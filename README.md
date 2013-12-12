@@ -16,13 +16,14 @@ gem 'deckhand', github: 'somawater/deckhand'
 # config/initializers/deckhand.rb
 Deckhand.configure do
   model Order do
-    'tbd'
+    search_on :short_id, :exact
   end
   model User do
-    'tbd'
+    search_on :name, :contains
+    search_on :email, :contains
   end
   model Subscription do
-    'tbd'
+    search_on :short_id, :contains
   end
 end
 ```
