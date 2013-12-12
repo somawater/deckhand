@@ -10,8 +10,15 @@ module Deckhand
     Configuration.instance
   end
 
+  module ConfigurationDSL
+    def model(model_class, &block)
+      models[model_class] = block
+    end
+  end
+
   class Configuration
     include Singleton
+    include ConfigurationDSL
 
     attr_accessor :initializer_block, :models
 
@@ -20,11 +27,12 @@ module Deckhand
     end
 
     def load_initializer_block
+      # TODO only allow methods in DSL
       instance_eval &initializer_block
     end
 
-    def model(model_class, &block)
-      models[model_class] = block
+    def model_names
+      @model_names ||= models.keys.map {|m| m.to_s.underscore.parameterize.dasherize }
     end
 
   end

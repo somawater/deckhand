@@ -7,7 +7,7 @@ class Deckhand::SearchController < Deckhand::BaseController
   private
 
   def jsonize(obj)
-    obj.as_json.merge(type: obj.class.to_s)
+    obj.as_json.merge(type: obj.class.to_s.downcase)
   end
 
   def dummy_data

@@ -2,16 +2,32 @@
 //= require jquery.ui.autocomplete
 //= require deckhand/lib/handlebars-v1.1.2
 
+window.Deckhand = (function() {
+
+  var templates = {}, templateSizes = ['small', 'large'];
+
+  var compileModelTemplates = function(modelName) {
+    templates[modelName] = {};
+    $.each(templateSizes, function(i, size) {
+      var element = document.getElementById('template-' + modelName + '-' + size);
+      if (element) {
+        templates[modelName][size] = Handlebars.compile(element.innerHTML);
+      }
+    });
+  };
+
+  return {
+    render: function(model, size) {
+      return templates[model.type][size](model);
+    },
+    init: function(modelNames) {
+      $.each(modelNames, function(i, n) { compileModelTemplates(n); });
+    },
+  };
+})();
+
 $(function() {
-  var smallOrderTemplate = Handlebars.compile($('#small-order-template').html()),
-    smallSubscriptionTemplate = Handlebars.compile($('#small-subscription-template').html()),
-    smallUserTemplate = Handlebars.compile($('#small-user-template').html());
-
-  var largeOrderTemplate = Handlebars.compile($('#large-order-template').html()),
-    largeSubscriptionTemplate = Handlebars.compile($('#large-subscription-template').html()),
-    largeUserTemplate = Handlebars.compile($('#large-user-template').html()),
-
-    searchInput = $('#search input');
+  var searchInput = $('#search input');
 
   searchInput.autocomplete({
     source: "search",
@@ -21,40 +37,13 @@ $(function() {
       return false;
     },
     select: function(event, ui) {
-      switch (ui.item.type) {
-        case 'Subscription':
-          $('#selected-items').append($('<li>').append(largeSubscriptionTemplate(ui.item)));
-        break;
-        case 'Order':
-          $('#selected-items').append($('<li>').append(largeOrderTemplate(ui.item)));
-        break;
-        case 'User':
-          $('#selected-items').append($('<li>').append(largeUserTemplate(ui.item)));
-        break;
-      }
-
+      $('#cards').prepend(Deckhand.render(ui.item, 'large'));
       searchInput.val("");
-
       return false;
     }
   }).data("ui-autocomplete")._renderItem = function(ul, item) {
-    var innerContent;
-    switch (item.type) {
-      case 'Subscription':
-        innerContent = smallSubscriptionTemplate(item);
-        item.value = 'Subscription '  + item.short_id;
-        break;
-      case 'Order':
-        innerContent = smallOrderTemplate(item);
-        item.value = 'Order '  + item.short_id;
-        break;
-      case 'User':
-        innerContent = smallUserTemplate(item);
-        item.value = 'User: ' + item.name;
-        break;
-      default:
-        innerContent = '???';
-    }
-    return $("<li>").append($('<a>').append(innerContent)).appendTo(ul);
+    var content = Deckhand.render(item, 'small');
+    // autocomplete breaks without that intermediate <a> tag
+    return $("<li>").append($('<a>').append(content)).appendTo(ul);
   };
 });
