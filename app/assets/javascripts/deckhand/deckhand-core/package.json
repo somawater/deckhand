@@ -1,0 +1,18 @@
+{
+  "name": "deckhand",
+  "description": "frontend ui for the deckhand gem",
+  "version": "0.0.1",
+  "author": {
+    "name": "Lawrence Wang",
+    "email": "lawrence@drinksoma.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/somawater/deckhand.git"
+  },
+  "dependencies": {
+    "dombars": "*",
+    "u.each": "*",
+    "timeago": "*"
+  }
+}
