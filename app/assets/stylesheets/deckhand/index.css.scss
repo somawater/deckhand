@@ -1,0 +1,17 @@
+/*
+ *= require jquery.ui.autocomplete
+ */
+
+body {
+  padding-top: 1em;
+}
+
+#search {
+  position: relative;
+
+  .glyphicon-search {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+}

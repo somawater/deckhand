@@ -1,0 +1,39 @@
+- content_for :head do
+  = stylesheet_link_tag 'deckhand/bootstrap-3.0.3/css/bootstrap.min'
+  = stylesheet_link_tag 'deckhand'
+
+- content_for :end_js do
+  = javascript_include_tag 'deckhand'
+
+.container
+  .row
+    .col-md-4.col-md-offset-4
+      .form-group#search
+        %i.glyphicon.glyphicon-search
+        %input.form-control(type="text")
+  .row
+    .col-md-4
+      %ul#selected-items
+
+%script#small-order-template(type="text/x-handlebars-template")
+  Order: {{short_id}}
+
+%script#small-user-template(type="text/x-handlebars-template")
+  User: {{name}}
+
+%script#small-subscription-template(type="text/x-handlebars-template")
+  Subscription: {{short_id}}
+
+%script#large-order-template(type="text/x-handlebars-template")
+  %h1 Order: {{short_id}}
+  Created At: {{created_at}}
+  State: {{state}}
+
+%script#large-user-template(type="text/x-handlebars-template")
+  %h1 User: {{name}}
+  Email: {{email_address}}
+
+%script#large-subscription-template(type="text/x-handlebars-template")
+  %h1 Subscription: {{short_id}}
+  Created_at: {{created_at}}
+
