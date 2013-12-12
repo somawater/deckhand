@@ -8,6 +8,11 @@ A card-based admin interface.
 Make the following changes in your main app:
 
 ```ruby
+# Gemfile
+gem 'deckhand', github: 'somawater/deckhand'
+```
+
+```ruby
 # config/initializers/deckhand.rb
 Deckhand.configure do
   model Order do
