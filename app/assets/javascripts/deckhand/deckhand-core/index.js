@@ -1,9 +1,20 @@
 Dombars = require('dombars'),
   each = require('u.each'),
-  moment = require('moment');
+  moment = require('moment'),
+  delegate = require('delegation'),
+  matches = require('matches-selector'),
+  ajax = require('component-ajax');
+
+var getJson = function(url, data, success) {
+  return ajax({url: url, dataType: 'json', data: data, success: success});
+};
 
 Dombars.registerHelper('humanTime', function(time) {
   return time ? moment(new Date(time)).fromNow() : 'never';
+});
+
+Dombars.registerHelper('pluralize', function(value, text) {
+  return value == 1 ? text : text + 's';
 });
 
 var storage = {};
@@ -29,22 +40,26 @@ var prepend = function(parent, child) {
 
 window.Deckhand = (function() {
 
-  var templates = {},
-    templateSizes = ['small', 'large'],
-    searchInput, searchResults, cards;
+  var templates = {}, searchInput, searchResults, cards, searchPath, showPath;
 
   var createNode = function(model, size) {
     var fragment = templates[model.type][size](model);
     return fragment;
   };
 
-  var compileModelTemplate = function(modelName) {
-    templates[modelName] = {};
-    each(templateSizes, function(size) {
-      var selector = '[type="text/x-handlebars-template"][data-model="'+modelName+'"][data-size="'+size+'"]';
-      var element = document.querySelector(selector);
-      if (element) {
-        templates[modelName][size] = Dombars.compile(element.innerHTML);
+  var compileTemplates = function() {
+    var elements = document.querySelectorAll('[type="text/x-handlebars-template"][data-model][data-size]');
+    elements = Array.prototype.slice.call(elements);
+    each(elements, function(element) {
+      var model = element.getAttribute('data-model'),
+        size = element.getAttribute('data-size');
+
+      if (matches(element, '[data-partial]')) {
+        var partialName = model + '_' + size.replace('-', '_');
+        Dombars.registerPartial(partialName, element.innerHTML);
+      } else {
+        if (!templates[model]) templates[model] = {};
+        templates[model][size] = Dombars.compile(element.innerHTML);
       }
     });
   };
@@ -54,40 +69,50 @@ window.Deckhand = (function() {
     Dombars.registerPartial(partialName, element.innerHTML);
   };
 
-  var setupAutocomplete = function() {
+  var setupBehavior = function() {
     searchInput.addEventListener('change', function(event) {
       searchResults.innerHTML = '';
 
-      $.get('search', {term: searchInput.value}, function(resp) {
-        each(resp, function(item) {
+      getJson(searchPath, {term: searchInput.value}, function(items) {
+        each(items, function(item) {
           var li = document.createElement('li');
           li.setAttribute('class', 'list-group-item');
-          li.appendChild(createNode(item, 'small'));
+          li.appendChild(createNode(item, 'search_result'));
           prepend(searchResults, li);
           storeData(li, item);
         })
       });
     });
+
+    delegate(searchResults, 'click', 'li', function(event) {
+      var item = fetchData(event.target);
+      var card = createNode(item, 'card');
+      prepend(cards, card);
+    })
+
+    delegate(cards, 'click', 'a[data-model][data-id]', function(event) {
+      var params = {
+        id: event.target.getAttribute('data-id'),
+        model: event.target.getAttribute('data-model')
+      };
+      getJson(showPath, params, function(item) {
+        var card = createNode(item, 'card');
+        prepend(cards, card);
+      })
+    });
   };
 
   return {
-    init: function(modelNames) {
-      each(modelNames, compileModelTemplate);
-      partials = document.querySelectorAll('[type="text/x-handlebars-template"][data-partial]');
-      each(Array.prototype.slice.call(partials), compilePartial);
+    init: function(options) {
+      searchPath = options.searchPath;
+      showPath = options.showPath;
 
       searchInput = document.getElementById('search-input');
       searchResults = document.getElementById('search-results');
       cards = document.getElementById('cards');
 
-      setupAutocomplete();
-
-      searchResults.addEventListener('click', function(event) {
-        if (event.target.tagName != 'LI') return;
-        var item = fetchData(event.target);
-        var card = createNode(item, 'large');
-        prepend(cards, card);
-      })
-    },
+      compileTemplates();
+      setupBehavior();
+    }
   };
 })();

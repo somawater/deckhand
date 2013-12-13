@@ -1,16 +1,26 @@
-class Deckhand::SearchController < Deckhand::BaseController
+class Deckhand::DataController < Deckhand::BaseController
+
+  def search
+    render json: results(params[:term]).map {|x| jsonize(x) }
+  end
 
   def show
-    render json: results(params[:term]).map {|x| jsonize(x) }
+    instance = find(params[:model], params[:id])
+    render json: jsonize(instance)
   end
 
   private
 
-  def jsonize(obj)
-    return obj unless Deckhand.config.models.map(&:to_s).include? obj.class.to_s
+  def find(model, id)
+    Deckhand.config.models_by_name[model].find(id)
+  end
 
-    obj_hash = {type: obj.class.to_s.underscore}
-    Deckhand.config.fields_to_show(obj.class).reduce(obj_hash) do |hash, field|
+  def jsonize(obj)
+    model = obj.class
+    return obj unless Deckhand.config.has_model? model
+
+    obj_hash = {type: model.to_s.underscore}
+    Deckhand.config.fields_to_show(model).reduce(obj_hash) do |hash, field|
       val = jsonize obj.send(field)
       if val.is_a? Array
         val = val.map {|subval| jsonize(subval) }

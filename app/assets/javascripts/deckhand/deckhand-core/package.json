@@ -13,6 +13,9 @@
   "dependencies": {
     "dombars": "*",
     "u.each": "*",
-    "moment": "*"
+    "moment": "*",
+    "delegation": "*",
+    "matches-selector": "*",
+    "component-ajax": "*"
   }
 }

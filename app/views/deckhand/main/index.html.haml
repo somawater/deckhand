@@ -4,9 +4,12 @@
   = stylesheet_link_tag 'deckhand/theme'
 
 - content_for :end_js do
-  = javascript_include_tag 'deckhand'
+  = javascript_include_tag 'deckhand/deckhand-core/index'
   :javascript
-    Deckhand.init(#{Deckhand.config.model_names});
+    Deckhand.init({
+      searchPath: '#{deckhand.search_data_path}',
+      showPath: '#{deckhand.data_path}'
+    });
 
 .container
   .row
@@ -21,3 +24,6 @@
       #cards
 
 = render 'deckhand/templates'
+
+-# %pre= raw Deckhand.config.models_by_name
+-# %pre= raw Deckhand.config.model_search

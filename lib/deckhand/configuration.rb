@@ -24,12 +24,9 @@ module Deckhand
 
     attr_accessor :initializer_block, :models_config
 
-    def initialize
-      self.models_config = {}
-    end
-
     def load_initializer_block
-      # TODO only allow methods in DSL
+      self.models_config = {}
+      # TODO allow only DSL methods to be called
       instance_eval &initializer_block
     end
 
@@ -37,8 +34,12 @@ module Deckhand
       @models ||= models_config.keys
     end
 
-    def model_names
-      @model_names ||= models.map {|m| m.to_s.underscore }
+    def models_by_name
+      @models_by_name ||= Hash[*(models.map {|m| [m.to_s.underscore, m] }.flatten)]
+    end
+
+    def has_model?(model)
+      models_by_name.keys.include? model.to_s.underscore
     end
 
     def model_search
