@@ -48,13 +48,13 @@ mount Deckhand::Engine => 'dh', :as => :deckhand
 ```haml
 -# app/views/deckhand/_templates.html.haml
 
-%script(type="text/x-handlebars-template" data-model="user" data-size="small")
+= deckhand_template :user, :search_result do
   {{name}} &lt;{{email}}&gt;
 
-%script(type="text/x-handlebars-template" data-model="subscription" data-size="small")
+= deckhand_template :subscription, :search_result do
   Subscription: {{short_id}}
 
-%script(type="text/x-handlebars-template" data-model="user" data-size="large")
+= deckhand_template :user, :card do
   .panel.panel-primary
     .panel-heading
       %h3.panel-title
@@ -64,12 +64,14 @@ mount Deckhand::Engine => 'dh', :as => :deckhand
           %a.glyphicon.glyphicon-edit.primary(href="/admin/user/{{id}}/edit" target="_blank")
         {{name}} &lt;{{email}}&gt;
     .panel-body
+      {{subscriptions.length}} {{pluralize subscriptions.length 'subscription'}}:
+      %ul.comma-separated
+        {{#each subscriptions}}
+        %li
+          %a(data-model="subscription" data-id="{{id}}") {{short_id}}
+        {{/each}}
 
-      {{#each subscriptions}}
-      {{> subscription_panel}}
-      {{/each}}
-
-%script(type="text/x-handlebars-template" data-model="subscription" data-size="panel" data-partial)
+= deckhand_template :subscription, :card do
   .panel.panel-default
     .panel-heading
       %h3.panel-title
@@ -81,20 +83,27 @@ mount Deckhand::Engine => 'dh', :as => :deckhand
     .panel-body
       .row
         .col-sm-6
+          %p {{plan.name}}
           %p
             {{#if active}}
-            active, recurs {{humanTime next_recurrence_at}}
+            %strong.good active,
+            recurs {{humanTime next_recurrence_at}}
             {{else}}
-            inactive!
-            {{#if hidden}}
-            also hidden
+            %strong.bad
+              inactive
+              {{#if hidden}}
+              and hidden
+              {{/if}}
             {{/if}}
-            {{/if}}
-          %p {{orders.length}} orders, {{charges.length}} charges
+          %p
+            {{charges.length}} {{pluralize charges.length 'charge'}},
+            {{orders.length}} {{pluralize orders.length 'order'}}
         .col-sm-6
           {{{address.to_html_s}}}
+
 ```
 
 Notes for templates:
  * Bootstrap 3 is included.
- * Give your partials the `data-partial` attribute and they'll be registered with the name "#{data-model}_#{data-size}".
+ * `pluralize` and `humanTime` helpers are included.
+ * Links with `data-model` and `data-id` will open a new card.
