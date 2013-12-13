@@ -4,7 +4,7 @@
   = stylesheet_link_tag 'deckhand/theme'
 
 - content_for :end_js do
-  = javascript_include_tag 'deckhand/deckhand-core/index'
+  = javascript_include_tag 'deckhand/index'
   :javascript
     Deckhand.init({
       searchPath: '#{deckhand.search_data_path}',
