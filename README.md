@@ -15,16 +15,28 @@ gem 'deckhand', github: 'somawater/deckhand'
 ```ruby
 # config/initializers/deckhand.rb
 Deckhand.configure do
-  model Order do
-    search_on :short_id, :exact
-  end
+
   model User do
+    search_on :short_id, :exact
     search_on :name, :contains
     search_on :email, :contains
+
+    show :subscriptions
+    exclude :encrypted_password
   end
+
   model Subscription do
-    search_on :short_id, :contains
+    show :orders, :charges, :address
   end
+
+  model Charge do
+    show :charged_amount_s, :orders
+  end
+
+  model ShippingAddress do
+    show :to_html_s
+  end
+
 end
 ```
 
@@ -36,32 +48,53 @@ mount Deckhand::Engine => 'dh', :as => :deckhand
 ```haml
 -# app/views/deckhand/_templates.html.haml
 
-%script#template-order-small(type="text/x-handlebars-template")
-  Order: {{short_id}}
+%script(type="text/x-handlebars-template" data-model="user" data-size="small")
+  {{name}} &lt;{{email}}&gt;
 
-%script#template-user-small(type="text/x-handlebars-template")
-  User: {{name}}
-
-%script#template-subscription-small(type="text/x-handlebars-template")
+%script(type="text/x-handlebars-template" data-model="subscription" data-size="small")
   Subscription: {{short_id}}
 
-%script#template-order-large(type="text/x-handlebars-template")
-  .well
-    %h1 Order: {{short_id}}
-    Created At: {{created_at}}
-    State: {{state}}
+%script(type="text/x-handlebars-template" data-model="user" data-size="large")
+  .panel.panel-primary
+    .panel-heading
+      %h3.panel-title
+        %span.right
+          signed up {{humanTime created_at}}
+          &nbsp;
+          %a.glyphicon.glyphicon-edit.primary(href="/admin/user/{{id}}/edit" target="_blank")
+        {{name}} &lt;{{email}}&gt;
+    .panel-body
 
-%script#template-user-large(type="text/x-handlebars-template")
-  .well
-    %h1 User: {{name}}
-    Email: {{email}}
+      {{#each subscriptions}}
+      {{> subscription_panel}}
+      {{/each}}
 
-%script#template-subscription-large(type="text/x-handlebars-template")
-  .well
-    %h1 Subscription: {{short_id}}
-    Created_at: {{created_at}}
+%script(type="text/x-handlebars-template" data-model="subscription" data-size="panel" data-partial)
+  .panel.panel-default
+    .panel-heading
+      %h3.panel-title
+        %span.right
+          created {{humanTime created_at}}
+          &nbsp;
+          %a.glyphicon.glyphicon-edit(href="/admin/subscription/{{id}}/edit" target="_blank")
+        Subscription {{short_id}}
+    .panel-body
+      .row
+        .col-sm-6
+          %p
+            {{#if active}}
+            active, recurs {{humanTime next_recurrence_at}}
+            {{else}}
+            inactive!
+            {{#if hidden}}
+            also hidden
+            {{/if}}
+            {{/if}}
+          %p {{orders.length}} orders, {{charges.length}} charges
+        .col-sm-6
+          {{{address.to_html_s}}}
 ```
 
 Notes for templates:
- * Bootstrap 3 is available.
- * Give the templates ID's in the format `"template-#{class.to_s.parameterize.dasherize}-#{size}"`
+ * Bootstrap 3 is included.
+ * Give your partials the `data-partial` attribute and they'll be registered with the name "#{data-model}_#{data-size}".
