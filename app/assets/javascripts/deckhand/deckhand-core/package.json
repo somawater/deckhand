@@ -13,6 +13,6 @@
   "dependencies": {
     "dombars": "*",
     "u.each": "*",
-    "timeago": "*"
+    "moment": "*"
   }
 }

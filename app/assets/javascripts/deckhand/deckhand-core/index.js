@@ -1,9 +1,9 @@
-var Dombars = require('dombars'),
+Dombars = require('dombars'),
   each = require('u.each'),
-  timeago = require('timeago');
+  moment = require('moment');
 
 Dombars.registerHelper('humanTime', function(time) {
-  return new Dombars.SafeString(timeago(new Date(time)));
+  return time ? moment(new Date(time)).fromNow() : 'never';
 });
 
 var storage = {};
@@ -31,23 +31,27 @@ window.Deckhand = (function() {
 
   var templates = {},
     templateSizes = ['small', 'large'],
-    searchInput,
-    searchResults,
-    cards;
+    searchInput, searchResults, cards;
 
   var createNode = function(model, size) {
     var fragment = templates[model.type][size](model);
     return fragment;
   };
 
-  var compileModelTemplates = function(modelName) {
+  var compileModelTemplate = function(modelName) {
     templates[modelName] = {};
     each(templateSizes, function(size) {
-      var element = document.getElementById('template-' + modelName + '-' + size);
+      var selector = '[type="text/x-handlebars-template"][data-model="'+modelName+'"][data-size="'+size+'"]';
+      var element = document.querySelector(selector);
       if (element) {
         templates[modelName][size] = Dombars.compile(element.innerHTML);
       }
     });
+  };
+
+  var compilePartial = function(element) {
+    var partialName = element.getAttribute('data-model') + '_' + element.getAttribute('data-size').replace('-', '_');
+    Dombars.registerPartial(partialName, element.innerHTML);
   };
 
   var setupAutocomplete = function() {
@@ -68,7 +72,9 @@ window.Deckhand = (function() {
 
   return {
     init: function(modelNames) {
-      each(modelNames, compileModelTemplates);
+      each(modelNames, compileModelTemplate);
+      partials = document.querySelectorAll('[type="text/x-handlebars-template"][data-partial]');
+      each(Array.prototype.slice.call(partials), compilePartial);
 
       searchInput = document.getElementById('search-input');
       searchResults = document.getElementById('search-results');

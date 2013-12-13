@@ -12,9 +12,9 @@ module Deckhand
 
   module ConfigurationDSL
     def model(model_class, &block)
-      models[model_class] = model_config = SimpleDSLStore.new
-      model_config.instance_eval &block
-      model_config.freeze
+      models_config[model_class] = this_model_config = SimpleDSLStore.new
+      this_model_config.instance_eval &block
+      this_model_config.freeze
     end
   end
 
@@ -22,10 +22,10 @@ module Deckhand
     include Singleton
     include ConfigurationDSL
 
-    attr_accessor :initializer_block, :models
+    attr_accessor :initializer_block, :models_config
 
     def initialize
-      self.models = {}
+      self.models_config = {}
     end
 
     def load_initializer_block
@@ -33,16 +33,30 @@ module Deckhand
       instance_eval &initializer_block
     end
 
-    def model_names
-      @model_names ||= models.keys.map {|m| m.to_s.underscore.parameterize.dasherize }
+    def models
+      @models ||= models_config.keys
     end
 
-    def searchable_models
-      @searchable_models ||= models.map do |model, config|
+    def model_names
+      @model_names ||= models.map {|m| m.to_s.underscore }
+    end
+
+    def model_search
+      @model_search ||= models_config.map do |model, config|
         if config.search_on
           [model, config.search_on]
         end
       end.compact
+    end
+
+    def fields_to_show(model)
+      mc = models_config[model]
+      mc.fields_to_show ||= begin
+        mc.show_only || begin
+          default_fields = model.fields.keys - ['_id'] + ['id']
+          (default_fields + (mc.show || []) - (mc.exclude || []))
+        end
+      end.flatten.map(&:to_sym).uniq.sort
     end
 
   end
