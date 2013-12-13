@@ -33,7 +33,7 @@ class Deckhand::DataController < Deckhand::BaseController
   def results(term)
     Deckhand.config.model_search.map do |model, search_fields|
       criteria = make_criteria(term, search_fields)
-      model.or(*criteria).limit(3)
+      model.or(*criteria).limit(5)
     end.map(&:to_a).flatten(1)
   end
 
