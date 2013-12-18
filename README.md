@@ -107,3 +107,15 @@ Notes for templates:
  * Bootstrap 3 is included.
  * `pluralize` and `humanTime` helpers are included.
  * Links with `data-model` and `data-id` will open a new card.
+ 
+ 
+## Troubleshooting
+
+### Spork
+
+Add this to the prefork block in `spec_helper.rb` ([why?](https://github.com/sporkrb/spork/wiki/Spork.trap_method-Jujitsu)):
+
+```ruby
+require 'deckhand'
+Spork.trap_method(Deckhand::Configuration, :load_initializer_block)
+```
