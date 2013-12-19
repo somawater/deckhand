@@ -11,17 +11,15 @@ var getJson = function(url, data, success) {
   return ajax({url: url, dataType: 'json', data: data, success: success});
 };
 
-var storage = {};
-
 storeData = function(node, data) {
   var key = Math.random().toString();
-  storage[key] = data;
+  sessionStorage.setItem(key, JSON.stringify(data));
   node.dataset.storeKey = key;
 }
 
 fetchData = function(node) {
   var key = node.dataset.storeKey;
-  return key ? storage[key] : nil;
+  return key ? JSON.parse(sessionStorage.getItem(key)) : null;
 }
 
 var prepend = function(parent, child) {
