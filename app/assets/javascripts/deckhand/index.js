@@ -5,17 +5,11 @@ Dombars = require('dombars'),
   matches = require('matches-selector'),
   ajax = require('component-ajax');
 
+require('./content_helpers');
+
 var getJson = function(url, data, success) {
   return ajax({url: url, dataType: 'json', data: data, success: success});
 };
-
-Dombars.registerHelper('humanTime', function(time) {
-  return time ? moment(new Date(time)).fromNow() : 'never';
-});
-
-Dombars.registerHelper('pluralize', function(value, text) {
-  return value == 1 ? text : text + 's';
-});
 
 var storage = {};
 
