@@ -40,7 +40,7 @@ class Deckhand::DataController < Deckhand::BaseController
   def make_criteria(term, search_fields)
     search_fields.map do |field, match_type|
       case match_type
-      when :exact
+      when :exact, nil
         {field => term}
       when :contains
         {field => /#{Regexp.escape term}/i}
