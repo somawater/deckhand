@@ -37,7 +37,9 @@ var Deckhand = angular.module('Deckhand', ['ngResource'])
   };
 
   $scope.open = function(model, id) {
-    $scope.items.unshift(Model.get({model: model, id: id}));
+    Model.get({model: model, id: id}, function(item) {
+      $scope.items.unshift(item);
+    });
   };
 }])
 
