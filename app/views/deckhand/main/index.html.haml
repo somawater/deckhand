@@ -24,6 +24,6 @@
 
     .col-sm-8
       #cards(ng-controller="CardsCtrl")
-        %div(ng-repeat="item in items" ng-include="item.type + '/card'")
+        %div(ng-repeat="item in items" ng-include="template(item)")
 
 = render 'deckhand/templates'
