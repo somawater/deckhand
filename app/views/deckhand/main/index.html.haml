@@ -3,24 +3,27 @@
   = stylesheet_link_tag 'deckhand'
   = stylesheet_link_tag 'deckhand/theme'
 
-- content_for :end_js do
-  = javascript_include_tag 'deckhand/index'
   :javascript
-    Deckhand.init({
+    window.DeckhandGlobals = {
       searchPath: '#{deckhand.search_data_path}',
       showPath: '#{deckhand.data_path}'
-    });
+    };
+
+  = javascript_include_tag 'deckhand/index'
 
 .container
   .row
-    .col-sm-4
-      .form-group#search
-        %i.glyphicon.glyphicon-search
-        %input#search-input.form-control(type="text")
+    .col-sm-4(ng-controller="SearchCtrl")
+      %form(ng-submit="search()")
+        .form-group#search
+          %i.glyphicon.glyphicon-search
+          %input#search-input.form-control(type="text" ng-model="term")
 
       %ul#search-results.list-group
+        %li.list-group-item(ng-repeat="result in results" ng-include="template(result)" ng-click="open(result)")
 
     .col-sm-8
-      #cards
+      #cards(ng-controller="CardsCtrl")
+        %div(ng-repeat="item in items" ng-include="item.type + '/card'")
 
 = render 'deckhand/templates'
