@@ -11,12 +11,7 @@
     "url": "https://github.com/somawater/deckhand.git"
   },
   "dependencies": {
-    "dombars": "*",
-    "u.each": "*",
     "moment": "*",
-    "delegation": "*",
-    "matches-selector": "*",
-    "component-ajax": "*",
     "angular": "1.2.2"
   }
 }

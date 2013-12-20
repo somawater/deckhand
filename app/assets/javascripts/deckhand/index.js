@@ -1,5 +1,4 @@
-var each = require('u.each'),
-  moment = require('moment'),
+var moment = require('moment'),
   angular = require('angular');
 
 require('./lib/angular-resource');
