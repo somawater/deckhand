@@ -15,3 +15,24 @@ body {
     top: 10px;
   }
 }
+
+a[ng-click], #search-results li {
+  cursor: pointer;
+}
+
+.glyphicon.primary {
+  color: white;
+}
+
+.good {
+  color: #5cb85c;
+}
+
+.bad {
+  color: #d2322d;
+}
+
+.right {
+  float: right;
+}
+
