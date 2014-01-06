@@ -11,4 +11,8 @@ module Deckhand::MainHelper
     end
   end
 
+  def trusted_html(attr)
+    content_tag :div, '', 'ng-bind-html' => "raw(#{attr})"
+  end
+
 end

@@ -2,8 +2,9 @@ var moment = require('moment'),
   angular = require('angular');
 
 require('./lib/angular-resource');
+require('./lib/angular-sanitize');
 
-var Deckhand = angular.module('Deckhand', ['ngResource'])
+var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 
 .factory('Search', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.searchPath);
@@ -27,9 +28,10 @@ var Deckhand = angular.module('Deckhand', ['ngResource'])
     var cardCtrl = angular.element(document.getElementById('cards')).scope();
     cardCtrl.add(item);
   };
+
 }])
 
-.controller('CardsCtrl', ['$scope', 'Model', function($scope, Model) {
+.controller('CardsCtrl', ['$scope', '$sce', 'Model', function($scope, $sce, Model) {
   $scope.items = [];
 
   $scope.add = function(item) {
@@ -45,6 +47,11 @@ var Deckhand = angular.module('Deckhand', ['ngResource'])
       $scope.items.unshift(item);
     });
   };
+
+  $scope.raw = function(value) {
+    return $sce.trustAsHtml(value);
+  };
+
 }])
 
 .filter('humanTime', function() {
