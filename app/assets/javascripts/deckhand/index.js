@@ -16,7 +16,10 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 
 .controller('SearchCtrl', ['$scope', 'Search', function($scope, Search) {
   $scope.search = function() {
-    $scope.results = Search.query({term: $scope.term});
+    $scope.results = Search.query({term: $scope.term}, function(results) {
+      if (results.length == 0)
+        $scope.noResults = true;
+    });
   };
 
   $scope.template = function(item) {
@@ -27,6 +30,12 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
     // HMMM what's that smell
     var cardCtrl = angular.element(document.getElementById('cards')).scope();
     cardCtrl.add(item);
+  };
+
+  $scope.reset = function() {
+    $scope.term = null;
+    $scope.results = [];
+    $scope.noResults = false;
   };
 
 }])
