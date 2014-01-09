@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Lawrence Wang"]
   s.email       = ["lawrence@drinksoma.com"]
   s.homepage    = "https://github.com/somawater/deckhand"
-  s.summary     = "It handles the money."
-  s.description = "Wrapper for Braintree and PayPal Express Checkout."
+  s.summary     = "A card-based admin UI."
+  s.description = "A card-based admin UI with an easy-to-use configuration DSL."
 
   s.files = Dir["{app,config,db,lib}/**/*"]
   s.test_files = Dir["test/**/*"]
