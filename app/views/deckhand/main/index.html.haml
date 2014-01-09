@@ -21,7 +21,8 @@
           %input#search-input.form-control(type="text" ng-model="term")
 
       %ul#search-results.list-group
-        %li.list-group-item(ng-repeat="result in results" ng-include="template(result)" ng-click="open(result)")
+        %li.list-group-item(ng-repeat="result in results" ng-click="open(result)")
+          {{result._model}}: {{result._label}}
 
       %ul#no-results.list-group(ng-show="noResults")
         %li.list-group-item No results

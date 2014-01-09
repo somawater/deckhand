@@ -1,0 +1,2 @@
+require 'deckhand'
+require 'ostruct'

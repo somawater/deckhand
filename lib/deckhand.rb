@@ -1,5 +1,7 @@
-require "deckhand/engine"
-require "deckhand/configuration"
+require 'deckhand/configuration'
+require 'deckhand/search'
+require 'deckhand/presenter'
+require 'deckhand/engine' if defined?(Rails)
 
 module Deckhand
 end

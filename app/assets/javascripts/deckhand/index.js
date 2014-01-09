@@ -14,7 +14,8 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
   return $resource(DeckhandGlobals.showPath);
 }])
 
-.controller('SearchCtrl', ['$scope', 'Search', function($scope, Search) {
+.controller('SearchCtrl', ['$scope', 'Search', 'Model', function($scope, Search, Model) {
+
   $scope.search = function() {
     $scope.results = Search.query({term: $scope.term}, function(results) {
       if (results.length == 0)
@@ -22,14 +23,12 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
     });
   };
 
-  $scope.template = function(item) {
-    return item.type + '/search_result';
-  };
-
-  $scope.open = function(item) {
-    // HMMM what's that smell
-    var cardCtrl = angular.element(document.getElementById('cards')).scope();
-    cardCtrl.add(item);
+  $scope.open = function(result) {
+    Model.get({model: result._model, id: result.id}, function(item) {
+      // HMMM what's that smell? there's got to be a better way to do this
+      var cardCtrl = angular.element(document.getElementById('cards')).scope();
+      cardCtrl.add(item);
+    })
   };
 
   $scope.reset = function() {
@@ -48,7 +47,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
   };
 
   $scope.template = function(item) {
-    return item.type + '/card';
+    return item._model + '/card';
   };
 
   $scope.open = function(model, id) {
