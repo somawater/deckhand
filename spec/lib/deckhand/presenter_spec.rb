@@ -14,9 +14,9 @@ describe Deckhand::Presenter do
       )
     end
 
-    it 'returns the expected fields, including label' do
+    it 'returns the expected fields, including label and model' do
       h = Deckhand::Presenter.new.present(obj)
-      expect(h).to eq({_label: "i am 3", foo: 1, baz: 3})
+      expect(h).to eq({_model: 'OpenStruct', _label: "i am 3", id: nil, foo: 1, baz: 3})
     end
 
   end
