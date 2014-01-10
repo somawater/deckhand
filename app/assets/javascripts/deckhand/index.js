@@ -47,13 +47,17 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
   };
 
   $scope.template = function(item) {
-    return item._model + '/card';
+    return DeckhandGlobals.templatePath + '?model=' + item._model;
   };
 
   $scope.open = function(model, id) {
     Model.get({model: model, id: id}, function(item) {
       $scope.items.unshift(item);
     });
+  };
+
+  $scope.close = function(item) {
+    $scope.items.splice($scope.items.indexOf(item), 1);
   };
 
   $scope.raw = function(value) {
@@ -71,6 +75,16 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 .filter('pluralize', function() {
   return function(quantity) {
     return quantity == 1 ? '' : 's';
+  }
+})
+
+.filter('prettify', function() {
+  return function(x) {
+    if (x && typeof(x) == 'object') {
+      return x._label;
+    } else {
+      return x;
+    }
   }
 })
 

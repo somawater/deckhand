@@ -1,0 +1,47 @@
+.panel.panel-default
+  .panel-heading
+    %h3.panel-title
+      %span.right
+        %a.glyphicon.glyphicon-edit(href="/admin/{{item._model.toLowerCase()}}/{{item.id}}/edit" target="_blank")
+        %a.glyphicon.glyphicon-remove(ng-click="close(item)")
+      {{item._model}}: {{item._label}}
+  .panel-body
+    %dl.dl-horizontal
+      - fields_to_show.each do |field|
+        %dt= field.to_s.sub(/_s$/, '').gsub('_', ' ')
+        %dd
+          - if Deckhand.config.link?(@model, field)
+            %a(ng-click="open('#{Deckhand.config.model_name_for(@model, field)}', item.#{field}.id)")
+              {{item.#{field}._label}}
+          - else
+            = angular_binding field
+
+  - if relations_to_tabulate.any?
+    %table.table
+      - relations_to_tabulate.each do |relation|
+        %thead
+          - relation.columns.each do |column|
+            %th= column.name
+        %tbody
+          %tr(ng-repeat="#{relation.singular_name} in item.#{relation.plural_name}")
+            - relation.columns.each do |column|
+              %td= angular_binding column.field, parent: relation.singular_name
+    / %thead
+    /   %tr
+    /     %th charge
+    /     %th amount
+    /     %th created
+    /     %th order
+    / %tbody
+    /   %tr(ng-repeat="charge in item.charges")
+    /     %td
+    /       %a(href="/admin/charge/{{charge.id}}") {{charge.short_id}}
+    /     %td
+    /       {{charge.charged_amount_s}}
+    /       %strong.bad(ng-if="charge.refunded") refunded
+    /     %td {{charge.created_at | humanTime}}
+    /     %td
+    /       %a(ng-repeat="order in charge.orders" href="/admin/order/{{order.id}}" target="_blank")
+    /         {{order.short_id}} ({{order.state}})
+
+    .panel-footer Whistle-tips go wooo

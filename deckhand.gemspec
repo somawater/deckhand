@@ -17,4 +17,5 @@ Gem::Specification.new do |s|
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'sprockets-browserify'
+  s.add_dependency 'haml'
 end

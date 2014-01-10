@@ -14,7 +14,7 @@ module Deckhand
 
     def model(model_class, &block)
       models_config[model_class] = SimpleDSLStore.new({
-        singular: [:label, :fields_to_show],
+        singular: [:label, :fields_to_show, :show_only],
         defaults: {show: [], exclude: []}
       }, &block)
     end
@@ -59,12 +59,7 @@ module Deckhand
 
     def fields_to_show(model)
       mc = models_config[model]
-      mc.fields_to_show ||= begin
-        mc.show_only || begin
-          default_fields = model.fields.keys.map(&:to_sym) - [:_id] + [:id]
-          default_fields + mc.show.flatten - mc.exclude.flatten
-        end
-      end.flatten.uniq
+      mc.fields_to_show ||= (mc.show_only || mc.show.flatten - mc.exclude.flatten).uniq
     end
 
     # a model's label can either be a symbol name of a method on that model,
@@ -75,6 +70,22 @@ module Deckhand
     def label(model)
       models_config[model].label ||= global_config[:model_label].instance_eval do
         detect {|attr| model.method_defined? attr } || last
+      end
+    end
+
+    def link?(model, field)
+      !!field_info(model, field)
+    end
+
+    def field_info(model, field)
+      # FIXME mongoid-specific, also probably missing some cases
+      model.fields.detect {|a, b| a == "#{field}_id" }
+    end
+
+    def model_name_for(model, field)
+      # FIXME there's probably an easier, more reliable way to do this
+      field_info(model, field).last.metadata.instance_eval do
+        self[:class_name] || self[:name].capitalize
       end
     end
 
