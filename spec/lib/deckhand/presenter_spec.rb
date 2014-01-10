@@ -20,4 +20,52 @@ describe Deckhand::Presenter do
     end
 
   end
+
+  context 'with cyclical relations' do
+    let(:foo) { Foo.new(id: 'foo') }
+    let(:bar) { Bar.new(id: 'bar') }
+
+    before do
+      Foo = Class.new OpenStruct
+      Bar = Class.new OpenStruct
+      Deckhand.configure do
+        model Foo do
+          show_only :bars
+        end
+
+        model Bar do
+          show_only :foos
+        end
+      end
+      Deckhand.config.load_initializer_block
+
+      foo.bars = [bar]
+      bar.foos = [foo]
+    end
+
+    it 'prevents infinite loops' do
+      h = Deckhand::Presenter.new.present(foo)
+      expect(h).to eq({
+        _model: 'Foo',
+        _label: 'foo',
+        id: 'foo',
+        bars: [
+          {
+            _model: 'Bar',
+            _label: 'bar',
+            id: 'bar',
+            foos: [
+              {
+                _model: 'Foo',
+                _label: 'foo',
+                id: 'foo'
+              }
+            ]
+          }
+        ]
+      })
+    end
+
+  end
+
 end
