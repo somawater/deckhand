@@ -1,7 +1,3 @@
-%w[Foo Bar Baz].each do |cls|
-  eval "#{cls} = Class.new OpenStruct"
-end
-
 Deckhand.configure do
 
   model_label :pretty_name, :name, :tag

@@ -2,6 +2,8 @@ require 'singleton'
 
 module Deckhand
 
+  module ModelStorage; end
+
   def self.configure(&block)
     Configuration.instance.initializer_block = block
   end
@@ -21,6 +23,11 @@ module Deckhand
 
     def model_label(*methods)
       global_config[:model_label] = methods + global_config[:model_label]
+    end
+
+    def model_storage(sym)
+      require "deckhand/model_storage/#{sym}"
+      global_config[:model_storage] = Deckhand::ModelStorage.const_get(sym.to_s.camelize).new
     end
 
   end

@@ -1,9 +1,10 @@
 require 'spec_helper'
 require File.dirname(__FILE__) + '/../../support/example_config'
 
-describe Deckhand.config do
+describe Deckhand::Configuration do
 
   before(:all) { Deckhand.config.load_initializer_block }
+  subject { Deckhand.config }
 
   it 'reads model_label' do
     expect(subject.global_config[:model_label]).to eq [:pretty_name, :name, :tag, :id]

@@ -7,11 +7,13 @@ describe Deckhand::Presenter do
     let(:obj) { OpenStruct.new(foo: 1, bar: 2, baz: 3, bonk: 4) }
 
     before do
-      Deckhand.config.stub(:has_model?) {|c| c == OpenStruct }
-      Deckhand.config.stub(
-        fields_to_show: [:foo, :baz],
-        label: ->(_) { "i am #{foo + bar}" }
-      )
+      Deckhand.configure do
+        model OpenStruct do
+          show :foo, :baz
+          label { "i am #{foo + bar}" }
+        end
+      end
+      Deckhand.config.load_initializer_block
     end
 
     it 'returns the expected fields, including label and model' do
@@ -26,15 +28,13 @@ describe Deckhand::Presenter do
     let(:bar) { Bar.new(id: 'bar') }
 
     before do
-      Foo = Class.new OpenStruct
-      Bar = Class.new OpenStruct
       Deckhand.configure do
         model Foo do
-          show_only :bars
+          show :bars
         end
 
         model Bar do
-          show_only :foos
+          show :foos
         end
       end
       Deckhand.config.load_initializer_block
