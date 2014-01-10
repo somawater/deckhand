@@ -5,14 +5,12 @@ class Deckhand::Presenter
     return obj unless Deckhand.config.has_model? model
     return core_fields(obj) if visited.include?(obj)
 
-    visited << obj
-
     Deckhand.config.fields_to_show(model).reduce(core_fields(obj)) do |hash, field|
       val = obj.send(field)
       hash[field] = if val.is_a?(Array)
-        val.map {|subval| present(subval, visited) }
+        val.map {|subval| present(subval, visited + [obj]) }
       else
-        present val, visited
+        present val, visited + [obj]
       end
       hash
     end
