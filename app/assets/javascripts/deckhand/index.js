@@ -17,9 +17,9 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 .controller('SearchCtrl', ['$scope', 'Search', 'Model', function($scope, Search, Model) {
 
   $scope.search = function() {
+    $scope.noResults = false;
     $scope.results = Search.query({term: $scope.term}, function(results) {
-      if (results.length == 0)
-        $scope.noResults = true;
+      if (results.length == 0) $scope.noResults = true;
     });
   };
 
