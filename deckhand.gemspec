@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_dependency 'active_support'
+  s.add_dependency 'activesupport'
   s.add_dependency 'sprockets-browserify'
   s.add_dependency 'haml'
 end
