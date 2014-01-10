@@ -1,4 +1,4 @@
-class Deckhand::Configuration::ModelConfig
+class Deckhand::Configuration::ModelDSL
 
   def initialize(options = {}, &block)
     @store = {}

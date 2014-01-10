@@ -5,7 +5,7 @@ module Deckhand
   class Engine < ::Rails::Engine
 
     config.to_prepare do
-      Deckhand::Configuration.instance.load_initializer_block
+      Deckhand.config.run
     end
 
     initializer 'deckhand.setup_browserify', :after => "sprockets.environment", :group => :all do |app|

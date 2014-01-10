@@ -4,16 +4,17 @@ module Deckhand::TemplatesHelper
     Deckhand.config.fields_to_show @model
   end
 
-  def angular_binding(field, options = {})
+  def angular_binding(name, options = {})
     parent = options[:parent] || 'item'
-
-    if Deckhand.config.link?(@model, field)
-      ng_click = "open('#{Deckhand.config.model_name_for(@model, field)}', item.#{field}.id)"
-      content_tag :a, "{{#{parent}.#{field}._label}}", 'ng-click' => ng_click
+    value = "{{value(#{parent}, '#{name}')}}"
+    if Deckhand.config.link?(@model, name)
+      relation_name = Deckhand.config.relation_model_name(@model, name)
+      ng_click = "open('#{relation_name}', item.#{name}.id)"
+      content_tag :a, value, 'ng-click' => ng_click
     elsif options[:html]
-      trusted_html "{{#{parent}.#{field}}}"
+      trusted_html value
     else
-      "{{#{parent}.#{field} | prettify}}"
+      value
     end
   end
 

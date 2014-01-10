@@ -1,5 +1,6 @@
 Deckhand.configure do
 
+  model_storage :dummy
   model_label :pretty_name, :name, :tag
 
   model Foo do

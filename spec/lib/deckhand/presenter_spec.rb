@@ -13,7 +13,7 @@ describe Deckhand::Presenter do
           label { "i am #{foo + bar}" }
         end
       end
-      Deckhand.config.load_initializer_block
+      Deckhand.config.run
     end
 
     it 'returns the expected fields, including label and model' do
@@ -37,7 +37,7 @@ describe Deckhand::Presenter do
           show :foos
         end
       end
-      Deckhand.config.load_initializer_block
+      Deckhand.config.run
 
       foo.bars = [bar]
       bar.foos = [foo]

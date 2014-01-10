@@ -1,3 +1,8 @@
+module Deckhand
+  class Configuration; end
+end
+
+require 'deckhand/configuration/dsl'
 require 'singleton'
 
 module Deckhand
@@ -12,49 +17,31 @@ module Deckhand
     Configuration.instance
   end
 
-  module ConfigurationDSL
-
-    def model(model_class, &block)
-      models_config[model_class] = Deckhand::Configuration::ModelConfig.new({
-        singular: [:label, :fields_to_show, :show_only],
-        defaults: {show: [], exclude: []}
-      }, &block)
-    end
-
-    def model_label(*methods)
-      global_config[:model_label] = methods + global_config[:model_label]
-    end
-
-    def model_storage(sym)
-      require "deckhand/model_storage/#{sym}"
-      global_config[:model_storage] = Deckhand::ModelStorage.const_get(sym.to_s.camelize).new
-    end
-
-  end
-
   class Configuration
     include Singleton
-    include ConfigurationDSL
 
     attr_accessor :initializer_block, :models_config, :global_config
-    attr_reader :search_config, :models_by_name
+    attr_reader :search_config, :models_by_name, :field_types
 
-    def load_initializer_block
+    def run
       self.models_config = {}
       self.global_config = {model_label: [:id]}
 
-      # TODO allow only DSL methods to be called
-      instance_eval &initializer_block
+      DSL.new(self).instance_eval &initializer_block
 
       @search_config = models_config.map do |model, config|
-        if config.search_on
-          [model, config.search_on]
-        end
+        [model, config.search_on] if config.search_on
       end.compact
 
       names = models_config.keys.map {|m| [m.to_s, m] }.flatten
       @models_by_name = Hash[*names]
+
+      if @model_storage = global_config[:model_storage]
+        setup_field_types
+      end
     end
+
+    delegate :link?, :relation_model_name, :to => :@model_storage
 
     def reset
       self.models_config = self.global_config = nil
@@ -79,19 +66,14 @@ module Deckhand
       end
     end
 
-    def link?(model, field)
-      !!field_info(model, field)
-    end
+    private
 
-    def field_info(model, field)
-      # FIXME mongoid-specific, also probably missing some cases
-      model.fields.detect {|a, b| a == "#{field}_id" }
-    end
-
-    def model_name_for(model, field)
-      # FIXME there's probably an easier, more reliable way to do this
-      field_info(model, field).last.metadata.instance_eval do
-        self[:class_name] || self[:name].capitalize
+    def setup_field_types
+      @field_types = models_config.keys.reduce({}) do |types, model|
+        types[model.to_s] = fields_to_show(model).reduce({}) do |h, (name, options)|
+          h[name] = @model_storage.field_type(model, name); h
+        end
+        types
       end
     end
 

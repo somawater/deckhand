@@ -39,7 +39,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 
 }])
 
-.controller('CardsCtrl', ['$scope', '$sce', 'Model', function($scope, $sce, Model) {
+.controller('CardsCtrl', ['$scope', '$sce', '$filter', 'Model', function($scope, $sce, $filter, Model) {
   $scope.items = [];
 
   $scope.add = function(item) {
@@ -51,6 +51,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
   };
 
   $scope.open = function(model, id) {
+    if (!id) return;
     Model.get({model: model, id: id}, function(item) {
       $scope.items.unshift(item);
     });
@@ -64,6 +65,22 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
     return $sce.trustAsHtml(value);
   };
 
+  $scope.value = function(item, attr) {
+    var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
+    var value;
+    if (!fieldTypes) {
+      value = item[attr];
+    } else if (fieldTypes[attr] == 'time') {
+      value = $filter('humanTime')(item[attr]);
+    } else if (fieldTypes[attr] == 'relation') {
+      obj = item[attr];
+      value = (obj ? obj._label : 'none');
+    } else {
+      value = item[attr];
+    }
+    return value;
+  };
+
 }])
 
 .filter('humanTime', function() {
@@ -75,16 +92,6 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 .filter('pluralize', function() {
   return function(quantity) {
     return quantity == 1 ? '' : 's';
-  }
-})
-
-.filter('prettify', function() {
-  return function(x) {
-    if (x && typeof(x) == 'object') {
-      return x._label;
-    } else {
-      return x;
-    }
   }
 })
 

@@ -7,7 +7,8 @@
     window.DeckhandGlobals = {
       searchPath: '#{deckhand.search_data_path}',
       showPath: '#{deckhand.data_path}',
-      templatePath: '#{deckhand.templates_path}'
+      templatePath: '#{deckhand.templates_path}',
+      fieldTypes: #{Deckhand.config.field_types.to_json}
     };
 
   = javascript_include_tag 'deckhand/index'
@@ -20,7 +21,7 @@
           .form-group
             %i.glyphicon.glyphicon-search(ng-hide="term")
             %i.glyphicon.glyphicon-remove(ng-show="term" ng-click="reset()")
-            %input#search-input.form-control(type="text" ng-model="term")
+            %input#search-input.form-control(type="text" ng-model="term" autofocus)
 
         %ul#search-results.list-group
           %li.list-group-item(ng-repeat="result in results" ng-click="open(result)")
