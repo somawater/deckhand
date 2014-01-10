@@ -11,8 +11,10 @@ Deckhand.configure do
     search_on :name, :contains
     search_on :email, :contains
 
+    show :email, :created_at
     show :bars
-    exclude :password
+    show :nose, :hairy => false, :large => true
+    show(:virtual_field) { ok }
     label { "#{name} <#{email}>" }
   end
 

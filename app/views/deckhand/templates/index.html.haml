@@ -7,7 +7,7 @@
       {{item._model}}: {{item._label}}
   .panel-body
     %dl.dl-horizontal
-      - fields_to_show.each do |field|
+      - fields_to_show.each do |field, options|
         %dt= field.to_s.sub(/_s$/, '').gsub('_', ' ')
         %dd
           - if Deckhand.config.link?(@model, field)

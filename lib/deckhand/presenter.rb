@@ -5,8 +5,9 @@ class Deckhand::Presenter
     return obj unless Deckhand.config.has_model? model
     return core_fields(obj) if visited.include?(obj)
 
-    Deckhand.config.fields_to_show(model).reduce(core_fields(obj)) do |hash, field|
+    Deckhand.config.fields_to_show(model).reduce(core_fields(obj)) do |hash, (field, options)|
       val = obj.send(field)
+      val = val.send(options[:delegate]) if options[:delegate]
       hash[field] = if val.is_a?(Array)
         val.map {|subval| present(subval, visited + [obj]) }
       else

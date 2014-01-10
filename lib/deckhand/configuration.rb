@@ -13,7 +13,7 @@ module Deckhand
   module ConfigurationDSL
 
     def model(model_class, &block)
-      models_config[model_class] = SimpleDSLStore.new({
+      models_config[model_class] = Deckhand::Configuration::ModelConfig.new({
         singular: [:label, :fields_to_show, :show_only],
         defaults: {show: [], exclude: []}
       }, &block)
@@ -58,8 +58,7 @@ module Deckhand
     end
 
     def fields_to_show(model)
-      mc = models_config[model]
-      mc.fields_to_show ||= (mc.show_only || mc.show.flatten - mc.exclude.flatten).uniq
+      models_config[model].show
     end
 
     # a model's label can either be a symbol name of a method on that model,
@@ -86,45 +85,6 @@ module Deckhand
       # FIXME there's probably an easier, more reliable way to do this
       field_info(model, field).last.metadata.instance_eval do
         self[:class_name] || self[:name].capitalize
-      end
-    end
-
-  end
-
-  class SimpleDSLStore
-    def initialize(options = {}, &block)
-      @store = {}
-
-      @options = {singular: [], defaults: {}}.merge options
-      @options[:defaults].each {|key, value| @store[key] = value }
-
-      instance_eval &block
-    end
-
-    def method_missing(sym, *args, &block)
-      if args.none? && !block
-        @store[sym]
-      else
-        if @options[:singular].include? sym
-          @store[sym] = merged_args(args, block, true)
-        else
-          # allow keywords to be called multiple times & accumulate args
-          @store[sym] ||= []
-          @store[sym] << merged_args(args, block, false)
-        end
-      end
-    end
-
-    def merged_args(args, block, unwrap)
-      if args.any? && block
-        [args, block].flatten(1)
-        args.first
-      elsif block
-        block
-      elsif args.size == 1 && unwrap
-        args.first
-      else
-        args
       end
     end
 

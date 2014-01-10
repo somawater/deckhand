@@ -14,8 +14,18 @@ describe Deckhand.config do
       Foo.stub(fields: {email: {}, created_at: {}, password: {}})
     end
 
-    it "takes 'exclude' and 'show' lists into account" do
-      expect(subject.fields_to_show(Foo)).to eq [:email, :created_at, :id, :bars]
+    it "reads 'show' keywords and options" do
+      fields_to_show = subject.fields_to_show(Foo)
+      expect(fields_to_show.first(4)).to eq [
+        [:email, {}],
+        [:created_at, {}],
+        [:bars, {}],
+        [:nose, {hairy: false, large: true}]
+      ]
+      last = fields_to_show.last
+      expect(last.first).to eq :virtual_field
+      expect(last.last).to be_kind_of Hash
+      expect(last.last[:block]).to be_kind_of Proc
     end
   end
 
