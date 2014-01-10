@@ -12,22 +12,25 @@
 
   = javascript_include_tag 'deckhand/index'
 
+#search
+  .container
+    .row
+      .col-sm-4(ng-controller="SearchCtrl")
+        %form(ng-submit="search()")
+          .form-group
+            %i.glyphicon.glyphicon-search(ng-hide="term")
+            %i.glyphicon.glyphicon-remove(ng-show="term" ng-click="reset()")
+            %input#search-input.form-control(type="text" ng-model="term")
+
+        %ul#search-results.list-group
+          %li.list-group-item(ng-repeat="result in results" ng-click="open(result)")
+            {{result._model}}: {{result._label}}
+
+        %ul#no-results.list-group(ng-show="noResults")
+          %li.list-group-item No results
+
 .container
   .row
-    #search.col-sm-4(ng-controller="SearchCtrl")
-      %form(ng-submit="search()")
-        .form-group
-          %i.glyphicon.glyphicon-search(ng-hide="term")
-          %i.glyphicon.glyphicon-remove(ng-show="term" ng-click="reset()")
-          %input#search-input.form-control(type="text" ng-model="term")
-
-      %ul#search-results.list-group
-        %li.list-group-item(ng-repeat="result in results" ng-click="open(result)")
-          {{result._model}}: {{result._label}}
-
-      %ul#no-results.list-group(ng-show="noResults")
-        %li.list-group-item No results
-
     .col-sm-8.col-sm-offset-4
       #cards(ng-controller="CardsCtrl")
         %div(ng-repeat="item in items" ng-include="template(item)")
