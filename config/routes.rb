@@ -3,6 +3,7 @@ Deckhand::Engine.routes.draw do
     root to: 'main#index'
     resource :data do
       get 'search', :on => :collection, :as => :search
+      put 'act'
     end
     resources :templates, only: [:index]
   end

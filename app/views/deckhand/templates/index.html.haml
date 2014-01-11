@@ -29,5 +29,5 @@
 
   - if actions.any?
     .panel-footer
-      - actions.each do |action, opts|
-        %button(ng-click="act(item, '#{action}', #{opts.to_json})")= action
+      - actions.each do |name, options|
+        %button(ng-click="act(item, '#{name}', #{options.to_json})")= name

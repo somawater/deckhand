@@ -51,6 +51,10 @@ module Deckhand
       models_by_name.keys.include? model.to_s
     end
 
+    def has_action?(model, action)
+      models_config[model].action.map(&:first).include? action
+    end
+
     def fields_to_show(model, options = {})
       fields = models_config[model].show
       options[:flat_only] ? fields.reject {|name, options| options[:table] } : fields

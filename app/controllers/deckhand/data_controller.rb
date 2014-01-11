@@ -10,20 +10,26 @@ class Deckhand::DataController < Deckhand::BaseController
     render_json Deckhand::Presenter.new.present(instance)
   end
 
-  def update
+  def act
     instance = get_instance
-    # TODO: begin/rescue/end the public_send and return a status code
-    result = instance.public_send(params[:act].to_sym)
-    render_json Deckhand::Presenter.new.present(instance).merge(_result: result)
+    action = params[:act].to_sym
+
+    if Deckhand.config.has_action?(instance.class, action)
+      # TODO: begin/rescue/end the public_send and return a status code
+      result = instance.public_send(params[:act].to_sym)
+      render_json Deckhand::Presenter.new.present(instance).merge(_result: result)
+    else
+      render_json({error: 'unknown action'}, :unprocessable_entity)
+    end
   end
 
   private
 
-  def render_json(data)
+  def render_json(data, status = :ok)
     if params[:pretty]
-      render json: JSON.pretty_generate(data)
+      render json: JSON.pretty_generate(data), status: status
     else
-      render json: data
+      render json: data, status: status
     end
   end
 

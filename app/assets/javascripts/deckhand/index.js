@@ -12,7 +12,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
 
 .factory('Model', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.showPath, null, {
-    update: {method: 'PUT'}
+    act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'}
   });
 }])
 
@@ -86,7 +86,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
   $scope.act = function(item, action, options) {
     // TODO: open some sort of dialog with the options listed
     if (!('confirm' in options) || confirm('Are you sure you want to do that?')) {
-      Model.update({model: item._model, id: item.id, act: action, value: options.confirm}, function(newItem) {
+      Model.act({model: item._model, id: item.id, act: action, value: options.confirm}, function(newItem) {
         // TODO visually call out the change
         $scope.items.splice($scope.items.indexOf(item), 1, newItem);
       })
