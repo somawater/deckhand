@@ -26,3 +26,8 @@
           %tr(ng-repeat="#{singular} in item.#{name}")
             - options[:table].each_with_index do |column, i|
               %td= angular_binding column, parent: singular, link: i == 0
+
+  - if actions.any?
+    .panel-footer
+      - actions.each do |action, opts|
+        %button(ng-click="act(item, '#{action}', #{opts.to_json})")= action

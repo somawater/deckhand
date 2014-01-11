@@ -8,8 +8,8 @@ class Deckhand::Presenter
     fields_to_show ||= Deckhand.config.fields_to_show(model, flat_only: visited.any?)
 
     fields_to_show.reduce(core_fields(obj)) do |hash, (field, options)|
-      val = obj.send(field)
-      val = val.send(options[:delegate]) if options[:delegate]
+      val = obj.public_send(field)
+      val = val.public_send(options[:delegate]) if options[:delegate]
       subfields_to_show = options[:table].map {|f| [f, {}] } if options[:table]
 
       hash[field] = if val.is_a?(Array)

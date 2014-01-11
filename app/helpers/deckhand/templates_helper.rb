@@ -30,6 +30,10 @@ module Deckhand::TemplatesHelper
     Deckhand.config.fields_to_show(@model).select {|name, options| options[:table] }
   end
 
+  def actions
+    Deckhand.config.models_config[@model].action || []
+  end
+
   def readable_field_name(name)
     name.to_s.sub(/_s$/, '').gsub('_', ' ')
   end

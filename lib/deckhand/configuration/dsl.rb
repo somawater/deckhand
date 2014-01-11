@@ -8,7 +8,7 @@ class Deckhand::Configuration::DSL
 
   def model(model_class, &block)
     @config.models_config[model_class] = Deckhand::Configuration::ModelDSL.new({
-      singular: [:label, :fields_to_show, :show_only],
+      singular: [:label, :fields_to_show],
       defaults: {show: [], exclude: []}
     }, &block)
   end
