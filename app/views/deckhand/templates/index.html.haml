@@ -7,36 +7,22 @@
       {{item._model}}: {{item._label}}
   .panel-body
     %dl.dl-horizontal
-      - fields_to_show.each do |field, options|
-        %dt= field.to_s.sub(/_s$/, '').gsub('_', ' ')
-        %dd= angular_binding field, options
+      - flat_fields.each do |name, options|
+        %dt= readable_field_name name
+        %dd= angular_binding name, options
 
-  - if relations_to_tabulate.any?
+  - if table_fields.any?
     %table.table
-      - relations_to_tabulate.each do |relation|
+      - table_fields.each do |name, options|
         %thead
-          - relation.columns.each do |column|
-            %th= column.name
+          %tr
+            %th(colspan="#{options[:table].size}")
+              %h4= readable_field_name name
+          %tr
+            - options[:table].each do |column|
+              %th= readable_field_name column
         %tbody
-          %tr(ng-repeat="#{relation.singular_name} in item.#{relation.plural_name}")
-            - relation.columns.each do |column|
-              %td= angular_binding column.field, parent: relation.singular_name
-    / %thead
-    /   %tr
-    /     %th charge
-    /     %th amount
-    /     %th created
-    /     %th order
-    / %tbody
-    /   %tr(ng-repeat="charge in item.charges")
-    /     %td
-    /       %a(href="/admin/charge/{{charge.id}}") {{charge.short_id}}
-    /     %td
-    /       {{charge.charged_amount_s}}
-    /       %strong.bad(ng-if="charge.refunded") refunded
-    /     %td {{charge.created_at | humanTime}}
-    /     %td
-    /       %a(ng-repeat="order in charge.orders" href="/admin/order/{{order.id}}" target="_blank")
-    /         {{order.short_id}} ({{order.state}})
-
-    .panel-footer Whistle-tips go wooo
+          - singular = name.to_s.singularize
+          %tr(ng-repeat="#{singular} in item.#{name}")
+            - options[:table].each_with_index do |column, i|
+              %td= angular_binding column, parent: singular, link: i == 0
