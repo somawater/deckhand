@@ -46,3 +46,21 @@ a[ng-click], #search-results li {
     text-decoration: none;
   }
 }
+
+#cards {
+  .ng-enter {
+    transition: 0.3s linear all;
+    opacity: 0.2;
+
+    * {
+      &:before, &:after {
+        display: inline; // workaround for a strange issue (rendering bug?)
+      }
+    }
+
+    &.ng-enter-active {
+      opacity: 1;
+    }
+  }
+
+}

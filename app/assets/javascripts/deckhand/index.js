@@ -3,8 +3,9 @@ var moment = require('moment'),
 
 require('./lib/angular-resource');
 require('./lib/angular-sanitize');
+require('./lib/angular-animate');
 
-var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize'])
+var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimate'])
 
 .factory('Search', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.searchPath);
