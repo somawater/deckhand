@@ -84,6 +84,11 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
     return value;
   };
 
+  $scope.substitute = function(item, attr, string) {
+    var value = $scope.value(item, attr);
+    return string.replace(':value', value);
+  };
+
   $scope.act = function(item, action, options) {
     // TODO: open some sort of dialog with the options listed
     if (!('confirm' in options) || confirm('Are you sure you want to do that?')) {

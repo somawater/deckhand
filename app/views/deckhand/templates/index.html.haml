@@ -25,7 +25,7 @@
           - singular = name.to_s.singularize
           %tr(ng-repeat="#{singular} in item.#{name}")
             - options[:table].each_with_index do |column, i|
-              %td= angular_binding column, parent: singular, link: i == 0
+              %td= angular_binding column, item: singular, link_to_item: i == 0
 
   - if actions.any?
     .panel-footer

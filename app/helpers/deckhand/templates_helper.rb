@@ -5,21 +5,29 @@ module Deckhand::TemplatesHelper
   end
 
   def angular_binding(name, options = {})
-    parent = options[:parent] || 'item'
-    value = "{{value(#{parent}, '#{name}')}}"
-    if options[:link]
-      relation_name = parent.capitalize
-      ng_click = "open('#{relation_name}', #{parent}.id)"
+    item = options[:item] || 'item'
+    value = "{{value(#{item}, '#{name}')}}"
+
+    if options[:link_to]
+      content_tag :a, value, target: '_blank', 'ng-href' => "{{substitute(#{item}, '#{name}', '#{options[:link_to]}')}}"
+
+    elsif options[:link_to_item]
+      relation_name = item.capitalize
+      ng_click = "open('#{relation_name}', #{item}.id)"
       content_tag :a, value, 'ng-click' => ng_click
+
     elsif Deckhand.config.link?(@model, name)
       relation_name = Deckhand.config.relation_model_name(@model, name)
       ng_click = "open('#{relation_name}', item.#{name}.id)"
       content_tag :a, value, 'ng-click' => ng_click
+
     elsif options[:html]
       trusted_html value
+
     else
       value
     end
+
   end
 
   def trusted_html(string = nil, &block)
