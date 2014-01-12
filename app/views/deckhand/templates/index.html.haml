@@ -2,7 +2,6 @@
   .panel-heading
     %h3.panel-title
       %span.right
-        %a.glyphicon.glyphicon-edit(href="/admin/{{item._model.toLowerCase()}}/{{item.id}}/edit" target="_blank")
         %a.glyphicon.glyphicon-remove(ng-click="close(item)")
       {{item._model}}: {{item._label}}
   .panel-body
