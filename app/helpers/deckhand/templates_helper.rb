@@ -42,7 +42,7 @@ module Deckhand::TemplatesHelper
   end
 
   def show_action?(condition)
-    "{{item['#{condition}']}}"
+    condition ? "{{item['#{condition}']}}" : 'true'
   end
 
   def readable_field_name(name)
