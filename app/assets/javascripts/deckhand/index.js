@@ -90,11 +90,15 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
   };
 
   $scope.act = function(item, action, options) {
+    if (!options) options = {confirm: true};
     // TODO: open some sort of dialog with the options listed
     if (!('confirm' in options) || confirm('Are you sure you want to do that?')) {
       Model.act({model: item._model, id: item.id, act: action, value: options.confirm}, function(newItem) {
-        // TODO visually call out the change
         $scope.items.splice($scope.items.indexOf(item), 1, newItem);
+        var result = newItem._result;
+        if (result && result._model) {
+          $scope.open(result._model, result.id);
+        }
       })
     }
   };

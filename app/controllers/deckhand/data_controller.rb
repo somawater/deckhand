@@ -1,13 +1,15 @@
 class Deckhand::DataController < Deckhand::BaseController
 
+  delegate :present, :present_results, :to => :presenter
+
   def search
     results = Deckhand::Search.new.results(params[:term])
-    render_json Deckhand::Presenter.new.present_results(results)
+    render_json present_results(results)
   end
 
   def show
     instance = get_instance
-    render_json Deckhand::Presenter.new.present(instance)
+    render_json present(instance)
   end
 
   def act
@@ -17,13 +19,17 @@ class Deckhand::DataController < Deckhand::BaseController
     if Deckhand.config.has_action?(instance.class, action)
       # TODO: begin/rescue/end the public_send and return a status code
       result = instance.public_send(params[:act].to_sym)
-      render_json Deckhand::Presenter.new.present(instance).merge(_result: result)
+      render_json present(instance).merge(_result: present(result))
     else
       render_json({error: 'unknown action'}, :unprocessable_entity)
     end
   end
 
   private
+
+  def presenter
+    Deckhand::Presenter.new
+  end
 
   def render_json(data, status = :ok)
     if params[:pretty]
