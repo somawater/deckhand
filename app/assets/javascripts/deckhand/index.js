@@ -4,8 +4,9 @@ var moment = require('moment'),
 require('./lib/angular-resource');
 require('./lib/angular-sanitize');
 require('./lib/angular-animate');
+require('./lib/angular-ui-bootstrap-0.10.0');
 
-var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimate'])
+var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimate', 'ui.bootstrap'])
 
 .factory('Search', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.searchPath);
@@ -42,7 +43,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 
 }])
 
-.controller('CardsCtrl', ['$scope', '$sce', '$filter', 'Model', function($scope, $sce, $filter, Model) {
+.controller('CardsCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
   $scope.items = [];
 
   $scope.add = function(item) {
