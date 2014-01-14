@@ -28,4 +28,5 @@
   - if actions.any?
     .panel-footer
       - actions.each do |name, options|
-        %button(ng-click="act(item, '#{name}', #{options.to_json})")= name
+        %button(ng-click="act(item, '#{name}', #{options.to_json})")
+          = readable_action_name name

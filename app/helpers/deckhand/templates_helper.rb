@@ -45,4 +45,8 @@ module Deckhand::TemplatesHelper
     name.to_s.sub(/_s$/, '').gsub('_', ' ')
   end
 
+  def readable_action_name(name)
+    name.to_s.sub(/!$/, '')
+  end
+
 end
