@@ -34,6 +34,12 @@ describe Deckhand::Configuration do
     end
   end
 
+  context '#fields_to_include' do
+    it 'includes fields used as conditions for actions' do
+      expect(subject.fields_to_include(Foo).map(&:first)).to include :explosive?
+    end
+  end
+
   context '#label' do
 
     before do

@@ -13,6 +13,7 @@ Deckhand.configure do
     show :nose, :hairy => false, :large => true
     show(:virtual_field) { ok }
     label { "#{name} <#{email}>" }
+    action :explode, :if => :explosive?
   end
 
   model Bar do
