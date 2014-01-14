@@ -52,12 +52,21 @@ module Deckhand
     end
 
     def has_action?(model, action)
-      models_config[model].action.map(&:first).include? action
+      actions(model).map(&:first).include? action
     end
 
     def fields_to_show(model, options = {})
       fields = models_config[model].show
       options[:flat_only] ? fields.reject {|name, options| options[:table] } : fields
+    end
+
+    def actions(model)
+      models_config[model].action || []
+    end
+
+    def fields_to_include(model, options = {})
+      action_conditions = actions(model).map {|a| a.last[:if] }.compact.map {|f| [f, {}] }
+      fields_to_show(model, options) + action_conditions # TODO de-duplicate
     end
 
     # a model's label can either be a symbol name of a method on that model,

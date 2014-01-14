@@ -38,7 +38,11 @@ module Deckhand::TemplatesHelper
   end
 
   def actions
-    Deckhand.config.models_config[@model].action || []
+    Deckhand.config.actions(@model)
+  end
+
+  def show_action?(condition)
+    "{{item['#{condition}']}}"
   end
 
   def readable_field_name(name)

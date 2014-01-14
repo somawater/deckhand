@@ -9,19 +9,27 @@ class Deckhand::Configuration::ModelDSL
     instance_eval &block
   end
 
-  def show(*args, &block)
+  def keyword_with_options(key, *args, &block)
     if args.none?
-      @store[:show]
+      @store[key]
     else
-      @store[:show] ||= []
+      @store[key] ||= []
       if args.last.is_a?(Hash)
         options = args.last
-        args[0..-2].each {|a| @store[:show] << [a, options] }
+        args[0..-2].each {|a| @store[key] << [a, options] }
       else
         options = block ? {block: block} : {}
-        args.each {|a| @store[:show] << [a, options] }
+        args.each {|a| @store[key] << [a, options] }
       end
     end
+  end
+
+  def show(*args, &block)
+    keyword_with_options(:show, *args, &block)
+  end
+
+  def action(*args, &block)
+    keyword_with_options(:action, *args, &block)
   end
 
   def method_missing(sym, *args, &block)

@@ -28,5 +28,5 @@
   - if actions.any?
     .panel-footer
       - actions.each do |name, options|
-        %button(ng-click="act(item, '#{name}', #{options.to_json})")
+        %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if])}")
           = readable_action_name name

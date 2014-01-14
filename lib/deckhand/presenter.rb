@@ -1,21 +1,21 @@
 class Deckhand::Presenter
 
-  def present(obj, visited = [], fields_to_show = nil)
+  def present(obj, visited = [], fields_to_include = nil)
     model = obj.class
     return obj unless Deckhand.config.has_model? model
     return core_fields(obj) if visited.include?(obj)
 
-    fields_to_show ||= Deckhand.config.fields_to_show(model, flat_only: visited.any?)
+    fields_to_include ||= Deckhand.config.fields_to_include(model, flat_only: visited.any?)
 
-    fields_to_show.reduce(core_fields(obj)) do |hash, (field, options)|
+    fields_to_include.reduce(core_fields(obj)) do |hash, (field, options)|
       val = obj.public_send(field)
       val = val.public_send(options[:delegate]) if options[:delegate]
-      subfields_to_show = options[:table].map {|f| [f, {}] } if options[:table]
+      subfields_to_include = options[:table].map {|f| [f, {}] } if options[:table]
 
       hash[field] = if val.is_a?(Array)
-        val.map {|subval| present(subval, visited + [obj], subfields_to_show) }
+        val.map {|subval| present(subval, visited + [obj], subfields_to_include) }
       else
-        present val, visited + [obj], subfields_to_show
+        present val, visited + [obj], subfields_to_include
       end
       hash
     end
