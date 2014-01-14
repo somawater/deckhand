@@ -4,15 +4,14 @@ module Deckhand::TemplatesHelper
     Deckhand.config.fields_to_show(@model, flat_only: true)
   end
 
-  def angular_binding(name, options = {})
-    item = options[:item] || 'item'
+  def angular_binding(item, name, options = {})
     value = "{{value(#{item}, '#{name}')}}"
 
     if options[:link_to]
       content_tag :a, value, target: '_blank', 'ng-href' => "{{substitute(#{item}, '#{name}', '#{options[:link_to]}')}}"
 
     elsif options[:link_to_item]
-      relation_name = item.capitalize
+      relation_name = Deckhand.config.relation_model_name(@model, options[:plural]).to_s.singularize
       ng_click = "open('#{relation_name}', #{item}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 
