@@ -1,4 +1,4 @@
-require 'deckhand/configuration/model_dsl'
+require 'deckhand/configuration/model_config'
 
 class Deckhand::Configuration::DSL
 
@@ -7,9 +7,11 @@ class Deckhand::Configuration::DSL
   end
 
   def model(model_class, &block)
-    @config.models_config[model_class] = Deckhand::Configuration::ModelDSL.new({
+    @config.models_config[model_class] = Deckhand::Configuration::ModelConfig.new({
+      model: model_class,
       singular: [:label, :fields_to_show],
-      defaults: {show: [], exclude: []}
+      defaults: {show: [], exclude: []},
+      label_defaults: @config.global_config[:model_label]
     }, &block)
   end
 

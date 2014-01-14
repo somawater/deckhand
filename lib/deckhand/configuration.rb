@@ -47,44 +47,23 @@ module Deckhand
       self.models_config = self.global_config = nil
     end
 
+    def for_model(model)
+      models_config[model]
+    end
+
     def has_model?(model)
       models_by_name.keys.include? model.to_s
     end
 
-    def has_action?(model, action)
-      actions(model).map(&:first).include? action
-    end
-
-    def fields_to_show(model, options = {})
-      fields = models_config[model].show
-      options[:flat_only] ? fields.reject {|name, options| options[:table] } : fields
-    end
-
-    def actions(model)
-      models_config[model].action || []
-    end
-
-    def fields_to_include(model, options = {})
-      action_conditions = actions(model).map {|a| a.last[:if] }.compact.map {|f| [f, {}] }
-      fields_to_show(model, options) + action_conditions # TODO de-duplicate
-    end
-
-    # a model's label can either be a symbol name of a method on that model,
-    # or a block that will be eval'ed in instance context.
-    # it can be defined in the model's configuration block with the "label" keyword,
-    # or fall back to the "model_label" keyword at the top level of configuration.
-    # the top-level configuration only supports methods, not blocks.
-    def label(model)
-      models_config[model].label ||= global_config[:model_label].instance_eval do
-        detect {|attr| model.method_defined? attr } || last
-      end
+    def action_form_class(model, action)
+      model.const_get(action.to_s.camelize)
     end
 
     private
 
     def setup_field_types
-      @field_types = models_config.keys.reduce({}) do |types, model|
-        types[model.to_s] = fields_to_show(model).reduce({}) do |h, (name, options)|
+      @field_types = models_config.reduce({}) do |types, (model, config)|
+        types[model.to_s] = config.fields_to_include.reduce({}) do |h, (name, options)|
           h[name] = @model_storage.field_type(model, name); h
         end
         types

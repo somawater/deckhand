@@ -5,7 +5,7 @@ class Deckhand::Presenter
     return obj unless Deckhand.config.has_model? model
     return core_fields(obj) if visited.include?(obj)
 
-    fields_to_include ||= Deckhand.config.fields_to_include(model, flat_only: visited.any?)
+    fields_to_include ||= Deckhand.config.for_model(model).fields_to_include(flat_only: visited.any?)
 
     fields_to_include.reduce(core_fields(obj)) do |hash, (field, options)|
       val = obj.public_send(field)
@@ -26,7 +26,7 @@ class Deckhand::Presenter
   end
 
   def label_value(obj)
-    if (label = Deckhand.config.label(obj.class)).is_a? Proc
+    if (label = Deckhand.config.for_model(obj.class).label).is_a? Proc
       obj.instance_eval &label
     else
       obj.send label

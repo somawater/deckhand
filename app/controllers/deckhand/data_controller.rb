@@ -16,7 +16,7 @@ class Deckhand::DataController < Deckhand::BaseController
     instance = get_instance
     action = params[:act].to_sym
 
-    if Deckhand.config.has_action?(instance.class, action)
+    if Deckhand.config.for_model(instance.class).has_action?(action)
       # TODO: begin/rescue/end the public_send and return a status code
       result = instance.public_send(params[:act].to_sym)
       render_json present(instance).merge(_result: present(result))

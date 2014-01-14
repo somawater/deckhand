@@ -1,7 +1,7 @@
 module Deckhand::TemplatesHelper
 
   def flat_fields
-    Deckhand.config.fields_to_show(@model, flat_only: true)
+    Deckhand.config.for_model(@model).fields_to_show(flat_only: true)
   end
 
   def angular_binding(item, name, options = {})
@@ -34,11 +34,11 @@ module Deckhand::TemplatesHelper
   end
 
   def table_fields
-    Deckhand.config.fields_to_show(@model).select {|name, options| options[:table] }
+    Deckhand.config.for_model(@model).fields_to_show.select {|name, options| options[:table] }
   end
 
   def actions
-    Deckhand.config.actions(@model)
+    Deckhand.config.for_model(@model).actions
   end
 
   def show_action?(condition)
@@ -50,7 +50,7 @@ module Deckhand::TemplatesHelper
   end
 
   def readable_action_name(name)
-    name.to_s.sub(/!$/, '')
+    name.to_s.sub(/!$/, '').gsub('_', ' ')
   end
 
 end
