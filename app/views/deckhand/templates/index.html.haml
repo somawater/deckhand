@@ -11,8 +11,8 @@
         %dd= angular_binding 'item', name, options
 
   - if table_fields.any?
-    %table.table
-      - table_fields.each do |name, options|
+    - table_fields.each do |name, options|
+      %table.table
         %thead
           %tr
             %th(colspan="#{options[:table].size}")
