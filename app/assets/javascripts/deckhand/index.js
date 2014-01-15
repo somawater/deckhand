@@ -1,6 +1,7 @@
-var moment = require('moment'),
-  angular = require('angular');
+window._ = require('underscore');
+var moment = require('moment');
 
+require('angular');
 require('./lib/angular-resource');
 require('./lib/angular-sanitize');
 require('./lib/angular-animate');
