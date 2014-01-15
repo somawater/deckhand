@@ -55,10 +55,6 @@ module Deckhand
       models_by_name.keys.include? model.to_s
     end
 
-    def action_form_class(model, action)
-      model.const_get(action.to_s.camelize)
-    end
-
     private
 
     def setup_field_types

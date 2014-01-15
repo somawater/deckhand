@@ -25,6 +25,40 @@ angular.module('controllers', ['ui.bootstrap'])
 
 }])
 
+.controller('ActionFormCtrl', ['$scope', '$modalInstance', 'Model', 'context', function($scope, $modalInstance, Model, context) {
+
+  var item = context.item, action = context.action, inputs = [];
+
+  $scope.item = item;
+  $scope.action = action;
+  $scope.form = {};
+
+  Model.form({model: item._model, act: action, id: item.id}, function(form) {
+    _.each(form, function(value, key) {
+      if (key.charAt(0) != '$') {
+        $scope.form[key] = value;
+        inputs.push(key);
+      }
+    });
+  });
+
+  $scope.cancel = function() {
+    $modalInstance.dismiss('cancel');
+  };
+
+  $scope.submit = function() {
+    var data = {model: item._model, id: item.id, act: action, form: $scope.form};
+
+    Model.act(data, function(newItem) {
+      $modalInstance.close(newItem);
+    }, function(resp) {
+      // TODO fancier error handling
+      alert('Error: ' + resp.data.error);
+    })
+  };
+
+}])
+
 .controller('CardsCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
   $scope.items = [];
 
@@ -72,24 +106,40 @@ angular.module('controllers', ['ui.bootstrap'])
     return string.replace(':value', value);
   };
 
+  var refreshItem = function(item, newItem) {
+    $scope.items.splice($scope.items.indexOf(item), 1, newItem);
+    var result = newItem._result;
+    if (result && result._model) {
+      $scope.open(result._model, result.id);
+    }
+  };
+
   $scope.act = function(item, action, options) {
     if (!options) options = {confirm: true};
 
     if (options.form) {
+      var url = DeckhandGlobals.templatePath + '?model=' + item._model + '&act=' + action + '&id=' + item.id;
+      var modalInstance = $modal.open({
+        templateUrl: url,
+        controller: 'ActionFormCtrl',
+        resolve: {
+          context: function() {
+            return {item: item, action: action};
+          }
+        }
+      });
 
+      modalInstance.result.then(function(newItem) {
+        refreshItem(item, newItem);
+      });
       return;
     }
 
-    // TODO: open some sort of dialog with the options listed
     if (!('confirm' in options) || confirm('Are you sure you want to do that?')) {
-      Model.act({model: item._model, id: item.id, act: action, value: options.confirm}, function(newItem) {
-        $scope.items.splice($scope.items.indexOf(item), 1, newItem);
-        var result = newItem._result;
-        if (result && result._model) {
-          $scope.open(result._model, result.id);
-        }
-      })
+      Model.act({model: item._model, id: item.id, act: action}, function(newItem) {
+        refreshItem(item, newItem);
+      });
     }
   };
 
-}])
+}]);

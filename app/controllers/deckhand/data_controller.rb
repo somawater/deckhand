@@ -12,16 +12,35 @@ class Deckhand::DataController < Deckhand::BaseController
     render_json present(instance)
   end
 
+  def form
+    instance = get_instance
+    model_config = Deckhand.config.for_model(instance.class)
+    form = model_config.action_form_class(params[:act]).new object: instance
+    render_json form.values
+  end
+
   def act
     instance = get_instance
     action = params[:act].to_sym
+    model_config = Deckhand.config.for_model(instance.class)
 
-    if Deckhand.config.for_model(instance.class).has_action?(action)
+    if model_config.has_action_form?(action)
+      form = model_config.action_form_class(action).new object: instance
+      form.consume_params(params[:form])
+      if form.valid?
+        result = form.execute
+        render_json present(instance).merge(_result: present(result))
+      else
+        render_error form.errors.full_messages.join('; ')
+      end
+
+    elsif model_config.has_action?(action)
       # TODO: begin/rescue/end the public_send and return a status code
       result = instance.public_send(params[:act].to_sym)
       render_json present(instance).merge(_result: present(result))
+
     else
-      render_json({error: 'unknown action'}, :unprocessable_entity)
+      render_error 'unknown action'
     end
   end
 
@@ -37,6 +56,11 @@ class Deckhand::DataController < Deckhand::BaseController
     else
       render json: data, status: status
     end
+  end
+
+  # TODO more flexible error presentation
+  def render_error(message)
+    render json: {error: message}, status: :unprocessable_entity
   end
 
   def get_instance

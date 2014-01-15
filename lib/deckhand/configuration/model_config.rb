@@ -26,6 +26,14 @@ class Deckhand::Configuration::ModelConfig
     actions.map(&:first).include? action
   end
 
+  def has_action_form?(action)
+    has_action?(action) and actions.any? {|name, options| name == action && options.include?(:form) }
+  end
+
+  def action_form_class(action)
+    model.const_get(action.to_s.camelize)
+  end
+
   def fields_to_show(options = {})
     options[:flat_only] ? show.reject {|name, options| options[:table] } : show
   end

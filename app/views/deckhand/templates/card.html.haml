@@ -7,7 +7,7 @@
   .panel-body
     %dl.dl-horizontal
       - flat_fields.each do |name, options|
-        %dt= readable_field_name name
+        %dt= readable_method_name name
         %dd= angular_binding 'item', name, options
 
   - if table_fields.any?
@@ -16,10 +16,10 @@
         %thead
           %tr
             %th(colspan="#{options[:table].size}")
-              %h4= readable_field_name name
+              %h4= readable_method_name name
           %tr
             - options[:table].each do |column|
-              %th= readable_field_name column
+              %th= readable_method_name column
         %tbody
           %tr(ng-repeat="nested_item in item.#{name}")
             - options[:table].each_with_index do |column, i|
@@ -29,4 +29,4 @@
     .panel-footer
       - actions.each do |name, options|
         %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if])}")
-          = readable_action_name name
+          = readable_method_name name

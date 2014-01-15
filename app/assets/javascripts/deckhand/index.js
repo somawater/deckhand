@@ -17,7 +17,8 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 
 .factory('Model', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.showPath, null, {
-    act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'}
+    act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'},
+    form: {method: 'GET', url: DeckhandGlobals.showPath + '/form'}
   });
 }])
 
@@ -30,6 +31,12 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 .filter('pluralize', function() {
   return function(quantity) {
     return quantity == 1 ? '' : 's';
+  }
+})
+
+.filter('readableMethodName', function() {
+  return function(name) {
+    return name.replace(/_/g, ' ');
   }
 })
 

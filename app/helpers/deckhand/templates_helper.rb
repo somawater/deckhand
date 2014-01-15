@@ -45,12 +45,19 @@ module Deckhand::TemplatesHelper
     condition ? "{{item['#{condition}']}}" : 'true'
   end
 
-  def readable_field_name(name)
-    name.to_s.sub(/_s$/, '').gsub('_', ' ')
+  def readable_method_name(name)
+    name.to_s.sub(/(_s|!)$/, '').gsub('_', ' ')
   end
 
-  def readable_action_name(name)
-    name.to_s.sub(/!$/, '').gsub('_', ' ')
+  def angular_input(name, options)
+    args = {'ng-model' => name, 'class' => 'form-control'}
+    if options[:type] == Boolean
+      args['type'] = 'checkbox'
+      args.delete('class')
+    else
+      args['type'] = 'text'
+    end # TODO more types & HTML5 validators
+    content_tag :input, '', args
   end
 
 end
