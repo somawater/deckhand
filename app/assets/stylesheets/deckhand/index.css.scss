@@ -17,7 +17,7 @@ body {
   }
 }
 
-a[ng-click], #search-results li {
+[ng-click], #search-results li {
   cursor: pointer;
 }
 
@@ -74,5 +74,26 @@ dl.dl-horizontal {
     // workaround for size changes during animation
     // FIXME this should be based on text height
     min-height: 20px;
+
+    padding-left: 4px;
+
+    &.editable {
+      position: relative;
+      .edit-icon {
+        display: none;
+      }
+
+      &:hover {
+        background-color: #f5f5f5;
+        border-radius: 4px;
+
+        .edit-icon {
+          display: block;
+          position: absolute;
+          right: 4px;
+          top: 3px;
+        }
+      }
+    }
   }
 }

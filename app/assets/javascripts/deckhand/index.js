@@ -18,7 +18,8 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 .factory('Model', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.showPath, null, {
     act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'},
-    form: {method: 'GET', url: DeckhandGlobals.showPath + '/form'}
+    form: {method: 'GET', url: DeckhandGlobals.showPath + '/form'},
+    update: {method: 'PUT', url: DeckhandGlobals.showPath}
   });
 }])
 

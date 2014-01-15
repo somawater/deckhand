@@ -44,6 +44,15 @@ class Deckhand::DataController < Deckhand::BaseController
     end
   end
 
+  def update
+    instance = get_instance
+    if instance.update_attributes(params[:attributes])
+      render_json present(instance)
+    else
+      render_error instance.errors.full_messages.join('; ')
+    end
+  end
+
   private
 
   def presenter

@@ -1,3 +1,8 @@
+// TODO fancier error handling
+var handleError = function(response) {
+  alert('Error: ' + response.data.error);
+};
+
 angular.module('controllers', ['ui.bootstrap'])
 
 .controller('SearchCtrl', ['$scope', 'Search', 'Model', function($scope, Search, Model) {
@@ -51,10 +56,7 @@ angular.module('controllers', ['ui.bootstrap'])
 
     Model.act(data, function(newItem) {
       $modalInstance.close(newItem);
-    }, function(resp) {
-      // TODO fancier error handling
-      alert('Error: ' + resp.data.error);
-    })
+    }, handleError);
   };
 
 }])
@@ -139,6 +141,20 @@ angular.module('controllers', ['ui.bootstrap'])
       Model.act({model: item._model, id: item.id, act: action}, function(newItem) {
         refreshItem(item, newItem);
       });
+    }
+  };
+
+  $scope.updateAttribute = function(item, name) {
+    var promptLabel = "Change " + name + " for " + item._label + ':';
+    var newValue = prompt(promptLabel, item[name]);
+
+    if (newValue != null) {
+      var data = {model: item._model, id: item.id, attributes: {}};
+      data.attributes[name] = newValue;
+
+      Model.update(data, function(newItem) {
+        refreshItem(item, newItem);
+      }, handleError);
     }
   };
 

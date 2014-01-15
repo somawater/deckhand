@@ -8,7 +8,12 @@
     %dl.dl-horizontal
       - flat_fields.each do |name, options|
         %dt= readable_method_name name
-        %dd= angular_binding 'item', name, options
+        - if options[:editable]
+          %dd.editable(ng-click="updateAttribute(item, '#{name}')")
+            %i.glyphicon.glyphicon-pencil.edit-icon
+            = angular_binding 'item', name, options
+        - else
+          %dd= angular_binding 'item', name, options
 
   - if table_fields.any?
     - table_fields.each do |name, options|
