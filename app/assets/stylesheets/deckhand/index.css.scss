@@ -68,3 +68,11 @@ a[ng-click], #search-results li {
 .modal-header h3 {
   margin: 0;
 }
+
+dl.dl-horizontal {
+  dd {
+    // workaround for size changes during animation
+    // FIXME this should be based on text height
+    min-height: 20px;
+  }
+}
