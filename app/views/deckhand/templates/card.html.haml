@@ -25,8 +25,8 @@
             - options[:table].each_with_index do |column, i|
               %td= angular_binding 'nested_item', column, plural: name, link_to_item: i == 0
 
-  - if actions.any?
-    .panel-footer
+  .panel-footer
+    - if actions.any?
       - actions.each do |name, options|
         %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if])}")
           = readable_method_name name
