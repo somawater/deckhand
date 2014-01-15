@@ -53,10 +53,12 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $scope.submit = function() {
     var data = {model: item._model, id: item.id, act: action, form: $scope.form};
-
+    $scope.error = null;
     Model.act(data, function(newItem) {
       $modalInstance.close(newItem);
-    }, handleError);
+    }, function(response) {
+      $scope.error = response.data.error;
+    });
   };
 
 }])

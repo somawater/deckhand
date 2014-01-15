@@ -2,6 +2,7 @@
   %h3 {{item._label}}: {{action | readableMethodName}}
 
 .modal-body
+  .alert.alert-danger(ng-show="error") {{error}}
   %form.form-horizontal
     - @form_class.inputs.each do |name, options|
       .form-group
