@@ -3,6 +3,6 @@
   %head
     %title Deckhand
     = yield :head
-  %body.deckhand
+  %body.deckhand(ng-controller="RootCtrl")
     = yield
     = yield :end_js

@@ -5,6 +5,27 @@ var handleError = function(response) {
 
 angular.module('controllers', ['ui.bootstrap'])
 
+.controller('RootCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
+
+  $rootScope.rootCtrl = $scope;
+  $rootScope.cards = [];
+
+  $scope.addCard = function(item) {
+    $rootScope.cards.unshift(item);
+    var event = new CustomEvent('focusItem', {detail: {index: 0}});
+    document.getElementById('cards').dispatchEvent(event);
+  };
+
+  $scope.removeCard = function(item) {
+    $rootScope.cards.splice($rootScope.cards.indexOf(item), 1);
+  };
+
+  $scope.replaceCard = function(item, newItem) {
+    $rootScope.cards.splice($rootScope.cards.indexOf(item), 1, newItem);
+  };
+
+}])
+
 .controller('SearchCtrl', ['$scope', 'Search', 'Model', function($scope, Search, Model) {
 
   $scope.search = function() {
@@ -16,9 +37,7 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $scope.open = function(result) {
     Model.get({model: result._model, id: result.id}, function(item) {
-      // FIXME find a better way to do this
-      var cardCtrl = angular.element(document.getElementById('cards')).scope();
-      cardCtrl.add(item);
+      $scope.rootCtrl.addCard(item);
     })
   };
 
@@ -64,13 +83,6 @@ angular.module('controllers', ['ui.bootstrap'])
 }])
 
 .controller('CardsCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
-  $scope.items = [];
-
-  $scope.add = function(item) {
-    $scope.items.unshift(item);
-    var event = new CustomEvent('focusItem', {detail: {index: 0}});
-    document.getElementById('cards').dispatchEvent(event);
-  };
 
   $scope.template = function(item) {
     return DeckhandGlobals.templatePath + '?model=' + item._model;
@@ -79,12 +91,12 @@ angular.module('controllers', ['ui.bootstrap'])
   $scope.open = function(model, id) {
     if (!id) return;
     Model.get({model: model, id: id}, function(item) {
-      $scope.add(item);
+      $scope.rootCtrl.addCard(item);
     });
   };
 
   $scope.close = function(item) {
-    $scope.items.splice($scope.items.indexOf(item), 1);
+    $scope.rootCtrl.removeCard(item);
   };
 
   $scope.raw = function(value) {
@@ -113,7 +125,7 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   var refreshItem = function(item, newItem) {
-    $scope.items.splice($scope.items.indexOf(item), 1, newItem);
+    $scope.rootCtrl.replaceCard(item, newItem);
     var result = newItem._result;
     if (result && result._model) {
       $scope.open(result._model, result.id);
