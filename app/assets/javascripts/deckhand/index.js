@@ -1,4 +1,5 @@
-var moment = require('moment');
+var moment = require('moment'),
+  scroll = require('scroll');
 
 require('angular');
 require('./lib/angular-resource');
@@ -41,5 +42,17 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 })
 
 .run(['$rootScope', function($rootScope) {
-  // init stuff
+
+  document.getElementById('cards').addEventListener('focusItem', function(event) {
+    var index = event.detail.index + 1; // nth-child is 1-indexed
+    var scrollOptions = {duration: 800, ease: 'outQuint'};
+    if (index == 1) {
+      scroll.top(document.body, 0, scrollOptions);
+    } else {
+      var selector = '#cards > div:nth-child(' + index + ')';
+      var element = document.querySelector(selector);
+      scroll.top(document.body, element.offsetTop, scrollOptions);
+    }
+  });
+
 }]);

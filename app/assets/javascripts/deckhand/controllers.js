@@ -16,7 +16,7 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $scope.open = function(result) {
     Model.get({model: result._model, id: result.id}, function(item) {
-      // HMMM what's that smell? there's got to be a better way to do this
+      // FIXME find a better way to do this
       var cardCtrl = angular.element(document.getElementById('cards')).scope();
       cardCtrl.add(item);
     })
@@ -68,6 +68,8 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $scope.add = function(item) {
     $scope.items.unshift(item);
+    var event = new CustomEvent('focusItem', {detail: {index: 0}});
+    document.getElementById('cards').dispatchEvent(event);
   };
 
   $scope.template = function(item) {
@@ -77,8 +79,7 @@ angular.module('controllers', ['ui.bootstrap'])
   $scope.open = function(model, id) {
     if (!id) return;
     Model.get({model: model, id: id}, function(item) {
-      $scope.items.unshift(item);
-
+      $scope.add(item);
     });
   };
 
