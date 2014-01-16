@@ -39,9 +39,9 @@ angular.module('controllers', ['ui.bootstrap'])
   $scope.form = {};
 
   Model.form({model: item._model, act: action, id: item.id}, function(form) {
-    _.each(form, function(value, key) {
+    Object.keys(form).forEach(function(key) {
       if (key.charAt(0) != '$') {
-        $scope.form[key] = value;
+        $scope.form[key] = form[key];
         inputs.push(key);
       }
     });
@@ -78,6 +78,7 @@ angular.module('controllers', ['ui.bootstrap'])
     if (!id) return;
     Model.get({model: model, id: id}, function(item) {
       $scope.items.unshift(item);
+
     });
   };
 

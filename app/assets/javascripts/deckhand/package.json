@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "moment": "*",
-    "angular": "1.2.2",
-    "underscore": "1.5.2"
+    "angular": "1.2.2"
   }
 }

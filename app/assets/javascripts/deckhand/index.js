@@ -1,4 +1,3 @@
-window._ = require('underscore');
 var moment = require('moment');
 
 require('angular');
