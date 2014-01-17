@@ -23,7 +23,9 @@
         %thead
           %tr
             %th(colspan="#{options[:table].size}")
-              %h4= readable_method_name name
+              %h4
+                = readable_method_name name
+                ({{item.#{name}.length}})
           %tr
             - options[:table].each do |column|
               %th= readable_method_name column
