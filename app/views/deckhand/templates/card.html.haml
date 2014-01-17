@@ -19,7 +19,7 @@
 
   - if table_fields.any?
     - table_fields.each do |name, options|
-      %table.table
+      %table.table(ng-show="item.#{name}.length > 0")
         %thead
           %tr
             %th(colspan="#{options[:table].size}")
