@@ -9,15 +9,31 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $rootScope.rootCtrl = $scope;
   $rootScope.cards = [];
+  var openedItems = {};
 
-  $scope.addCard = function(item) {
-    $rootScope.cards.unshift(item);
-    var event = new CustomEvent('focusItem', {detail: {index: 0}});
+  var matchingOpenedItem = function(item) {
+    if (!openedItems[item._model]) return false;
+    return openedItems[item._model][item.id];
+  }
+
+  $scope.openCard = function(item) {
+    var openItem = matchingOpenedItem(item), event;
+
+    if (openItem) {
+      event = new CustomEvent('focusItem', {detail: {index: $rootScope.cards.indexOf(openItem)}});
+    } else {
+      if (!openedItems[item._model]) openedItems[item._model] = {};
+      openedItems[item._model][item.id] = item;
+      $rootScope.cards.unshift(item);
+      event = new CustomEvent('focusItem', {detail: {index: 0}});
+    }
+
     document.getElementById('cards').dispatchEvent(event);
   };
 
   $scope.removeCard = function(item) {
     $rootScope.cards.splice($rootScope.cards.indexOf(item), 1);
+    delete openedItems[item._model][item.id];
   };
 
   $scope.replaceCard = function(item, newItem) {
@@ -37,7 +53,7 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $scope.open = function(result) {
     Model.get({model: result._model, id: result.id}, function(item) {
-      $scope.rootCtrl.addCard(item);
+      $scope.rootCtrl.openCard(item);
     })
   };
 
@@ -91,7 +107,7 @@ angular.module('controllers', ['ui.bootstrap'])
   $scope.open = function(model, id) {
     if (!id) return;
     Model.get({model: model, id: id}, function(item) {
-      $scope.rootCtrl.addCard(item);
+      $scope.rootCtrl.openCard(item);
     });
   };
 
