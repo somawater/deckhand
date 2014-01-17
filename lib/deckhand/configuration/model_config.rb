@@ -34,6 +34,10 @@ class Deckhand::Configuration::ModelConfig
     options[:flat_only] ? @dsl.show.reject {|name, options| options[:table] } : @dsl.show
   end
 
+  def fields_to_edit
+    @dsl.show.select {|name, options| options[:editable] }
+  end
+
   def actions
     @dsl.action || []
   end

@@ -15,10 +15,13 @@ class Deckhand::DataController < Deckhand::BaseController
   def form
     instance = get_instance
     model_config = Deckhand.config.for_model(instance.class)
-    if params[:act]
+
+    case params[:type]
+    when 'act'
       form = model_config.action_form_class(params[:act]).new object: instance
       render_json form.values
-    elsif edit_fields = params[:edit_fields]
+    when 'edit'
+      edit_fields = params[:edit_fields] || model_config.fields_to_edit
       render_json present(instance, [], edit_fields)
     end
   end

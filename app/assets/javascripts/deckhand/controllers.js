@@ -88,7 +88,7 @@ angular.module('controllers', ['ui.bootstrap'])
     $scope.error = null;
     var data = extend({form: $scope.form, id: $scope.item.id}, context.formParams);
 
-    Model[context.modelAction](data, function(newItem) {
+    Model[context.verb](data, function(newItem) {
       $modalInstance.close(newItem);
     }, function(response) {
       $scope.error = response.data.error;
@@ -100,7 +100,7 @@ angular.module('controllers', ['ui.bootstrap'])
 .controller('CardsCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
 
   $scope.template = function(item) {
-    return DeckhandGlobals.templatePath + '?model=' + item._model;
+    return DeckhandGlobals.templatePath + '?' + qs.stringify({model: item._model, type: 'card'});
   };
 
   $scope.raw = function(value) {
@@ -140,7 +140,7 @@ angular.module('controllers', ['ui.bootstrap'])
     if (!options) options = {confirm: true};
 
     if (options.form) {
-      var formParams = {model: item._model, act: action};
+      var formParams = {model: item._model, act: action, type: 'action'};
       var url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
       var modalInstance = $modal.open({
         templateUrl: url,
@@ -151,7 +151,7 @@ angular.module('controllers', ['ui.bootstrap'])
               item: item,
               title: $filter('readableMethodName')(action),
               formParams: formParams,
-              modelAction: 'act'
+              verb: 'act'
             };
           }
         }
@@ -171,21 +171,27 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   $scope.edit = function(item, name) {
-    var formParams = {model: item._model, id: item.id, edit_fields: [name]};
-    var url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
+    var formParams = {model: item._model, id: item.id, type: 'edit'}, url;
 
-    // this is a workaround for an issue with Angular where it doesn't
-    // stringify parameters the same way that Node's querystring does,
-    // e.g. http://stackoverflow.com/questions/18318714/angularjs-resource-cannot-pass-array-as-one-of-the-parameters
-    formParams['edit_fields[]'] = formParams.edit_fields;
-    delete formParams.edit_fields;
+    if (name) {
+      formParams.edit_fields = [name];
+      url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
+
+      // this is a workaround for an issue with Angular where it doesn't
+      // stringify parameters the same way that Node's querystring does,
+      // e.g. http://stackoverflow.com/questions/18318714/angularjs-resource-cannot-pass-array-as-one-of-the-parameters
+      formParams['edit_fields[]'] = formParams.edit_fields;
+      delete formParams.edit_fields;
+    } else {
+      url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
+    }
 
     var modalInstance = $modal.open({
       templateUrl: url,
       controller: 'ModalFormCtrl',
       resolve: {
         context: function() {
-          return {item: item, title: 'edit', formParams: formParams, modelAction: 'update'};
+          return {item: item, title: 'edit', formParams: formParams, verb: 'update'};
         }
       }
     });

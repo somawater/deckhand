@@ -5,12 +5,18 @@ class Deckhand::TemplatesController < Deckhand::BaseController
 
   def index
     @model = Deckhand.config.models_by_name[params[:model]]
-    if action = params[:act]
-      form_class = Deckhand.config.for_model(@model).action_form_class(action)
+
+    case params[:type]
+    when 'card'
+      render 'deckhand/templates/card'
+
+    when 'action'
+      form_class = Deckhand.config.for_model(@model).action_form_class(params[:act])
       @inputs = form_class.inputs
       render 'deckhand/templates/modal_form'
 
-    elsif @inputs = params[:edit_fields]
+    when 'edit'
+      @inputs = params[:edit_fields] || Deckhand.config.for_model(@model).fields_to_edit
       render 'deckhand/templates/modal_form'
 
     else

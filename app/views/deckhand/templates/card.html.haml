@@ -3,6 +3,7 @@
   .panel-heading
     %h3.panel-title
       %span.right
+        %a.glyphicon.glyphicon-pencil(ng-click="edit(item)")
         %a.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
       {{item._model}}: {{item._label}}
 
