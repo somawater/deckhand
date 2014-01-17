@@ -23,12 +23,17 @@
             %i.glyphicon.glyphicon-remove(ng-show="term" ng-click="reset()")
             %input#search-input.form-control(type="text" ng-model="term" autofocus)
 
-        %ul#search-results.list-group
-          %li.list-group-item(ng-repeat="result in results" ng-click="open(result)")
+        #search-results.list-group
+          %a.list-group-item(ng-repeat="result in results" ng-click="open(result)")
             {{result._model}}: {{result._label}}
 
         %ul#no-results.list-group(ng-show="noResults")
           %li.list-group-item No results
+
+        %h4(ng-show="cards.length > 0") Opened cards
+        #opened-cards.list-group
+          %a.list-group-item(ng-repeat="item in cards" ng-click="open(item)")
+            {{item._model}}: {{item._label}}
 
 .container
   .row
