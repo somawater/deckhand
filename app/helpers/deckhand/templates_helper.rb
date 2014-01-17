@@ -12,12 +12,12 @@ module Deckhand::TemplatesHelper
 
     elsif options[:link_to_item]
       relation_name = Deckhand.config.relation_model_name(@model, options[:plural]).to_s.singularize
-      ng_click = "open('#{relation_name}', #{item}.id)"
+      ng_click = "showCard('#{relation_name}', #{item}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 
     elsif Deckhand.config.link?(@model, name)
       relation_name = Deckhand.config.relation_model_name(@model, name)
-      ng_click = "open('#{relation_name}', item.#{name}.id)"
+      ng_click = "showCard('#{relation_name}', item.#{name}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 
     elsif options[:html]

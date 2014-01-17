@@ -24,7 +24,7 @@
             %input#search-input.form-control(type="text" ng-model="term" autofocus)
 
         #search-results.list-group
-          %a.list-group-item(ng-repeat="result in results" ng-click="open(result)")
+          %a.list-group-item(ng-repeat="result in results" ng-click="showCard(result._model, result.id)")
             {{result._model}}: {{result._label}}
 
         %ul#no-results.list-group(ng-show="noResults")
@@ -32,7 +32,7 @@
 
         %h4(ng-show="cards.length > 0") Opened cards
         #opened-cards.list-group
-          %a.list-group-item(ng-repeat="item in cards" ng-click="open(item)")
+          %a.list-group-item(ng-repeat="item in cards" ng-click="showCard(item._model, item.id)")
             {{item._model}}: {{item._label}}
 
 .container

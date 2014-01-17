@@ -5,38 +5,37 @@ var handleError = function(response) {
 
 angular.module('controllers', ['ui.bootstrap'])
 
-.controller('RootCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
+.controller('RootCtrl', ['$rootScope', 'Model', function($rootScope, Model) {
 
-  $rootScope.rootCtrl = $scope;
   $rootScope.cards = [];
   var openedItems = {};
 
-  var matchingOpenedItem = function(item) {
-    if (!openedItems[item._model]) return false;
-    return openedItems[item._model][item.id];
+  var focusCard = function(index) {
+    var event = new CustomEvent('focusItem', {detail: {index: index}});
+    document.getElementById('cards').dispatchEvent(event);
   }
 
-  $scope.openCard = function(item) {
-    var openItem = matchingOpenedItem(item), event;
+  $rootScope.showCard = function(model, id) {
+    var openedItem = (openedItems[model] ? openedItems[model][id] : null);
 
-    if (openItem) {
-      event = new CustomEvent('focusItem', {detail: {index: $rootScope.cards.indexOf(openItem)}});
+    if (openedItem) {
+      focusCard($rootScope.cards.indexOf(openedItem));
     } else {
-      if (!openedItems[item._model]) openedItems[item._model] = {};
-      openedItems[item._model][item.id] = item;
-      $rootScope.cards.unshift(item);
-      event = new CustomEvent('focusItem', {detail: {index: 0}});
+      Model.get({model: model, id: id}, function(item) {
+        if (!openedItems[model]) openedItems[model] = {};
+        openedItems[model][id] = item;
+        $rootScope.cards.unshift(item);
+        focusCard(0);
+      });
     }
-
-    document.getElementById('cards').dispatchEvent(event);
   };
 
-  $scope.removeCard = function(item) {
+  $rootScope.removeCard = function(item) {
     $rootScope.cards.splice($rootScope.cards.indexOf(item), 1);
     delete openedItems[item._model][item.id];
   };
 
-  $scope.replaceCard = function(item, newItem) {
+  $rootScope.replaceCard = function(item, newItem) {
     $rootScope.cards.splice($rootScope.cards.indexOf(item), 1, newItem);
   };
 
@@ -49,12 +48,6 @@ angular.module('controllers', ['ui.bootstrap'])
     $scope.results = Search.query({term: $scope.term}, function(results) {
       if (results.length == 0) $scope.noResults = true;
     });
-  };
-
-  $scope.open = function(result) {
-    Model.get({model: result._model, id: result.id}, function(item) {
-      $scope.rootCtrl.openCard(item);
-    })
   };
 
   $scope.reset = function() {
@@ -104,17 +97,6 @@ angular.module('controllers', ['ui.bootstrap'])
     return DeckhandGlobals.templatePath + '?model=' + item._model;
   };
 
-  $scope.open = function(model, id) {
-    if (!id) return;
-    Model.get({model: model, id: id}, function(item) {
-      $scope.rootCtrl.openCard(item);
-    });
-  };
-
-  $scope.close = function(item) {
-    $scope.rootCtrl.removeCard(item);
-  };
-
   $scope.raw = function(value) {
     return $sce.trustAsHtml(value);
   };
@@ -141,7 +123,7 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   var refreshItem = function(item, newItem) {
-    $scope.rootCtrl.replaceCard(item, newItem);
+    $scope.replaceCard(item, newItem);
     var result = newItem._result;
     if (result && result._model) {
       $scope.open(result._model, result.id);
