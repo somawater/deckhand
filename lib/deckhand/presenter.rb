@@ -9,8 +9,8 @@ class Deckhand::Presenter
 
     fields_to_include.reduce(core_fields(obj)) do |hash, (field, options)|
       val = obj.public_send(field)
-      val = val.public_send(options[:delegate]) if options[:delegate]
-      subfields_to_include = options[:table].map {|f| [f, {}] } if options[:table]
+      val = val.public_send(options[:delegate]) if options && options[:delegate]
+      subfields_to_include = options[:table].map {|f| [f, {}] } if options && options[:table]
 
       hash[field] = if val.is_a?(Array)
         val.map {|subval| present(subval, visited + [obj], subfields_to_include) }

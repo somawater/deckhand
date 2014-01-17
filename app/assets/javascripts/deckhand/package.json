@@ -13,6 +13,7 @@
   "dependencies": {
     "moment": "*",
     "angular": "1.2.2",
-    "scroll": "*"
+    "scroll": "*",
+    "extend": "*"
   }
 }

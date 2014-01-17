@@ -15,8 +15,12 @@ class Deckhand::DataController < Deckhand::BaseController
   def form
     instance = get_instance
     model_config = Deckhand.config.for_model(instance.class)
-    form = model_config.action_form_class(params[:act]).new object: instance
-    render_json form.values
+    if params[:act]
+      form = model_config.action_form_class(params[:act]).new object: instance
+      render_json form.values
+    elsif edit_fields = params[:edit_fields]
+      render_json present(instance, [], edit_fields)
+    end
   end
 
   def act
@@ -46,7 +50,7 @@ class Deckhand::DataController < Deckhand::BaseController
 
   def update
     instance = get_instance
-    if instance.update_attributes(params[:attributes])
+    if instance.update_attributes(params[:form])
       render_json present(instance)
     else
       render_error instance.errors.full_messages.join('; ')

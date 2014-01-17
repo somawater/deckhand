@@ -1,3 +1,6 @@
+var qs = require('querystring'),
+  extend = require('extend');
+
 // TODO fancier error handling
 var handleError = function(response) {
   alert('Error: ' + response.data.error);
@@ -60,15 +63,15 @@ angular.module('controllers', ['ui.bootstrap'])
 
 }])
 
-.controller('ActionFormCtrl', ['$scope', '$modalInstance', 'Model', 'context', function($scope, $modalInstance, Model, context) {
+.controller('ModalFormCtrl', ['$scope', '$modalInstance', 'Model', 'context', function($scope, $modalInstance, Model, context) {
 
-  var item = context.item, action = context.action, inputs = [];
+  var inputs = [];
 
-  $scope.item = item;
-  $scope.action = action;
+  $scope.item = context.item;
+  $scope.title = context.title;
   $scope.form = {};
 
-  Model.form({model: item._model, act: action, id: item.id}, function(form) {
+  Model.form(extend({id: $scope.item.id}, context.formParams), function(form) {
     Object.keys(form).forEach(function(key) {
       if (key.charAt(0) != '$') {
         $scope.form[key] = form[key];
@@ -82,9 +85,10 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   $scope.submit = function() {
-    var data = {model: item._model, id: item.id, act: action, form: $scope.form};
     $scope.error = null;
-    Model.act(data, function(newItem) {
+    var data = extend({form: $scope.form, id: $scope.item.id}, context.formParams);
+
+    Model[context.modelAction](data, function(newItem) {
       $modalInstance.close(newItem);
     }, function(response) {
       $scope.error = response.data.error;
@@ -136,13 +140,19 @@ angular.module('controllers', ['ui.bootstrap'])
     if (!options) options = {confirm: true};
 
     if (options.form) {
-      var url = DeckhandGlobals.templatePath + '?model=' + item._model + '&act=' + action + '&id=' + item.id;
+      var formParams = {model: item._model, act: action};
+      var url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
       var modalInstance = $modal.open({
         templateUrl: url,
-        controller: 'ActionFormCtrl',
+        controller: 'ModalFormCtrl',
         resolve: {
           context: function() {
-            return {item: item, action: action};
+            return {
+              item: item,
+              title: $filter('readableMethodName')(action),
+              formParams: formParams,
+              modelAction: 'act'
+            };
           }
         }
       });
@@ -160,18 +170,29 @@ angular.module('controllers', ['ui.bootstrap'])
     }
   };
 
-  $scope.updateAttribute = function(item, name) {
-    var promptLabel = "Change " + name + " for " + item._label + ':';
-    var newValue = prompt(promptLabel, item[name]);
+  $scope.edit = function(item, name) {
+    var formParams = {model: item._model, id: item.id, edit_fields: [name]};
+    var url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
 
-    if (newValue != null) {
-      var data = {model: item._model, id: item.id, attributes: {}};
-      data.attributes[name] = newValue;
+    // this is a workaround for an issue with Angular where it doesn't
+    // stringify parameters the same way that Node's querystring does,
+    // e.g. http://stackoverflow.com/questions/18318714/angularjs-resource-cannot-pass-array-as-one-of-the-parameters
+    formParams['edit_fields[]'] = formParams.edit_fields;
+    delete formParams.edit_fields;
 
-      Model.update(data, function(newItem) {
-        refreshItem(item, newItem);
-      }, handleError);
-    }
+    var modalInstance = $modal.open({
+      templateUrl: url,
+      controller: 'ModalFormCtrl',
+      resolve: {
+        context: function() {
+          return {item: item, title: 'edit', formParams: formParams, modelAction: 'update'};
+        }
+      }
+    });
+
+    modalInstance.result.then(function(newItem) {
+      refreshItem(item, newItem);
+    });
   };
 
 }]);
