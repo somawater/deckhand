@@ -30,7 +30,7 @@ module Deckhand
       DSL.new(self).instance_eval &initializer_block
 
       @search_config = models_config.map do |model, config|
-        [model, config.search_on] if config.search_on
+        [model, config.search_fields] if config.search_fields
       end.compact
 
       names = models_config.keys.map {|m| [m.to_s, m] }.flatten

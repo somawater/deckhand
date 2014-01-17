@@ -6,6 +6,16 @@ describe Deckhand::Configuration::ModelConfig do
   before(:all) { Deckhand.config.run }
   let(:foo_config) { Deckhand.config.for_model(Foo) }
 
+  context '#search_fields' do
+    it "reads 'search_on' keywords and options" do
+      foo_config.search_fields.should == [
+        [:name, {}],
+        [:email, {}],
+        [:short_id, {:match => :exact}]
+      ]
+    end
+  end
+
   context '#fields_to_show' do
     before do
       Foo.stub(fields: {email: {}, created_at: {}, password: {}})

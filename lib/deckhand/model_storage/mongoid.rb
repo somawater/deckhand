@@ -1,4 +1,6 @@
-class Deckhand::ModelStorage::Mongoid
+require 'deckhand/model_storage/base'
+
+class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
 
   def link?(model, name)
     model.relations.include? name.to_s
@@ -24,6 +26,25 @@ class Deckhand::ModelStorage::Mongoid
 
   def relation(model, name)
     model.relations[name.to_s]
+  end
+
+  def search(term)
+    search_config.map do |model, search_fields|
+      model.or(*search_criteria(term, search_fields)).limit(5)
+    end.map(&:to_a).flatten(1)
+  end
+
+  private
+
+  def search_criteria(term, search_fields)
+    search_fields.map do |field, options|
+      case options[:match]
+      when :exact
+        {field => term}
+      when :contains, nil
+        {field => /#{Regexp.escape term}/i}
+      end
+    end
   end
 
 end

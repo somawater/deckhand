@@ -9,10 +9,6 @@ class Deckhand::Configuration::ModelConfig
     @dsl = Deckhand::Configuration::ModelDSL.new(options, &block)
   end
 
-  def method_missing(sym, *args, &block)
-    @dsl.send(sym, *args, &block)
-  end
-
   # a model's label can either be a symbol name of a method on that model,
   # or a block that will be eval'ed in instance context.
   # it can be defined in the model's configuration block with the "label" keyword,
@@ -35,7 +31,7 @@ class Deckhand::Configuration::ModelConfig
   end
 
   def fields_to_show(options = {})
-    options[:flat_only] ? show.reject {|name, options| options[:table] } : show
+    options[:flat_only] ? @dsl.show.reject {|name, options| options[:table] } : @dsl.show
   end
 
   def actions
@@ -45,6 +41,10 @@ class Deckhand::Configuration::ModelConfig
   def fields_to_include(options = {})
     action_conditions = actions.map {|a| a.last[:if] }.compact.map {|f| [f, {}] }
     fields_to_show(options) + action_conditions # TODO de-duplicate
+  end
+
+  def search_fields
+    @dsl.search_on
   end
 
 end

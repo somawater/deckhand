@@ -4,9 +4,8 @@ Deckhand.configure do
   model_label :pretty_name, :name, :tag
 
   model Foo do
-    search_on :short_id, :exact
-    search_on :name, :contains
-    search_on :email, :contains
+    search_on :name, :email
+    search_on :short_id, :match => :exact
 
     show :email, :created_at
     show :bars
@@ -20,10 +19,7 @@ Deckhand.configure do
   end
 
   model Baz do
-    search_on :recipient_email, :contains
-    search_on :recipient_first_name, :contains
-    search_on :recipient_last_name, :contains
-
+    search_on :recipient_email, :recipient_first_name, :recipient_last_name
     show :giver, :recipient, :subscription, :coupon
   end
 

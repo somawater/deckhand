@@ -24,12 +24,10 @@ class Deckhand::Configuration::ModelDSL
     end
   end
 
-  def show(*args, &block)
-    keyword_with_options(:show, *args, &block)
-  end
-
-  def action(*args, &block)
-    keyword_with_options(:action, *args, &block)
+  %w[search_on show action].each do |keyword|
+    define_method keyword do |*args, &block|
+      keyword_with_options(keyword.to_sym, *args, &block)
+    end
   end
 
   def method_missing(sym, *args, &block)
