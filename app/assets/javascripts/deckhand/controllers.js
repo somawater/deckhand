@@ -37,6 +37,8 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $rootScope.replaceCard = function(item, newItem) {
     $rootScope.cards.splice($rootScope.cards.indexOf(item), 1, newItem);
+    delete openedItems[item._model][item.id];
+    openedItems[newItem._model][newItem.id] = newItem;
   };
 
 }])
