@@ -128,7 +128,7 @@ angular.module('controllers', ['ui.bootstrap'])
     $scope.replaceCard(item, newItem);
     var result = newItem._result;
     if (result && result._model) {
-      $scope.open(result._model, result.id);
+      $scope.showCard(result._model, result.id);
     }
   };
 
