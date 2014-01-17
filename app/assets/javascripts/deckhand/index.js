@@ -47,11 +47,11 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
     var index = event.detail.index + 1; // nth-child is 1-indexed
     var scrollOptions = {duration: 800, ease: 'outQuint'};
     if (index == 1) {
-      scroll.top(document.body, 0, scrollOptions);
+      scroll.top(document.documentElement, 0, scrollOptions);
     } else {
       var selector = '#cards > div:nth-child(' + index + ')';
       var element = document.querySelector(selector);
-      scroll.top(document.body, element.offsetTop, scrollOptions);
+      scroll.top(document.documentElement, element.offsetTop, scrollOptions);
     }
   });
 
