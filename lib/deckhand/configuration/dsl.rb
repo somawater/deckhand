@@ -1,4 +1,5 @@
 require 'deckhand/configuration/model_config'
+require 'deckhand/configuration/simple_dsl'
 
 class Deckhand::Configuration::DSL
 
@@ -11,12 +12,12 @@ class Deckhand::Configuration::DSL
       model: model_class,
       singular: [:label, :fields_to_show],
       defaults: {show: [], exclude: []},
-      label_defaults: @config.global_config[:model_label]
+      label_defaults: @config.global_config.model_label
     }, &block)
   end
 
   def model_label(*methods)
-    @config.global_config[:model_label] = methods + @config.global_config[:model_label]
+    @config.global_config.model_label = methods + @config.global_config.model_label
   end
 
   def model_storage(sym)
@@ -24,7 +25,11 @@ class Deckhand::Configuration::DSL
     unless (class_name.constantize rescue nil)
       require "deckhand/model_storage/#{sym}"
     end
-    @config.global_config[:model_storage] = class_name.constantize.new
+    @config.global_config.model_storage = class_name.constantize.new
+  end
+
+  def plugins(&block)
+    @config.global_config.plugins = Deckhand::Configuration::SimpleDSL.new(&block)
   end
 
 end

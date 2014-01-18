@@ -25,7 +25,7 @@ module Deckhand
 
     def run
       self.models_config = {}
-      self.global_config = {model_label: [:id]}
+      self.global_config = OpenStruct.new(model_label: [:id])
 
       DSL.new(self).instance_eval &initializer_block
 
@@ -36,7 +36,7 @@ module Deckhand
       names = models_config.keys.map {|m| [m.to_s, m] }.flatten
       @models_by_name = Hash[*names]
 
-      if @model_storage = global_config[:model_storage]
+      if @model_storage = global_config.model_storage
         setup_field_types
       end
     end
