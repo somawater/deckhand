@@ -29,7 +29,7 @@ class Deckhand::Configuration::DSL
   end
 
   def plugins(&block)
-    @config.global_config.plugins = Deckhand::Configuration::SimpleDSL.new(&block)
+    @config.global_config.plugins = Deckhand::Configuration::SimpleDSL.new(singular: [:ckeditor], &block)
   end
 
 end

@@ -1,5 +1,6 @@
 var moment = require('moment'),
-  scroll = require('scroll');
+  scroll = require('scroll'),
+  include = require('./lib/include');
 
 require('angular');
 require('./lib/angular-resource');
@@ -22,6 +23,19 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
     update: {method: 'PUT', url: DeckhandGlobals.showPath}
   });
 }])
+
+.directive('ckeditor', function() {
+  return function(scope, element, attrs) {
+    if (window.CKEDITOR) {
+      // FIXME race condition with data-binding
+      CKEDITOR.replace(element[0]);
+    } else if (DeckhandGlobals.ckeditor != '') {
+      include(DeckhandGlobals.ckeditor, function() {
+        CKEDITOR.replace(element[0]);
+      });
+    }
+  };
+})
 
 .filter('humanTime', function() {
   return function(time) {

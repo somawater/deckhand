@@ -57,7 +57,14 @@ module Deckhand::TemplatesHelper
     else
       args['type'] = 'text'
     end # TODO more types & HTML5 validators
-    content_tag :input, '', args
+
+    if options[:editable] == {with: :ckeditor}
+      args['ckeditor'] = true
+      content_tag :textarea, '', args
+    else
+      content_tag :input, '', args
+    end
+
   end
 
 end
