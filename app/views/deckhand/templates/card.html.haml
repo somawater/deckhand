@@ -1,9 +1,9 @@
-.panel.panel-info
+.panel.panel-info(ng-controller="CardCtrl")
 
   .panel-heading
     %h3.panel-title
       %span.right
-        %a.glyphicon.glyphicon-pencil(ng-click="edit(item)")
+        %a.glyphicon.glyphicon-pencil(ng-click="edit()")
         %a.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
       {{item._model}}: {{item._label}}
 
@@ -12,7 +12,7 @@
       - flat_fields.each do |name, options|
         %dt= readable_method_name(options[:alias] || name)
         - if options[:editable]
-          %dd.editable(ng-click="edit(item, '#{name}')")
+          %dd.editable(ng-click="edit('#{name}')")
             %i.glyphicon.glyphicon-pencil.edit-icon
             = angular_binding 'item', name, options
         - else

@@ -44,6 +44,10 @@ angular.module('controllers', ['ui.bootstrap'])
     openedItems[newItem._model][newItem.id] = newItem;
   };
 
+  $rootScope.cardTemplate = function(item) {
+    return DeckhandGlobals.templatePath + '?' + qs.stringify({model: item._model, type: 'card'});
+  };
+
 }])
 
 .controller('SearchCtrl', ['$scope', 'Search', 'Model', function($scope, Search, Model) {
@@ -97,11 +101,7 @@ angular.module('controllers', ['ui.bootstrap'])
 
 }])
 
-.controller('CardsCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
-
-  $scope.template = function(item) {
-    return DeckhandGlobals.templatePath + '?' + qs.stringify({model: item._model, type: 'card'});
-  };
+.controller('CardCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
 
   $scope.raw = function(value) {
     return $sce.trustAsHtml(value);
@@ -170,8 +170,8 @@ angular.module('controllers', ['ui.bootstrap'])
     }
   };
 
-  $scope.edit = function(item, name) {
-    var formParams = {model: item._model, id: item.id, type: 'edit'}, url;
+  $scope.edit = function(name) {
+    var formParams = {model: $scope.item._model, id: $scope.item.id, type: 'edit'}, url;
 
     if (name) {
       formParams.edit_fields = [name];
@@ -191,7 +191,7 @@ angular.module('controllers', ['ui.bootstrap'])
       controller: 'ModalFormCtrl',
       resolve: {
         context: function() {
-          return {item: item, title: 'edit', formParams: formParams, verb: 'update'};
+          return {item: $scope.item, title: 'edit', formParams: formParams, verb: 'update'};
         }
       }
     });
