@@ -26,9 +26,14 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 
 .directive('ckeditor', function() {
   return function(scope, element, attrs) {
+
     if (window.CKEDITOR) {
-      // FIXME race condition with data-binding
-      CKEDITOR.replace(element[0]);
+      var unwatch = scope.$watch(attrs.ngModel, function(value) {
+        if (value) {
+          CKEDITOR.replace(element[0]);
+          unwatch();
+        }
+      })
     } else if (DeckhandGlobals.ckeditor != '') {
       include(DeckhandGlobals.ckeditor, function() {
         CKEDITOR.replace(element[0]);
