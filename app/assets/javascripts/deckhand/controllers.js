@@ -197,7 +197,7 @@ angular.module('controllers', ['ui.bootstrap'])
     });
 
     modalInstance.result.then(function(newItem) {
-      refreshItem(item, newItem);
+      refreshItem($scope.item, newItem);
     });
   };
 

@@ -25,21 +25,32 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 }])
 
 .directive('ckeditor', function() {
-  return function(scope, element, attrs) {
+  var link = function(scope, element, attrs, ngModel) {
+    var setupEditor = function() {
+      var editor = CKEDITOR.replace(element[0]);
+      editor.on('change', function() {
+        ngModel.$setViewValue(editor.getData());
+      })
+    };
 
     if (window.CKEDITOR) {
       var unwatch = scope.$watch(attrs.ngModel, function(value) {
         if (value) {
-          CKEDITOR.replace(element[0]);
+          setupEditor();
           unwatch();
         }
       })
     } else if (DeckhandGlobals.ckeditor != '') {
       include(DeckhandGlobals.ckeditor, function() {
-        CKEDITOR.replace(element[0]);
+        setupEditor();
       });
     }
   };
+
+  return {
+    require: 'ngModel',
+    link: link
+  }
 })
 
 .filter('humanTime', function() {
