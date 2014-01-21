@@ -14,7 +14,7 @@ class Deckhand::ModelStorage::Base
 
   protected
 
-  def query
+  def query(scope, term, fields)
     raise NotImplementedException
   end
 
