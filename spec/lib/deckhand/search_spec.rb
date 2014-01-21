@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/dummy_model_storage'
 
 describe Deckhand::Search do
 

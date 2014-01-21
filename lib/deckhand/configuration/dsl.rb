@@ -8,12 +8,9 @@ class Deckhand::Configuration::DSL
   end
 
   def model(model_class, &block)
-    @config.models_config[model_class] = Deckhand::Configuration::ModelConfig.new({
-      model: model_class,
-      singular: [:label, :fields_to_show],
-      defaults: {show: [], exclude: []},
-      label_defaults: @config.global_config.model_label
-    }, &block)
+    options = {model: model_class, label_defaults: @config.global_config.model_label}
+    model_config = Deckhand::Configuration::ModelConfig.new(options, &block)
+    @config.models_config[model_class] = model_config
   end
 
   def model_label(*methods)

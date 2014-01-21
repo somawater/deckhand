@@ -22,12 +22,10 @@ class Deckhand::ModelStorage::Dummy < Deckhand::ModelStorage::Base
     nil
   end
 
-  def search(term)
-    search_config.map do |model, search_fields|
-      search_fields.map do |name, options|
-        OpenStruct.new(model: model, text: term, match_field: name, match_type: options[:match])
-      end
-    end.flatten(1)
+  def query(scope, term, fields)
+    fields.map do |name, options|
+      OpenStruct.new(model: scope, text: term, match_field: name, match_type: options[:match])
+    end
   end
 
 end

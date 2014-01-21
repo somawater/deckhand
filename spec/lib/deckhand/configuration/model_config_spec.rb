@@ -6,13 +6,17 @@ describe Deckhand::Configuration::ModelConfig do
   before(:all) { Deckhand.config.run }
   let(:foo_config) { Deckhand.config.for_model(Foo) }
 
-  context '#search_fields' do
-    it "reads 'search_on' keywords and options" do
-      foo_config.search_fields.should == [
-        [:name, {}],
-        [:email, {}],
-        [:short_id, {:match => :exact}]
-      ]
+  context '#search_options' do
+    it "reads 'search_on' and 'search_scope' keywords" do
+      foo_config.search_options.should == {
+        scope: :verified,
+        fields: [
+          [:name, {}],
+          [:email, {}],
+          [:short_id, {:match => :exact}]
+        ]
+      }
+
     end
   end
 
@@ -55,7 +59,6 @@ describe Deckhand::Configuration::ModelConfig do
     it 'uses a method from model_label if it exists on the model' do
       expect(Deckhand.config.for_model(Bar).label).to eq :tag
     end
-
   end
 
 end

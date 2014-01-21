@@ -4,9 +4,13 @@ class Deckhand::Configuration::ModelConfig
   attr_reader :model
 
   def initialize(options = {}, &block)
+    default_options = {
+      singular: [:label, :fields_to_show, :search_scope],
+      defaults: {show: [], exclude: []}
+    }
     @label_defaults = options.delete(:label_defaults)
     @model = options.delete(:model)
-    @dsl = Deckhand::Configuration::ModelDSL.new(options, &block)
+    @dsl = Deckhand::Configuration::ModelDSL.new(default_options.merge(options), &block)
   end
 
   # a model's label can either be a symbol name of a method on that model,
@@ -47,8 +51,12 @@ class Deckhand::Configuration::ModelConfig
     fields_to_show(options) + action_conditions # TODO de-duplicate
   end
 
-  def search_fields
-    @dsl.search_on
+  def searchable?
+    !!search_options[:fields]
+  end
+
+  def search_options
+    {scope: @dsl.search_scope, fields: @dsl.search_on}
   end
 
 end

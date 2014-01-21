@@ -6,6 +6,7 @@ Deckhand.configure do
   model Foo do
     search_on :name, :email
     search_on :short_id, :match => :exact
+    search_scope :verified
 
     show :email, :created_at
     show :bars

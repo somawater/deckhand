@@ -28,16 +28,16 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
     model.relations[name.to_s]
   end
 
-  def search(term)
-    search_config.map do |model, search_fields|
-      model.or(*search_criteria(term, search_fields)).limit(5)
-    end.map(&:to_a).flatten(1)
+  protected
+
+  def query(scope, term, fields)
+    scope.or(*search_criteria(term, fields)).limit(5)
   end
 
   private
 
-  def search_criteria(term, search_fields)
-    search_fields.map do |field, options|
+  def search_criteria(term, fields)
+    fields.map do |field, options|
       case options[:match]
       when :exact
         {field => term}

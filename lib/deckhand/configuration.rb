@@ -21,17 +21,13 @@ module Deckhand
     include Singleton
 
     attr_accessor :initializer_block, :models_config, :global_config
-    attr_reader :search_config, :models_by_name, :field_types
+    attr_reader :models_by_name, :field_types
 
     def run
       self.models_config = {}
       self.global_config = OpenStruct.new(model_label: [:id])
 
       DSL.new(self).instance_eval &initializer_block
-
-      @search_config = models_config.map do |model, config|
-        [model, config.search_fields] if config.search_fields
-      end.compact
 
       names = models_config.keys.map {|m| [m.to_s, m] }.flatten
       @models_by_name = Hash[*names]
