@@ -2,7 +2,7 @@ require 'deckhand/model_storage/base'
 
 class Deckhand::ModelStorage::Dummy < Deckhand::ModelStorage::Base
 
-  def link?(model, name)
+  def relation?(model, name)
     false
   end
 

@@ -2,7 +2,7 @@ require 'deckhand/model_storage/base'
 
 class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
 
-  def link?(model, name)
+  def relation?(model, name)
     model.relations.include? name.to_s
   end
 

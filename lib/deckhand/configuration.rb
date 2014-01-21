@@ -37,7 +37,7 @@ module Deckhand
       end
     end
 
-    delegate :link?, :relation_model_name, :to => :@model_storage
+    delegate :relation?, :relation_model_name, :to => :@model_storage
 
     def reset
       self.models_config = self.global_config = nil
