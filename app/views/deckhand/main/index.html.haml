@@ -9,7 +9,7 @@
       showPath: '#{deckhand.data_path}',
       templatePath: '#{deckhand.templates_path}',
       fieldTypes: #{Deckhand.config.field_types.to_json},
-      ckeditor = "#{Deckhand.config.global_config.plugins.ckeditor}";
+      ckeditor: "#{Deckhand.config.global_config.plugins.ckeditor}"
     };
 
   = javascript_include_tag 'deckhand/index'
