@@ -67,7 +67,8 @@ angular.module('controllers', ['ui.bootstrap'])
 
 }])
 
-.controller('ModalFormCtrl', ['$scope', '$modalInstance', 'Model', 'context', function($scope, $modalInstance, Model, context) {
+.controller('ModalFormCtrl', ['$scope', '$modalInstance', '$upload', 'Model', 'context',
+  function($scope, $modalInstance, $upload, Model, context) {
 
   var inputs = [];
 
@@ -88,14 +89,38 @@ angular.module('controllers', ['ui.bootstrap'])
     $modalInstance.dismiss('cancel');
   };
 
+  $scope.files = {};
+
+  $scope.onFileSelect = function($files, name) {
+    $scope.files[name.replace(/(\.(.*))$/, '[$2]')] = $files[0];
+  }
+
   $scope.submit = function() {
     $scope.error = null;
-    var data = extend({form: $scope.form, id: $scope.item.id}, context.formParams);
 
-    Model[context.verb](data, function(newItem) {
+    var params;
+    if (context.verb == 'update') {
+      params = {url: DeckhandGlobals.showPath, method: 'PUT'};
+    } else if (context.verb == 'act') {
+      params = {url: DeckhandGlobals.showPath + '/act', method: 'PUT'};
+    }
+
+    var filenames = Object.keys($scope.files);
+    var files = filenames.map(function(name) { return $scope.files[name] });
+
+    extend(params, {
+      fileFormDataName: filenames,
+      file: files,
+      data: {
+        id: $scope.item.id,
+        non_file_params: extend({form: $scope.form}, context.formParams)
+      },
+    });
+
+    $upload.upload(params).success(function(newItem) {
       $modalInstance.close(newItem);
-    }, function(response) {
-      $scope.error = response.data.error;
+    }).error(function(response) {
+      $scope.error = response.error;
     });
   };
 

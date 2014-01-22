@@ -8,9 +8,10 @@ require('./lib/angular-sanitize');
 require('./lib/angular-animate');
 require('./lib/angular-ui-bootstrap-0.10.0');
 require('./lib/angular-ui-bootstrap-tpls-0.10.0');
+require('./lib/angular-file-upload');
 require('./controllers');
 
-var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimate', 'controllers'])
+var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimate', 'controllers', 'angularFileUpload'])
 
 .factory('Search', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.searchPath);

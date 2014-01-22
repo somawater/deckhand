@@ -1,5 +1,7 @@
 class Deckhand::DataController < Deckhand::BaseController
 
+  before_filter :combine_params, only: [:act, :update]
+
   delegate :present, :present_results, :to => :presenter
 
   def search
@@ -8,12 +10,10 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def show
-    instance = get_instance
     render_json present(instance)
   end
 
   def form
-    instance = get_instance
     model_config = Deckhand.config.for_model(instance.class)
 
     case params[:type]
@@ -27,7 +27,6 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def act
-    instance = get_instance
     action = params[:act].to_sym
     model_config = Deckhand.config.for_model(instance.class)
 
@@ -52,8 +51,7 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def update
-    instance = get_instance
-    if instance.update_attributes(params[:form])
+    if instance.update_attributes params[:form].except(:id)
       render_json present(instance)
     else
       render_error instance.errors.full_messages.join('; ')
@@ -79,8 +77,33 @@ class Deckhand::DataController < Deckhand::BaseController
     render json: {error: message}, status: :unprocessable_entity
   end
 
-  def get_instance
-    Deckhand.config.models_by_name[params[:model]].find(params[:id])
+  def instance
+    @instance ||= Deckhand.config.models_by_name[params[:model]].find(params[:id])
+  end
+
+  def combine_params
+    # this is a workaround for the way angular-file-upload works.
+    # it splits up top-level parameters into their own parts of the response
+    # and stringifies them, so we move all the non-file fields down a level
+    # and parse them explicitly.
+    non_file_params = JSON.load(params[:non_file_params])
+
+    # copy this first so we can load the instance
+    params[:model] = non_file_params['model']
+
+    non_file_params['form'].tap do |form|
+      # remove the previous values for the file attachment fields
+      form.keys.each do |key|
+        if Deckhand.config.attachment? instance.class, key.to_sym
+          form.delete(key)
+        end
+      end
+      # add the uploaded files
+      form.merge!(params[:form]) if params[:form]
+    end
+
+    params.merge! non_file_params
+    params.delete :non_file_params
   end
 
 end

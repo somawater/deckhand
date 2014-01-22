@@ -54,6 +54,10 @@ module Deckhand::TemplatesHelper
     if options[:type] == Boolean
       args['type'] = 'checkbox'
       args.delete('class')
+    elsif options[:type] == :file
+      args['type'] = 'file'
+      args['ng-file-select'] = "onFileSelect($files, '#{name}')"
+      args.delete('ng-model')
     else
       args['type'] = 'text'
     end # TODO more types & HTML5 validators
