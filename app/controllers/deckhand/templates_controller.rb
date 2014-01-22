@@ -23,7 +23,7 @@ class Deckhand::TemplatesController < Deckhand::BaseController
       render 'deckhand/templates/modal_form'
 
     else
-      render 'deckhand/templates/card'
+      raise "unknown type: #{params[:type]}"
     end
   end
 

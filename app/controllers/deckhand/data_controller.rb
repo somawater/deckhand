@@ -17,12 +17,14 @@ class Deckhand::DataController < Deckhand::BaseController
     model_config = Deckhand.config.for_model(instance.class)
 
     case params[:type]
-    when 'act'
+    when 'action'
       form = model_config.action_form_class(params[:act]).new object: instance
       render_json form.values
     when 'edit'
       edit_fields = params[:edit_fields] || model_config.fields_to_edit
       render_json present(instance, [], edit_fields)
+    else
+      raise "unknown type: #{params[:type]}"
     end
   end
 
@@ -34,8 +36,12 @@ class Deckhand::DataController < Deckhand::BaseController
       form = model_config.action_form_class(action).new object: instance
       form.consume_params(params[:form])
       if form.valid?
-        result = form.execute
-        render_json present(instance).merge(_result: present(result))
+        begin
+          result = form.execute
+          render_json present(instance).merge(_result: present(result))
+        rescue
+          render_error $!.message
+        end
       else
         render_error form.errors.full_messages.join('; ')
       end
