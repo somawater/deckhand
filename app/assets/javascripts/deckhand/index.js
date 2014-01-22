@@ -26,20 +26,25 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
 
 .directive('ckeditor', function() {
   var link = function(scope, element, attrs, ngModel) {
+    var editor;
+
     var setupEditor = function() {
-      var editor = CKEDITOR.replace(element[0]);
+      editor = CKEDITOR.replace(element[0]);
+
+      // the editor may have been loaded before the form data
+      scope.$watch(attrs.ngModel, function(value) {
+        if (value) {
+          setTimeout(function() { editor.setData(value); }, 0);
+        }
+      })
+
       editor.on('change', function() {
         ngModel.$setViewValue(editor.getData());
       })
     };
 
     if (window.CKEDITOR) {
-      var unwatch = scope.$watch(attrs.ngModel, function(value) {
-        if (value) {
-          setupEditor();
-          unwatch();
-        }
-      })
+      setupEditor();
     } else if (DeckhandGlobals.ckeditor != '') {
       include(DeckhandGlobals.ckeditor, function() {
         setupEditor();
@@ -47,10 +52,7 @@ var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimat
     }
   };
 
-  return {
-    require: 'ngModel',
-    link: link
-  }
+  return {require: 'ngModel', link: link};
 })
 
 .filter('humanTime', function() {
