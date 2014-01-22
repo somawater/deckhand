@@ -31,7 +31,7 @@ describe Deckhand::Configuration::ModelConfig do
         [:email, {}],
         [:created_at, {}],
         [:bars, {}],
-        [:nose, {hairy: false, large: true}]
+        [:nose, {hairy: false, large: true, editable: true}]
       ]
       last = fields_to_show.last
       expect(last.first).to eq :virtual_field
