@@ -171,7 +171,7 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   $scope.edit = function(name) {
-    var formParams = {model: $scope.item._model, id: $scope.item.id, type: 'edit'}, url;
+    var formParams = {model: $scope.item._model, type: 'edit'}, url;
 
     if (name) {
       formParams.edit_fields = [name];
