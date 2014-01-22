@@ -7,7 +7,12 @@ module Deckhand::TemplatesHelper
   def angular_binding(item, name, options = {})
     value = "{{value(#{item}, '#{name}')}}"
 
-    if options[:link_to]
+    if options[:thumbnail]
+      content_tag :a, target: '_blank', 'ng-href' => value do
+        content_tag :img, '', 'ng-src' => value
+      end
+
+    elsif options[:link_to]
       content_tag :a, value, target: '_blank', 'ng-href' => "{{substitute(#{item}, '#{name}', '#{options[:link_to]}')}}"
 
     elsif options[:link_to_item]
