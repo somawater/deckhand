@@ -10,6 +10,11 @@ class Deckhand::Presenter
     fields_to_include.reduce(core_fields(obj)) do |hash, (field, options)|
       val = obj.public_send(field)
       val = val.public_send(options[:delegate]) if options && options[:delegate]
+
+      if Deckhand.config.attachment?(model, field)
+        val = val.blank? ? nil : val.url
+      end
+
       subfields_to_include = options[:table].map {|f| [f, {}] } if options && options[:table]
 
       hash[field] = if val.is_a?(Array)

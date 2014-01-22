@@ -46,6 +46,18 @@ describe Deckhand::Configuration::ModelConfig do
     end
   end
 
+  context 'fields_to_edit' do
+    before do
+      Foo.stub attachment_definitions: {nose: {}}
+    end
+
+    it 'auto-detects Paperclip fields' do
+      Deckhand.config.attachment?(Foo, :nose).should be_true
+      nose_config = foo_config.fields_to_edit.detect {|name, options| name == :nose }
+      expect(nose_config.last[:type]).to eq :file
+    end
+  end
+
   context '#label' do
 
     before do

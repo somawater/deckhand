@@ -51,6 +51,11 @@ module Deckhand
       models_by_name.keys.include? model.to_s
     end
 
+    def attachment?(model, name)
+      # this is specific to Paperclip
+      model.respond_to?(:attachment_definitions) and model.attachment_definitions.try(:include?, name)
+    end
+
     private
 
     def setup_field_types

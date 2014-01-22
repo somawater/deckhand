@@ -39,7 +39,12 @@ class Deckhand::Configuration::ModelConfig
   end
 
   def fields_to_edit
-    @dsl.show.select {|name, options| options[:editable] }
+    @fields_to_edit ||= @dsl.show.select {|name, options| options[:editable] }.map do |name, options|
+      if Deckhand.config.attachment?(@model, name)
+        options[:type] = :file
+      end
+      [name, options]
+    end
   end
 
   def actions

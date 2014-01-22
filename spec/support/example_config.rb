@@ -10,7 +10,7 @@ Deckhand.configure do
 
     show :email, :created_at
     show :bars
-    show :nose, :hairy => false, :large => true
+    show :nose, :hairy => false, :large => true, :editable => true
     show(:virtual_field) { ok }
     label { "#{name} <#{email}>" }
     action :explode, :if => :explosive?
