@@ -1,4 +1,5 @@
 require 'active_support/core_ext/class/attribute'
+require 'active_model'
 
 module Deckhand::Form
 
@@ -35,10 +36,13 @@ module Deckhand::Form
     # without the need for a hidden input on the client side
     inputs.each do |name, options|
       value = if p = params[name]
-        case options[:type]
-        when Integer; p.to_i
-        when Float;   p.to_f
-        else;         p
+        type = options[:type]
+        if type == Integer
+          p.to_i
+        elsif type == Float
+          p.to_f
+        else
+          p
         end
       end
       send "#{name}=", value
