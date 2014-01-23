@@ -3,6 +3,12 @@
 A card-based admin interface.
 
 
+## Requirements
+
+Tested with the latest Ruby (2.0). Other versions/VMs are untested but might work fine.
+
+Node, NPM and Browserify are required.
+
 ## Usage
 
 Make the following changes in your main app:
