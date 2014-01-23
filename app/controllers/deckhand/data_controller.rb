@@ -38,7 +38,10 @@ class Deckhand::DataController < Deckhand::BaseController
       if form.valid?
         begin
           result = form.execute
-          render_json present(instance).merge(_result: present(result))
+          render_json(
+            result: present(result),
+            changed: form.changed_objects.map {|obj| present(obj) }
+          )
         rescue
           render_error $!.message
         end
@@ -49,8 +52,10 @@ class Deckhand::DataController < Deckhand::BaseController
     elsif model_config.has_action?(action)
       # TODO: begin/rescue/end the public_send and return a status code
       result = instance.public_send(params[:act].to_sym)
-      render_json present(instance).merge(_result: present(result))
-
+      render_json(
+        result: present(result),
+        changed: [present(instance)]
+      )
     else
       render_error 'unknown action'
     end
@@ -58,7 +63,7 @@ class Deckhand::DataController < Deckhand::BaseController
 
   def update
     if instance.update_attributes params[:form].except(:id)
-      render_json present(instance)
+      render_json changed: [present(instance)]
     else
       render_error instance.errors.full_messages.join('; ')
     end

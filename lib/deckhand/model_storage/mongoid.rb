@@ -15,6 +15,8 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
   def field_type(model, name)
     if f = field(model, name)
       f.options[:type].to_s.underscore
+    elsif Deckhand.config.for_model(model).table_field?(name)
+      :table
     elsif r = relation(model, name)
       :relation
     end

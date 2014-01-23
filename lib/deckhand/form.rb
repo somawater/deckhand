@@ -53,6 +53,10 @@ module Deckhand::Form
     raise NotImplementedError
   end
 
+  def changed_objects
+    raise NotImplementedError
+  end
+
   module ClassMethods
     def input(name, options = {})
       attr_accessor name

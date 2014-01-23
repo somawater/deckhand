@@ -35,7 +35,13 @@ class Deckhand::Configuration::ModelConfig
   end
 
   def fields_to_show(options = {})
-    options[:flat_only] ? @dsl.show.reject {|name, options| options[:table] } : @dsl.show
+    if options[:flat_only]
+      @dsl.show.reject {|name, options| options[:table] }
+    elsif options[:table_only]
+      @dsl.show.select {|name, options| options[:table] }
+    else
+      @dsl.show
+    end
   end
 
   def fields_to_edit
@@ -62,6 +68,10 @@ class Deckhand::Configuration::ModelConfig
 
   def search_options
     {scope: @dsl.search_scope, fields: @dsl.search_on}
+  end
+
+  def table_field?(name)
+    fields_to_show(table_only: true).map(&:first).include? name
   end
 
 end

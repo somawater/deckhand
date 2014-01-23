@@ -1,5 +1,6 @@
 var qs = require('querystring'),
-  extend = require('extend');
+  extend = require('extend'),
+  union = require('./lib/union');
 
 // TODO fancier error handling
 var handleError = function(response) {
@@ -11,23 +12,57 @@ angular.module('controllers', ['ui.bootstrap'])
 .controller('RootCtrl', ['$rootScope', 'Model', function($rootScope, Model) {
 
   $rootScope.cards = [];
-  var openedItems = {};
+  window.itemEntries = {};
 
   var focusCard = function(index) {
     var event = new CustomEvent('focusItem', {detail: {index: index}});
     document.getElementById('cards').dispatchEvent(event);
-  }
+  };
+
+  var findEntry = function(model, id) {
+    return (itemEntries[model] ? itemEntries[model][id] : null);
+  };
+
+  var register = function(item) {
+    var model = item._model, id = item.id;
+    console.log('registering ' + model + ' ' + id);
+
+    if (!itemEntries[model])
+      itemEntries[model] = {};
+
+    if (!itemEntries[model][id])
+      itemEntries[model][id] = {card: false};
+
+    var entry = itemEntries[model][id];
+
+    if (entry.item) {
+      extend(entry.item, item); // Q: does this deep-merge correctly?
+    } else {
+      entry.item = item;
+    }
+
+    Object.keys(item).forEach(function(field) {
+      var type = DeckhandGlobals.fieldTypes[item._model][field];
+      if (type == 'table') {
+        item[field].forEach(register);
+      } else if (type == 'relation' && item[field] && item[field]._model) {
+        register(item[field]);
+      }
+    });
+
+    return entry;
+  };
 
   $rootScope.showCard = function(model, id) {
-    var openedItem = (openedItems[model] ? openedItems[model][id] : null);
+    var entry = findEntry(model, id);
 
-    if (openedItem) {
-      focusCard($rootScope.cards.indexOf(openedItem));
+    if (entry && entry.card) {
+      focusCard($rootScope.cards.indexOf(entry.item));
     } else {
       Model.get({model: model, id: id}, function(item) {
-        if (!openedItems[model]) openedItems[model] = {};
-        openedItems[model][id] = item;
-        $rootScope.cards.unshift(item);
+        var entry = register(item, true);
+        entry.card = true;
+        $rootScope.cards.unshift(entry.item);
         focusCard(0);
       });
     }
@@ -35,13 +70,19 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $rootScope.removeCard = function(item) {
     $rootScope.cards.splice($rootScope.cards.indexOf(item), 1);
-    delete openedItems[item._model][item.id];
+    findEntry(item._model, item.id).card = false;
   };
 
-  $rootScope.replaceCard = function(item, newItem) {
-    $rootScope.cards.splice($rootScope.cards.indexOf(item), 1, newItem);
-    delete openedItems[item._model][item.id];
-    openedItems[newItem._model][newItem.id] = newItem;
+  $rootScope.refreshItem = function(newItem) {
+    console.log("refreshing " + newItem._model + ' ' + newItem.id);
+    var entry = findEntry(newItem._model, newItem.id);
+    if (!entry) return;
+
+    extend(entry.item, newItem);
+    if (entry.card) {
+      var index = $rootScope.cards.indexOf(entry.item);
+      $rootScope.cards.splice(index, 1, entry.item); // trigger animation
+    }
   };
 
   $rootScope.cardTemplate = function(item) {
@@ -117,8 +158,8 @@ angular.module('controllers', ['ui.bootstrap'])
       },
     });
 
-    $upload.upload(params).success(function(newItem) {
-      $modalInstance.close(newItem);
+    $upload.upload(params).success(function(response) {
+      $modalInstance.close(response);
     }).error(function(response) {
       $scope.error = response.error;
     });
@@ -153,9 +194,12 @@ angular.module('controllers', ['ui.bootstrap'])
     return string.replace(':value', value);
   };
 
-  var refreshItem = function(item, newItem) {
-    $scope.replaceCard(item, newItem);
-    var result = newItem._result;
+  var processResponse = function(response) {
+    response.changed.forEach(function(item) {
+      $scope.refreshItem(item);
+    })
+
+    var result = response.result;
     if (result && result._model) {
       $scope.showCard(result._model, result.id);
     }
@@ -182,16 +226,12 @@ angular.module('controllers', ['ui.bootstrap'])
         }
       });
 
-      modalInstance.result.then(function(newItem) {
-        refreshItem(item, newItem);
-      });
+      modalInstance.result.then(processResponse);
       return;
     }
 
     if (!('confirm' in options) || confirm('Are you sure you want to do that?')) {
-      Model.act({model: item._model, id: item.id, act: action}, function(newItem) {
-        refreshItem(item, newItem);
-      });
+      Model.act({model: item._model, id: item.id, act: action}, processResponse);
     }
   };
 
@@ -221,9 +261,13 @@ angular.module('controllers', ['ui.bootstrap'])
       }
     });
 
-    modalInstance.result.then(function(newItem) {
-      refreshItem($scope.item, newItem);
-    });
+    modalInstance.result.then(processResponse);
   };
+
+  $scope.refresh = function() {
+    Model.get({model: $scope.item._model, id: $scope.item.id}, function(newItem) {
+      $scope.refreshItem(newItem);
+    });
+  }
 
 }]);
