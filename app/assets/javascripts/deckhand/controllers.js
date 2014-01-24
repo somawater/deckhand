@@ -209,7 +209,7 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   $scope.act = function(item, action, options) {
-    if (!options) options = {confirm: true};
+    if (!options) options = {confirm: 'Are you sure?'};
 
     if (options.form) {
       var formParams = {model: item._model, act: action, type: 'action'};
@@ -233,7 +233,7 @@ angular.module('controllers', ['ui.bootstrap'])
       return;
     }
 
-    if (!('confirm' in options) || confirm('Are you sure you want to do that?')) {
+    if (!('confirm' in options) || confirm(options.confirm)) {
       Model.act({model: item._model, id: item.id, act: action}, processResponse);
     }
   };
