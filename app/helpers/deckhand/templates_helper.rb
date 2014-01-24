@@ -13,7 +13,7 @@ module Deckhand::TemplatesHelper
     end
 
     if options[:html]
-      trusted_html value
+      content_tag :div, '', 'ng-bind-html' => value.gsub(/^\{\{|\}\}$/, '')
 
     elsif options[:thumbnail]
       content_tag :a, target: '_blank', 'ng-href' => value do
@@ -37,10 +37,6 @@ module Deckhand::TemplatesHelper
       value
     end
 
-  end
-
-  def trusted_html(string = nil, &block)
-    content_tag :div, '', 'ng-bind-html' => "raw('#{string || block.call}')"
   end
 
   def table_fields

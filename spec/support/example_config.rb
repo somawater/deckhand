@@ -24,4 +24,8 @@ Deckhand.configure do
     show :giver, :recipient, :subscription, :coupon
   end
 
+  model Quux do
+    show :lamppost, html: true
+  end
+
 end

@@ -165,11 +165,7 @@ angular.module('controllers', ['ui.bootstrap'])
 
 }])
 
-.controller('CardCtrl', ['$scope', '$sce', '$filter', '$modal', 'Model', function($scope, $sce, $filter, $modal, Model) {
-
-  $scope.raw = function(value) {
-    return $sce.trustAsHtml(value);
-  };
+.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', function($scope, $filter, $modal, Model) {
 
   $scope.value = function(item, attr) {
     var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
