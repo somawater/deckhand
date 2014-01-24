@@ -11,7 +11,7 @@
   .panel-body
     %dl.dl-horizontal
       - flat_fields.each do |name, options|
-        %dt= readable_method_name(options[:alias] || name)
+        %dt= options[:alias] || readable_method_name(name)
         - if options[:editable]
           %dd.editable(ng-click="edit('#{name}')")
             %i.glyphicon.glyphicon-pencil.edit-icon
