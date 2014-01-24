@@ -25,7 +25,6 @@ angular.module('controllers', ['ui.bootstrap'])
 
   var register = function(item) {
     var model = item._model, id = item.id;
-    console.log('registering ' + model + ' ' + id);
 
     if (!itemEntries[model])
       itemEntries[model] = {};
@@ -36,7 +35,7 @@ angular.module('controllers', ['ui.bootstrap'])
     var entry = itemEntries[model][id];
 
     if (entry.item) {
-      extend(entry.item, item); // Q: does this deep-merge correctly?
+      extend(true, entry.item, item);
     } else {
       entry.item = item;
     }
@@ -74,11 +73,7 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   $rootScope.refreshItem = function(newItem) {
-    console.log("refreshing " + newItem._model + ' ' + newItem.id);
-    var entry = findEntry(newItem._model, newItem.id);
-    if (!entry) return;
-
-    extend(entry.item, newItem);
+    var entry = register(newItem);
     if (entry.card) {
       var index = $rootScope.cards.indexOf(entry.item);
       $rootScope.cards.splice(index, 1, entry.item); // trigger animation
@@ -238,10 +233,14 @@ angular.module('controllers', ['ui.bootstrap'])
     }
   };
 
-  $scope.edit = function(name) {
-    var formParams = {model: $scope.item._model, type: 'edit'}, url;
+  $scope.edit = function(name, options) {
+    if (options == true) options = {};
 
-    if (name) {
+    var item = (options.nested ? $scope.item[name] : $scope.item),
+      formParams = {type: 'edit', model: item._model},
+      url;
+
+    if (name && !options.nested) { // single-field editing
       formParams.edit_fields = [name];
       url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
 
@@ -250,7 +249,8 @@ angular.module('controllers', ['ui.bootstrap'])
       // e.g. http://stackoverflow.com/questions/18318714/angularjs-resource-cannot-pass-array-as-one-of-the-parameters
       formParams['edit_fields[]'] = formParams.edit_fields;
       delete formParams.edit_fields;
-    } else {
+
+    } else { // all editable fields at once
       url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
     }
 
@@ -259,7 +259,7 @@ angular.module('controllers', ['ui.bootstrap'])
       controller: 'ModalFormCtrl',
       resolve: {
         context: function() {
-          return {item: $scope.item, title: 'edit', formParams: formParams, verb: 'update'};
+          return {item: item, title: 'edit', formParams: formParams, verb: 'update'};
         }
       }
     });

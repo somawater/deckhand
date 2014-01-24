@@ -13,7 +13,7 @@
       - flat_fields.each do |name, options|
         %dt= options[:alias] || readable_method_name(name)
         - if options[:editable]
-          %dd.editable(ng-click="edit('#{name}')")
+          %dd.editable(ng-click="edit('#{name}', #{options[:editable].to_json})")
             %i.glyphicon.glyphicon-pencil.edit-icon
             = angular_binding 'item', name, options
         - else

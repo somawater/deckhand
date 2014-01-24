@@ -5,9 +5,17 @@ module Deckhand::TemplatesHelper
   end
 
   def angular_binding(item, name, options = {})
-    value = "{{value(#{item}, '#{name}')}}"
 
-    if options[:thumbnail]
+    value = if options[:delegate]
+      "{{value(#{item}.#{name}, '#{options[:delegate]}')}}"
+    else
+      "{{value(#{item}, '#{name}')}}"
+    end
+
+    if options[:html]
+      trusted_html value
+
+    elsif options[:thumbnail]
       content_tag :a, target: '_blank', 'ng-href' => value do
         content_tag :img, '', 'ng-src' => value
       end
@@ -24,9 +32,6 @@ module Deckhand::TemplatesHelper
       relation_name = Deckhand.config.relation_model_name(@model, name)
       ng_click = "showCard('#{relation_name}', item.#{name}.id)"
       content_tag :a, value, 'ng-click' => ng_click
-
-    elsif options[:html]
-      trusted_html value
 
     else
       value
