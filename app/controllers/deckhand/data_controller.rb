@@ -22,7 +22,9 @@ class Deckhand::DataController < Deckhand::BaseController
       render_json form.values
     when 'edit'
       edit_fields = params[:edit_fields] || model_config.fields_to_edit
-      render_json present(instance, [], edit_fields)
+      initial_values = present(instance, [], edit_fields)
+      # FIXME this and the implementation of form.values need to be merged
+      render_json Hash[*(initial_values.map {|k,v| [k, {value: v}]}.flatten)]
     else
       raise "unknown type: #{params[:type]}"
     end
