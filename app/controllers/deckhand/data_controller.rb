@@ -92,11 +92,14 @@ class Deckhand::DataController < Deckhand::BaseController
     @instance ||= Deckhand.config.models_by_name[params[:model]].find(params[:id])
   end
 
+  # this is a workaround for the way angular-file-upload works.
+  # it splits up top-level parameters into their own parts of the response
+  # and stringifies them in a way that Rails can't deal with automatically,
+  # so we put them into a subtree keyed with "non_file_params" and parse
+  # them here.
   def combine_params
-    # this is a workaround for the way angular-file-upload works.
-    # it splits up top-level parameters into their own parts of the response
-    # and stringifies them, so we move all the non-file fields down a level
-    # and parse them explicitly.
+    return unless params[:non_file_params]
+
     non_file_params = JSON.load(params[:non_file_params])
 
     # copy this first so we can load the instance
