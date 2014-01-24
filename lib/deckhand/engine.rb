@@ -5,6 +5,9 @@ module Deckhand
   class Engine < ::Rails::Engine
 
     config.to_prepare do
+      if Rails.env.development?
+        load Rails.root.join('config/initializers/deckhand.rb')
+      end
       Deckhand.config.run
     end
 
