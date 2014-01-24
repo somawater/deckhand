@@ -28,7 +28,13 @@ module Deckhand::Form
   end
 
   def values
-    Hash[*(inputs.map {|name, _| [name, send(name)] }.flatten)]
+    @values ||= inputs.reduce({}) do |h, (name, options)|
+      h[name] = {
+        value: send(name),
+        choices: (send(options[:choices]) if options[:choices])
+      }
+      h
+    end
   end
 
   def consume_params(params)

@@ -111,17 +111,20 @@ angular.module('controllers', ['ui.bootstrap'])
 .controller('ModalFormCtrl', ['$scope', '$modalInstance', '$upload', 'Model', 'context',
   function($scope, $modalInstance, $upload, Model, context) {
 
-  var inputs = [];
-
   $scope.item = context.item;
   $scope.title = context.title;
   $scope.form = {};
+  $scope.choicesForSelect = {};
 
-  Model.form(extend({id: $scope.item.id}, context.formParams), function(form) {
+  Model.getFormData(extend({id: $scope.item.id}, context.formParams), function(form) {
     Object.keys(form).forEach(function(key) {
       if (key.charAt(0) != '$') {
-        $scope.form[key] = form[key];
-        inputs.push(key);
+        var data = form[key];
+        $scope.form[key] = data.value;
+        if (data.choices) {
+          // FIXME this "form." prefix is weird
+          $scope.choicesForSelect['form.' + key] = data.choices;
+        }
       }
     });
   });

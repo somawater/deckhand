@@ -56,18 +56,27 @@ module Deckhand::TemplatesHelper
 
   def angular_input(name, options)
     args = {'ng-model' => name, 'class' => 'form-control'}
+
     if options[:type] == Boolean
       args['type'] = 'checkbox'
       args.delete('class')
+
     elsif options[:type] == :file
       args['type'] = 'file'
       args['ng-file-select'] = "onFileSelect($files, '#{name}')"
       args.delete('ng-model')
+
+    elsif options[:collection]
+      # nothing
     else
       args['type'] = 'text'
     end # TODO more types & HTML5 validators
 
-    if options[:editable] == {with: :ckeditor}
+    if options[:choices]
+      content_tag(:select, '', args) do
+        content_tag :option, '{{choice[0]}}', 'ng-repeat' => "choice in choicesForSelect['#{name}']", 'ng-value' => 'choice[1]'
+      end
+    elsif options[:editable] == {with: :ckeditor}
       args['ckeditor'] = true
       content_tag :textarea, '', args
     else
