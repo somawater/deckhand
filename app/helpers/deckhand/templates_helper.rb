@@ -51,7 +51,7 @@ module Deckhand::TemplatesHelper
   end
 
   def readable_method_name(name)
-    name.to_s.sub(/(_s|!)$/, '').gsub('_', ' ').split.map(&:capitalize).join(' ')
+    name.to_s.sub(/(_s|!)$/, '').gsub('_', ' ').capitalize
   end
 
   def angular_input(name, options)
