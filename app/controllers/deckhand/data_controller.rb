@@ -35,8 +35,7 @@ class Deckhand::DataController < Deckhand::BaseController
     model_config = Deckhand.config.for_model(instance.class)
 
     if model_config.has_action_form?(action)
-      form = model_config.action_form_class(action).new object: instance
-      form.consume_params(params[:form])
+      form = model_config.action_form_class(action).new params[:form].merge(object: instance)
       if form.valid?
         begin
           result = form.execute

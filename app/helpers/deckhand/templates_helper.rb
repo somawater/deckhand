@@ -58,7 +58,7 @@ module Deckhand::TemplatesHelper
   def angular_input(name, options)
     args = {'ng-model' => name, 'class' => 'form-control'}
 
-    if options[:type] == Boolean
+    if options[:type] == :boolean
       args['type'] = 'checkbox'
       args.delete('class')
 
