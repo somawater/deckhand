@@ -48,7 +48,7 @@ module Deckhand::TemplatesHelper
   end
 
   def show_action?(condition)
-    condition ? "{{item['#{condition}']}}" : 'true'
+    condition ? "item['#{condition}']" : 'true'
   end
 
   def readable_method_name(name)
