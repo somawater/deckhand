@@ -17,7 +17,7 @@ class Deckhand::Configuration::ModelDSL < Deckhand::Configuration::SimpleDSL
     end
   end
 
-  %w[search_on show action].each do |keyword|
+  %w[search_on show action edit].each do |keyword|
     define_method keyword do |*args, &block|
       keyword_with_options(keyword.to_sym, *args, &block)
     end

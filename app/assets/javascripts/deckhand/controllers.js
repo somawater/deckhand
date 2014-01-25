@@ -230,7 +230,7 @@ angular.module('controllers', ['ui.bootstrap'])
   };
 
   $scope.edit = function(name, options) {
-    if (options == true) options = {};
+    if (options == true || !options) options = {};
 
     var item = (options.nested ? $scope.item[name] : $scope.item),
       formParams = {type: 'edit', model: item._model},
