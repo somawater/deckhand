@@ -2,12 +2,13 @@
 
 A card-based admin interface.
 
+It's a Rails engine with a DSL that produces an Angular.js app for viewing and manipulating your domain objects.
 
 ## Requirements
 
-Tested with the latest Ruby (2.0). Other versions/VMs are untested but might work fine.
+Tested with the latest Ruby (2.0)
 
-Node, NPM and Browserify are required.
+Node.js, NPM and [Browserify](http://browserify.org) are required.
 
 ## Usage
 
@@ -21,101 +22,21 @@ gem 'deckhand', github: 'somawater/deckhand'
 ```ruby
 # config/initializers/deckhand.rb
 Deckhand.configure do
-
-  model User do
-    search_on :short_id, :exact
-    search_on :name, :contains
-    search_on :email, :contains
-
-    show :subscriptions
-    exclude :encrypted_password
-  end
-
-  model Subscription do
-    show :orders, :charges, :address
-  end
-
-  model Charge do
-    show :charged_amount_s, :orders
-  end
-
-  model ShippingAddress do
-    show :to_html_s
-  end
-
+  # examples forthcoming...
 end
 ```
 
+## Tips and troubleshooting
+
+### Auto-reloading in development
+
+Add the following to `config/initializers/deckhand.rb` or anywhere else in the Rails startup sequence:
 ```ruby
-# config/routes.rb
-mount Deckhand::Engine => 'dh', :as => :deckhand
+if Rails.env.development?
+  config_file = Rails.root.join('config/initializers/deckhand.rb')
+  Deckhand::Engine.config.watchable_files << config_file
+end
 ```
-
-```haml
--# app/views/deckhand/_templates.html.haml
-
-= deckhand_template :user, :search_result do
-  {{name}} &lt;{{email}}&gt;
-
-= deckhand_template :subscription, :search_result do
-  Subscription: {{short_id}}
-
-= deckhand_template :user, :card do
-  .panel.panel-primary
-    .panel-heading
-      %h3.panel-title
-        %span.right
-          signed up {{humanTime created_at}}
-          &nbsp;
-          %a.glyphicon.glyphicon-edit.primary(href="/admin/user/{{id}}/edit" target="_blank")
-        {{name}} &lt;{{email}}&gt;
-    .panel-body
-      {{subscriptions.length}} {{pluralize subscriptions.length 'subscription'}}:
-      %ul.comma-separated
-        {{#each subscriptions}}
-        %li
-          %a(data-model="subscription" data-id="{{id}}") {{short_id}}
-        {{/each}}
-
-= deckhand_template :subscription, :card do
-  .panel.panel-default
-    .panel-heading
-      %h3.panel-title
-        %span.right
-          created {{humanTime created_at}}
-          &nbsp;
-          %a.glyphicon.glyphicon-edit(href="/admin/subscription/{{id}}/edit" target="_blank")
-        Subscription {{short_id}}
-    .panel-body
-      .row
-        .col-sm-6
-          %p {{plan.name}}
-          %p
-            {{#if active}}
-            %strong.good active,
-            recurs {{humanTime next_recurrence_at}}
-            {{else}}
-            %strong.bad
-              inactive
-              {{#if hidden}}
-              and hidden
-              {{/if}}
-            {{/if}}
-          %p
-            {{charges.length}} {{pluralize charges.length 'charge'}},
-            {{orders.length}} {{pluralize orders.length 'order'}}
-        .col-sm-6
-          {{{address.to_html_s}}}
-
-```
-
-Notes for templates:
- * Bootstrap 3 is included.
- * `pluralize` and `humanTime` helpers are included.
- * Links with `data-model` and `data-id` will open a new card.
-
-
-## Troubleshooting
 
 ### Spork
 
@@ -125,3 +46,11 @@ Add this to the prefork block in `spec_helper.rb` ([why?](https://github.com/spo
 require 'deckhand'
 Spork.trap_method(Deckhand::Configuration, :run)
 ```
+
+### Heroku
+
+You may want to use [this Ruby buildpack](https://github.com/somawater/heroku-buildpack-ruby), which uses the newest version of Node.js according to [semver.io](http://semver.io). [ddollar's multi-buildpack](https://github.com/ddollar/heroku-buildpack-multi) is another option, which we haven't tested.
+
+----
+
+[Lawrence](http://github.com/levity) and [Matthias](http://github.com/natarius) at [Soma](https://www.drinksoma.com)
