@@ -3,29 +3,37 @@ Deckhand.configure do
   model_storage :dummy
   model_label :pretty_name, :name, :tag
 
-  model Foo do
+  model Participant do
     search_on :name, :email
-    search_on :short_id, :match => :exact
+    search_on :shortcode, :match => :exact
     search_scope :verified
 
-    show :email, :created_at
-    show :bars
-    show :nose, :hairy => false, :large => true, :editable => true
-    show(:virtual_field) { ok }
     label { "#{name} <#{email}>" }
-    action :explode, :if => :explosive?
+    show :email, :created_at
+    show :groups
+    show :twitter_handle, link_to: 'http://twitter.com/:value'
+    show :address, :delegate => :summary, :html => true, :editable => {nested: true}
+
+    action :promote, :if => :promotable?
   end
 
-  model Bar do
+  model Group do
+    search_on :name
+    show :name, :description
+    show :logo, thumbnail: true, editable: true
+    show :organizers, table: [:name, :email]
   end
 
-  model Baz do
-    search_on :recipient_email, :recipient_first_name, :recipient_last_name
-    show :giver, :recipient, :subscription, :coupon
+  model Campaign do
+    search_scope :active
+    show :name, :duration, :status
+    show :participants, table: [:name, :email, :last_active_at]
+    action :promote, :if => :promotable?
   end
 
-  model Quux do
-    show :lamppost, html: true
+  model Address do
+    show :summary, :html => true
+    edit :name, :street_1, :street_2, :city, :state, :postcode, :country
   end
 
 end

@@ -4,72 +4,70 @@ require File.dirname(__FILE__) + '/../../../support/example_config'
 describe Deckhand::Configuration::ModelConfig do
 
   before(:all) { Deckhand.config.run }
-  let(:foo_config) { Deckhand.config.for_model(Foo) }
+  subject { Deckhand.config.for_model(Participant) }
 
   context '#search_options' do
     it "reads 'search_on' and 'search_scope' keywords" do
-      foo_config.search_options.should == {
+      Deckhand.config.for_model(Participant).search_options.should == {
         scope: :verified,
         fields: [
           [:name, {}],
           [:email, {}],
-          [:short_id, {:match => :exact}]
+          [:shortcode, {:match => :exact}]
         ]
       }
-
     end
   end
 
   context '#fields_to_show' do
-    before do
-      Foo.stub(fields: {email: {}, created_at: {}, password: {}})
-    end
 
     it "reads 'show' keywords and options" do
-      fields_to_show = foo_config.fields_to_show
-      expect(fields_to_show.first(4)).to eq [
+      expect(Deckhand.config.for_model(Participant).fields_to_show).to eq [
         [:email, {}],
         [:created_at, {}],
-        [:bars, {}],
-        [:nose, {hairy: false, large: true, editable: true}]
+        [:groups, {}],
+        [:twitter_handle, {link_to: 'http://twitter.com/:value'}],
+        [:address, {delegate: :summary, html: true, editable: {nested: true}}]
       ]
-      last = fields_to_show.last
-      expect(last.first).to eq :virtual_field
-      expect(last.last).to be_kind_of Hash
-      expect(last.last[:block]).to be_kind_of Proc
     end
   end
 
   context '#fields_to_include' do
     it 'includes fields used as conditions for actions' do
-      expect(foo_config.fields_to_include.map(&:first)).to include :explosive?
+      fields_to_include = Deckhand.config.for_model(Participant).fields_to_include
+      expect(fields_to_include.map(&:first)).to include :promotable?
     end
   end
 
   context 'fields_to_edit' do
     before do
-      Foo.stub attachment_definitions: {nose: {}}
+      Group.stub attachment_definitions: {logo: {}}
     end
 
     it 'auto-detects Paperclip fields' do
-      Deckhand.config.attachment?(Foo, :nose).should be_true
-      nose_config = foo_config.fields_to_edit.detect {|name, options| name == :nose }
-      expect(nose_config.last[:type]).to eq :file
+      Deckhand.config.attachment?(Group, :logo).should be_true
+      fields_to_edit = Deckhand.config.for_model(Group).fields_to_edit
+      logo_config = fields_to_edit.detect {|x| x.first == :logo }.last
+      expect(logo_config[:type]).to eq :file
+    end
+
+    it 'excludes fields that have their own nested forms' do
+      Deckhand.config.for_model(Participant).fields_to_edit.map(&:first).should_not include :address
     end
   end
 
   context '#label' do
 
     before do
-      Bar.instance_eval { define_method(:tag) { 'bar' } }
+      Group.instance_eval { define_method(:name) { some_name } }
     end
 
     it 'uses a block defined for the model' do
-      expect(foo_config.label).to be_a Proc
+      expect(Deckhand.config.for_model(Participant).label).to be_a Proc
     end
 
     it 'uses a method from model_label if it exists on the model' do
-      expect(Deckhand.config.for_model(Bar).label).to eq :tag
+      expect(Deckhand.config.for_model(Group).label).to eq :name
     end
   end
 

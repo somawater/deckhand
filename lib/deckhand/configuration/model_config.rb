@@ -46,7 +46,9 @@ class Deckhand::Configuration::ModelConfig
 
   def fields_to_edit
     @fields_to_edit ||= begin
-      show_and_edit = @dsl.show.select {|name, options| options[:editable] }
+      show_and_edit = @dsl.show.select do |name, options|
+        options[:editable] && (!options[:editable].is_a?(Hash) || !options[:editable][:nested])
+      end
       edit_only = @dsl.edit || []
       (show_and_edit + edit_only).map do |name, options|
         options[:type] = :file if Deckhand.config.attachment?(@model, name)

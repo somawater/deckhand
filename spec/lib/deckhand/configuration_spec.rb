@@ -16,7 +16,7 @@ describe Deckhand::Configuration do
 
   context '#field_types' do
     it "sets type to 'html' when specified" do
-      Deckhand.config.field_types['Quux'][:lamppost] = :html
+      Deckhand.config.field_types['Participant'][:summary] = :html
     end
   end
 

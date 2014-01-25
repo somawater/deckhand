@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    deckhand (0.0.6)
+    deckhand (0.1.0)
       activesupport
       haml
       sprockets-browserify
