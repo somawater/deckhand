@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'deckhand/form'
 require File.dirname(__FILE__) + '/../../support/example_form'
 
 describe Deckhand::Form do

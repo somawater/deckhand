@@ -31,7 +31,6 @@ class Deckhand::Configuration::ModelConfig
   end
 
   def action_form_class(action)
-    require 'deckhand/form'
     model.const_get(action.to_s.camelize)
   end
 
@@ -48,7 +47,7 @@ class Deckhand::Configuration::ModelConfig
   def fields_to_edit
     @fields_to_edit ||= begin
       show_and_edit = @dsl.show.select {|name, options| options[:editable] }
-      edit_only = @dsl.edit
+      edit_only = @dsl.edit || []
       (show_and_edit + edit_only).map do |name, options|
         options[:type] = :file if Deckhand.config.attachment?(@model, name)
         [name, options]
