@@ -14,7 +14,7 @@ It's a Rails engine with a DSL that produces an Angular.js app for viewing and m
 * Automatic form validation
 * Search
 * Authentication (via [Devise](https://github.com/plataformatec/devise) or other)
-* User action history (internally or via [PaperTrail](https://github.com/airblade/paper_trail))
+* User action history
 * Supported ORMs
   * Mongoid
 
