@@ -42,7 +42,7 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
     fields.map do |field, options|
       case options[:match]
       when :exact
-        {field => term}
+        {field => /^#{Regexp.escape term}$/i}
       when :contains, nil
         {field => /#{Regexp.escape term}/i}
       end
