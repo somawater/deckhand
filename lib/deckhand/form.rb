@@ -7,9 +7,12 @@ class Deckhand::Form
   include ActiveModel::Validations::Callbacks
 
   class_attribute :inputs
-  self.inputs = {}
 
   attr_accessor :object
+
+  def self.inherited(subclass)
+    subclass.inputs = {}
+  end
 
   class << self
     def input(name, options = {})
