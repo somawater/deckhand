@@ -5,7 +5,7 @@ class Deckhand::DataController < Deckhand::BaseController
   delegate :present, :present_results, :to => :presenter
 
   def search
-    results = Deckhand::Search.new(params[:term]).results
+    results = Deckhand.config.model_storage.search(params[:term])
     render_json present_results(results)
   end
 

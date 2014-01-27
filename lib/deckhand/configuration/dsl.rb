@@ -22,11 +22,11 @@ class Deckhand::Configuration::DSL
     unless (class_name.constantize rescue nil)
       require "deckhand/model_storage/#{sym}"
     end
-    @config.global_config.model_storage = class_name.constantize.new
+    @config.model_storage = class_name.constantize.new
   end
 
   def plugins(&block)
-    @config.global_config.plugins = Deckhand::Configuration::SimpleDSL.new(singular: [:ckeditor], &block)
+    @config.plugins = Deckhand::Configuration::SimpleDSL.new(singular: [:ckeditor], &block)
   end
 
 end

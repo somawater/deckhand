@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Deckhand::Search do
+describe 'search' do
 
   before do
     Deckhand.configure do
@@ -20,7 +20,7 @@ describe Deckhand::Search do
 
   # this test depends upon Deckhand::ModelStorage::Dummy#search
   it 'searches across all models with specified search fields' do
-    Deckhand::Search.new('text!').results.should == [
+    Deckhand.config.model_storage.search('text!').should == [
       OpenStruct.new(model: Foo, text: 'text!', match_field: :foo, match_type: nil),
       OpenStruct.new(model: Foo, text: 'text!', match_field: :bar, match_type: nil),
       OpenStruct.new(model: Foo, text: 'text!', match_field: :baz, match_type: nil),

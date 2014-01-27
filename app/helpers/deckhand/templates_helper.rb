@@ -1,7 +1,7 @@
 module Deckhand::TemplatesHelper
 
-  def flat_fields
-    Deckhand.config.for_model(@model).fields_to_show(flat_only: true)
+  def model_config
+    @model_config ||= Deckhand.config.for_model(@model)
   end
 
   def angular_binding(item, name, options = {})
@@ -37,14 +37,6 @@ module Deckhand::TemplatesHelper
       value
     end
 
-  end
-
-  def table_fields
-    Deckhand.config.for_model(@model).fields_to_show.select {|name, options| options[:table] }
-  end
-
-  def actions
-    Deckhand.config.for_model(@model).actions
   end
 
   def show_action?(condition)

@@ -226,6 +226,6 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     Model.get({model: $scope.item._model, id: $scope.item.id}, function(newItem) {
       $scope.refreshItem(newItem);
     });
-  }
+  };
 
 }]);

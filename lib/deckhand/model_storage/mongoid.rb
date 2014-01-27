@@ -30,6 +30,10 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
     model.relations[name.to_s]
   end
 
+  def has_history?(model)
+    defined?(Mongoid::Audit::Trackable) && model.ancestors.include?(Mongoid::Audit::Trackable)
+  end
+
   protected
 
   def query(scope, term, fields)

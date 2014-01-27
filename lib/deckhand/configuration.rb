@@ -20,7 +20,7 @@ module Deckhand
   class Configuration
     include Singleton
 
-    attr_accessor :initializer_block, :models_config, :global_config
+    attr_accessor :initializer_block, :models_config, :global_config, :model_storage, :plugins
     attr_reader :models_by_name, :field_types
 
     def run
@@ -32,12 +32,10 @@ module Deckhand
       names = models_config.keys.map {|m| [m.to_s, m] }.flatten
       @models_by_name = Hash[*names]
 
-      if @model_storage = global_config.model_storage
-        setup_field_types
-      end
+      setup_field_types if model_storage
     end
 
-    delegate :relation?, :relation_model_name, :to => :@model_storage
+    delegate :field_type, :relation?, :relation_model_name, :to => :model_storage
 
     def reset
       self.models_config = self.global_config = nil
@@ -61,7 +59,7 @@ module Deckhand
     def setup_field_types
       @field_types = models_config.reduce({}) do |types, (model, config)|
         types[model.to_s] = config.fields_to_include.reduce({}) do |h, (name, options)|
-          h[name] = @model_storage.field_type(model, name); h
+          h[name] = field_type(model, name); h
         end
         types
       end

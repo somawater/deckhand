@@ -4,13 +4,15 @@
     %h3.panel-title
       %span.right
         %a.glyphicon.glyphicon-refresh(ng-click="refresh()")
+        - if model_config.has_history?
+          %a.glyphicon.glyphicon-book(ng-click="showHistory()")
         %a.glyphicon.glyphicon-pencil(ng-click="edit()")
         %a.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
       {{item._model}}: {{item._label}}
 
   .panel-body
     %dl.dl-horizontal
-      - flat_fields.each do |name, options|
+      - model_config.flat_fields.each do |name, options|
         %dt= options[:alias] || readable_method_name(name)
         - if options[:editable]
           %dd.editable(ng-click="edit('#{name}', #{options[:editable].to_json})")
@@ -19,24 +21,23 @@
         - else
           %dd= angular_binding 'item', name, options
 
-  - if table_fields.any?
-    - table_fields.each do |name, options|
-      %table.table(ng-show="item.#{name}.length > 0")
-        %thead
-          %tr
-            %th(colspan="#{options[:table].size}")
-              %h4
-                = readable_method_name name
-                ({{item.#{name}.length}})
-          %tr
-            - options[:table].each do |column|
-              %th= readable_method_name column
-        %tbody
-          %tr(ng-repeat="nested_item in item.#{name}")
-            - options[:table].each_with_index do |column, i|
-              %td= angular_binding 'nested_item', column, plural: name, link_to_item: i == 0
+  - model_config.table_fields.each do |name, options|
+    %table.table(ng-show="item.#{name}.length > 0")
+      %thead
+        %tr
+          %th(colspan="#{options[:table].size}")
+            %h4
+              = readable_method_name name
+              ({{item.#{name}.length}})
+        %tr
+          - options[:table].each do |column|
+            %th= readable_method_name column
+      %tbody
+        %tr(ng-repeat="nested_item in item.#{name}")
+          - options[:table].each_with_index do |column, i|
+            %td= angular_binding 'nested_item', column, plural: name, link_to_item: i == 0
 
   .panel-footer
-    - actions.each do |name, options|
+    - model_config.actions.each do |name, options|
       %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if])}")
         = options[:alias] || readable_method_name(name)

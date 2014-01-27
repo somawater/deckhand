@@ -22,6 +22,10 @@ class Deckhand::ModelStorage::Dummy < Deckhand::ModelStorage::Base
     nil
   end
 
+  def has_history?(model)
+    false
+  end
+
   def query(scope, term, fields)
     fields.map do |name, options|
       OpenStruct.new(model: scope, text: term, match_field: name, match_type: options[:match])

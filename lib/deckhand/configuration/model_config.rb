@@ -44,6 +44,14 @@ class Deckhand::Configuration::ModelConfig
     end
   end
 
+  def flat_fields
+    fields_to_show(flat_only: true)
+  end
+
+  def table_fields
+    fields_to_show(table_only: true)
+  end
+
   def fields_to_edit
     @fields_to_edit ||= begin
       show_and_edit = @dsl.show.select do |name, options|
@@ -55,6 +63,10 @@ class Deckhand::Configuration::ModelConfig
         [name, options]
       end
     end
+  end
+
+  def has_history?
+    Deckhand.config.model_storage.has_history?(model)
   end
 
   def actions

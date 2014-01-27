@@ -11,7 +11,7 @@ describe Deckhand::Configuration do
   end
 
   it 'reads model_storage' do
-    expect(config.global_config.model_storage).to be_kind_of Deckhand::ModelStorage::Dummy
+    expect(config.model_storage).to be_kind_of Deckhand::ModelStorage::Dummy
   end
 
   context '#field_types' do
