@@ -1,15 +1,7 @@
-var qs = require('querystring'),
-  extend = require('extend'),
-  union = require('./lib/union');
+var qs = require('querystring'), union = require('./lib/union');
 
-// TODO fancier error handling
-var handleError = function(response) {
-  alert('Error: ' + response.data.error);
-};
-
-angular.module('controllers', ['ui.bootstrap'])
-
-.controller('RootCtrl', ['$rootScope', 'Model', function($rootScope, Model) {
+Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
+  function($rootScope, Model, ModelStore) {
 
   $rootScope.cards = [];
   window.itemEntries = {};
@@ -19,47 +11,14 @@ angular.module('controllers', ['ui.bootstrap'])
     document.getElementById('cards').dispatchEvent(event);
   };
 
-  var findEntry = function(model, id) {
-    return (itemEntries[model] ? itemEntries[model][id] : null);
-  };
-
-  var register = function(item) {
-    var model = item._model, id = item.id;
-
-    if (!itemEntries[model])
-      itemEntries[model] = {};
-
-    if (!itemEntries[model][id])
-      itemEntries[model][id] = {card: false};
-
-    var entry = itemEntries[model][id];
-
-    if (entry.item) {
-      extend(true, entry.item, item);
-    } else {
-      entry.item = item;
-    }
-
-    Object.keys(item).forEach(function(field) {
-      var type = DeckhandGlobals.fieldTypes[item._model][field];
-      if (type == 'table') {
-        item[field].forEach(register);
-      } else if (type == 'relation' && item[field] && item[field]._model) {
-        register(item[field]);
-      }
-    });
-
-    return entry;
-  };
-
   $rootScope.showCard = function(model, id) {
-    var entry = findEntry(model, id);
+    var entry = ModelStore.find(model, id);
 
     if (entry && entry.card) {
       focusCard($rootScope.cards.indexOf(entry.item));
     } else {
       Model.get({model: model, id: id}, function(item) {
-        var entry = register(item, true);
+        var entry = ModelStore.register(item);
         entry.card = true;
         $rootScope.cards.unshift(entry.item);
         focusCard(0);
@@ -69,11 +28,11 @@ angular.module('controllers', ['ui.bootstrap'])
 
   $rootScope.removeCard = function(item) {
     $rootScope.cards.splice($rootScope.cards.indexOf(item), 1);
-    findEntry(item._model, item.id).card = false;
+    ModelStore.find(item._model, item.id).card = false;
   };
 
   $rootScope.refreshItem = function(newItem) {
-    var entry = register(newItem);
+    var entry = ModelStore.register(newItem);
     if (entry.card) {
       var index = $rootScope.cards.indexOf(entry.item);
       $rootScope.cards.splice(index, 1, entry.item); // trigger animation

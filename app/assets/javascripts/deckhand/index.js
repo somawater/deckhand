@@ -1,3 +1,5 @@
+window.extend = require('extend');
+
 var moment = require('moment'),
   scroll = require('scroll'),
   include = require('./lib/include');
@@ -9,23 +11,14 @@ require('./lib/angular-animate');
 require('./lib/angular-ui-bootstrap-0.10.0');
 require('./lib/angular-ui-bootstrap-tpls-0.10.0');
 require('./lib/angular-file-upload');
+
+window.Deckhand = angular.module('Deckhand',
+  ['ngResource', 'ngSanitize', 'ngAnimate', 'angularFileUpload', 'ui.bootstrap']);
+
 require('./controllers');
+require('./services');
 
-var Deckhand = angular.module('Deckhand', ['ngResource', 'ngSanitize', 'ngAnimate', 'controllers', 'angularFileUpload'])
-
-.factory('Search', ['$resource', function($resource) {
-  return $resource(DeckhandGlobals.searchPath);
-}])
-
-.factory('Model', ['$resource', function($resource) {
-  return $resource(DeckhandGlobals.showPath, null, {
-    act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'},
-    getFormData: {method: 'GET', url: DeckhandGlobals.showPath + '/form'},
-    update: {method: 'PUT', url: DeckhandGlobals.showPath}
-  });
-}])
-
-.directive('ckeditor', function() {
+Deckhand.directive('ckeditor', function() {
   var link = function(scope, element, attrs, ngModel) {
     var editor;
 
