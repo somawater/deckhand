@@ -1,5 +1,6 @@
 require 'active_support/core_ext/class/attribute'
 require 'active_model'
+require 'backport/active_model/model'
 
 class Deckhand::Form
   extend ActiveModel::Callbacks
