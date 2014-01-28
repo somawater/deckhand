@@ -64,7 +64,15 @@ Spork.trap_method(Deckhand::Configuration, :run)
 
 ### Heroku
 
-You may want to use [this Ruby buildpack](https://github.com/somawater/heroku-buildpack-ruby), which uses the newest version of Node.js according to [semver.io](http://semver.io). [ddollar's multi-buildpack](https://github.com/ddollar/heroku-buildpack-multi) is another option, which we haven't tested.
+You may want to use [this Ruby buildpack](https://github.com/somawater/heroku-buildpack-ruby), which uses the newest version of Node.js according to [semver.io](http://semver.io).
+
+Its as simple as creating your Heroku App like this:
+
+```ruby
+heroku create --stack cedar --buildpack https://github.com/somawater/heroku-buildpack-ruby.git#use_latest_stable_node_version
+```
+
+[ddollar's multi-buildpack](https://github.com/ddollar/heroku-buildpack-multi) is another option, which we haven't tested.
 
 ----
 
