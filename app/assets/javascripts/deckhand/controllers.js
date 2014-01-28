@@ -114,7 +114,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       data: {
         id: $scope.item.id,
         non_file_params: extend({form: $scope.form}, context.formParams)
-      }
+      },
     });
 
     $upload.upload(params).success(function(response) {
@@ -138,7 +138,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       if (fieldTypes[name] == 'lazy_table') {
         $scope.collapse[name] = true;
         $scope.lazyLoad[name] = true;
-      } else if (!item[name] || item[name].length == 0) {
+      } else if (fieldTypes[name] == 'table' && item[name].length == 0) {
         $scope.collapse[name] = true;
       }
     })

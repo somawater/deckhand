@@ -57,7 +57,7 @@ module Deckhand::TemplatesHelper
       args['ng-file-select'] = "onFileSelect($files, '#{name}')"
       args.delete('ng-model')
 
-    elsif options[:collection]
+    elsif options[:choices]
       # nothing
     else
       args['type'] = 'text'
