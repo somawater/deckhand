@@ -4,21 +4,6 @@ A card-based, user-centric admin interface.
 
 It's a Rails engine with a DSL that produces an Angular.js app for viewing and manipulating your domain objects.
 
-## Features
-
-* It's Fast
-* Access any data with ease
-* Custom actions
-* Custom wizards
-* Inline editing
-* Automatic form validation
-* Search
-* Authentication (via [Devise](https://github.com/plataformatec/devise) or other)
-* User action history
-* Supported ORMs
-  * Mongoid
-
-
 ## Requirements
 
 Tested with the latest Ruby (2.0)
