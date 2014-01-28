@@ -22,20 +22,20 @@
           %dd= angular_binding 'item', name, options
 
   - model_config.table_fields.each do |name, options|
-    %table.table(ng-show="item.#{name}.length > 0")
-      %thead
-        %tr
-          %th(colspan="#{options[:table].size}")
-            %h4
-              = readable_method_name name
-              ({{item.#{name}.length}})
-        %tr
-          - options[:table].each do |column|
-            %th= readable_method_name column
-      %tbody
-        %tr(ng-repeat="nested_item in item.#{name}")
-          - options[:table].each_with_index do |column, i|
-            %td= angular_binding 'nested_item', column, link_to_item: i == 0
+    %h4.table-title(ng-click="collapse['#{name}'] = !collapse['#{name}']" ng-show="item.#{name}.length > 0")
+      %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")
+      = readable_method_name name
+      ({{item.#{name}.length}})
+    %div(collapse="collapse['#{name}']" ng-show="item.#{name}.length > 0")
+      %table.table
+        %thead
+          %tr
+            - options[:table].each do |column|
+              %th= readable_method_name column
+        %tbody
+          %tr(ng-repeat="nested_item in item.#{name}")
+            - options[:table].each_with_index do |column, i|
+              %td= angular_binding 'nested_item', column, link_to_item: i == 0
 
   .panel-footer
     - model_config.actions.each do |name, options|

@@ -31,6 +31,27 @@ body {
 
 .panel {
   margin-bottom: 40px;
+
+  table {
+    th:first-child, td:first-child {
+      padding-left: 15px;
+    }
+  }
+}
+
+h4.table-title {
+  padding-left: 15px;
+  margin-top: 0;
+
+  .glyphicon {
+    transition: 0.4s;
+    font-size: 14px;
+  }
+
+  .glyphicon.collapsed {
+    -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+  }
 }
 
 .panel-heading {
