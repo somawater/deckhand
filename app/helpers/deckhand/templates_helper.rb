@@ -7,10 +7,10 @@ module Deckhand::TemplatesHelper
   def angular_binding(item, name, options = {})
 
     value = if options[:delegate]
-      "{{value(#{item}.#{name}, '#{options[:delegate]}')}}"
-    else
-      "{{value(#{item}, '#{name}')}}"
-    end
+              "{{value(#{item}.#{name}, '#{options[:delegate]}')}}"
+            else
+              "{{value(#{item}, '#{name}')}}"
+            end
 
     if options[:html]
       content_tag :div, '', 'ng-bind-html' => value.gsub(/^\{\{|\}\}$/, '')
@@ -67,6 +67,9 @@ module Deckhand::TemplatesHelper
       content_tag(:select, '', args) do
         content_tag :option, '{{choice[0]}}', 'ng-repeat' => "choice in choicesForSelect['#{name}']", 'ng-value' => 'choice[1]'
       end
+    elsif options[:editable] == {with: :textarea}
+      args['rows'] = 4
+      content_tag :textarea, '', args
     elsif options[:editable] == {with: :ckeditor}
       args['ckeditor'] = true
       content_tag :textarea, '', args
