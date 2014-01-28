@@ -136,7 +136,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       if (fieldTypes[name] == 'lazy_table') {
         $scope.collapse[name] = true;
         $scope.lazyLoad[name] = true;
-      } else if (item[name].length == 0) {
+      } else if (fieldTypes[name] == 'table' && item[name].length == 0) {
         $scope.collapse[name] = true;
       }
     })
