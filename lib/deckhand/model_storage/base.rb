@@ -5,7 +5,7 @@ class Deckhand::ModelStorage::Base
       next unless config.searchable?
 
       options = config.search_options
-      scope = model
+      scope = model.constantize
       scope = scope.send(options[:scope]) if options[:scope]
 
       query(scope, term, options[:fields])

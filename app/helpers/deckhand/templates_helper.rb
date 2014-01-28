@@ -27,7 +27,7 @@ module Deckhand::TemplatesHelper
       ng_click = "showCard(#{item}._model, #{item}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 
-    elsif model_config.relation?(name)
+    elsif Deckhand.config.relation?(@model, name)
       ng_click = "showCard(item.#{name}._model, item.#{name}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 

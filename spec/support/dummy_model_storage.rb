@@ -6,24 +6,12 @@ class Deckhand::ModelStorage::Dummy < Deckhand::ModelStorage::Base
     false
   end
 
-  def relation_model_name(model, name)
-    name
-  end
-
   def field_type(model, name)
     nil
   end
 
   def field(model, name)
     nil
-  end
-
-  def relation(model, name)
-    nil
-  end
-
-  def has_history?(model)
-    false
   end
 
   def query(scope, term, fields)

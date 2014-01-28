@@ -65,10 +65,6 @@ class Deckhand::Configuration::ModelConfig
     end
   end
 
-  def has_history?
-    Deckhand.config.model_storage.has_history?(model)
-  end
-
   def actions
     @dsl.action || []
   end
@@ -88,6 +84,11 @@ class Deckhand::Configuration::ModelConfig
 
   def table_field?(name)
     fields_to_show(table_only: true).map(&:first).include? name
+  end
+
+  def type_override(name)
+    field_conf = fields_to_show.detect {|n, options| n == name }
+    field_conf ? field_conf.last[:type] : nil
   end
 
 end

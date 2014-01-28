@@ -1,11 +1,9 @@
-.panel.panel-info(ng-controller="CardCtrl")
+.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item)")
 
   .panel-heading
     %h3.panel-title
       %span.right
         %a.glyphicon.glyphicon-refresh(ng-click="refresh()")
-        - if model_config.has_history?
-          %a.glyphicon.glyphicon-book(ng-click="showHistory()")
         %a.glyphicon.glyphicon-pencil(ng-click="edit()")
         %a.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
       {{item._label}}
@@ -22,11 +20,12 @@
           %dd= angular_binding 'item', name, options
 
   - model_config.table_fields.each do |name, options|
-    %h4.table-title(ng-click="collapse['#{name}'] = !collapse['#{name}']" ng-show="item.#{name}.length > 0")
+    %h4.table-title(ng-click="toggleTable('#{name}')")
       %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")
-      = readable_method_name name
-      ({{item.#{name}.length}})
-    %div(collapse="collapse['#{name}']" ng-show="item.#{name}.length > 0")
+      = options[:alias] || readable_method_name(name)
+      %span(ng-show="!lazyLoad['#{name}']") ({{item.#{name}.length}})
+
+    %div(collapse="collapse['#{name}']")
       %table.table
         %thead
           %tr

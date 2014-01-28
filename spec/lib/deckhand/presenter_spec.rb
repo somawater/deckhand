@@ -124,4 +124,47 @@ describe Deckhand::Presenter do
     end
   end
 
+  context 'with lazy-loaded tables' do
+    before do
+      Deckhand.configure do
+        model Foo do
+          show :bars, table: [:quuz], lazy_load: true
+        end
+
+        model Bar do
+          show :quuz, :quux
+        end
+      end
+      Deckhand.config.run
+    end
+
+    let(:bar) { Bar.new quuz: 1, quux: 2 }
+    let(:foo) { Foo.new bars: [bar] }
+
+    it "uses an empty array as a placeholder for the relation" do
+      h = Deckhand::Presenter.new.present(foo)
+      expect(h).to eq({
+        _model: 'Foo',
+        id: nil,
+        _label: nil,
+        bars: []
+      })
+    end
+
+    it 'loads the relation when eager_load is set' do
+      h = Deckhand::Presenter.new(eager_load: true).present(foo)
+      expect(h).to eq({
+        _model: 'Foo',
+        id: nil,
+        _label: nil,
+        bars: [{
+          _model: 'Bar',
+          id: nil,
+          _label: nil,
+          quuz: 1
+        }]
+      })
+    end
+  end
+
 end

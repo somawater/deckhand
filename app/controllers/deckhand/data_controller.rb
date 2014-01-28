@@ -10,12 +10,17 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def show
-    render_json present(instance)
+    fields = if params[:fields]
+      requested = params[:fields].split(',').compact.map(&:to_sym)
+      model_config.fields_to_show.select do |field, options|
+        requested.include?(field)
+      end
+    end
+
+    render_json present(instance, [], fields)
   end
 
   def form
-    model_config = Deckhand.config.for_model(instance.class)
-
     case params[:type]
     when 'action'
       form = model_config.action_form_class(params[:act]).new object: instance
@@ -32,7 +37,6 @@ class Deckhand::DataController < Deckhand::BaseController
 
   def act
     action = params[:act].to_sym
-    model_config = Deckhand.config.for_model(instance.class)
 
     if model_config.has_action_form?(action)
       form = model_config.action_form_class(action).new params[:form].merge(object: instance)
@@ -73,7 +77,7 @@ class Deckhand::DataController < Deckhand::BaseController
   private
 
   def presenter
-    Deckhand::Presenter.new
+    Deckhand::Presenter.new params.slice(:eager_load)
   end
 
   def render_json(data, status = :ok)
@@ -90,7 +94,11 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def instance
-    @instance ||= Deckhand.config.models_by_name[params[:model]].find(params[:id])
+    @instance ||= Deckhand.config.model_class(params[:model]).find(params[:id])
+  end
+
+  def model_config
+    @model_config ||= Deckhand.config.for_model(params[:model])
   end
 
   # this is a workaround for the way angular-file-upload works.

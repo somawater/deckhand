@@ -13,6 +13,7 @@ Deckhand.configure do
     show :groups
     show :twitter_handle, link_to: 'http://twitter.com/:value'
     show :address, :delegate => :summary, :html => true, :editable => {nested: true}
+    show :text_messages, table: [:created_at, :text], lazy_load: true
 
     action :promote, :if => :promotable?
   end
@@ -28,6 +29,7 @@ Deckhand.configure do
     search_scope :active
     show :name, :duration, :status
     show :participants, table: [:name, :email, :last_active_at]
+    show :random_group, type: :relation
     action :promote, :if => :promotable?
   end
 

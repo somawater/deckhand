@@ -21,7 +21,7 @@ module Deckhand
     include Singleton
 
     attr_accessor :initializer_block, :models_config, :global_config, :model_storage, :plugins
-    attr_reader :models_by_name, :field_types
+    attr_reader :field_types
 
     def run
       self.models_config = {}
@@ -29,24 +29,25 @@ module Deckhand
 
       DSL.new(self).instance_eval &initializer_block
 
-      names = models_config.keys.map {|m| [m.to_s, m] }.flatten
-      @models_by_name = Hash[*names]
-
       setup_field_types if model_storage
     end
 
-    delegate :field_type, :relation?, :relation_model_name, :to => :model_storage
+    delegate :field_type, :relation?, :to => :model_storage
 
     def reset
       self.models_config = self.global_config = nil
     end
 
+    def model_class(model)
+      models_config.keys.detect {|k| k == model }.constantize
+    end
+
     def for_model(model)
-      models_config[model]
+      models_config[model.to_s]
     end
 
     def has_model?(model)
-      models_by_name.keys.include? model.to_s
+      models_config.include? model.to_s
     end
 
     def attachment?(model, name)
@@ -58,8 +59,9 @@ module Deckhand
 
     def setup_field_types
       @field_types = models_config.reduce({}) do |types, (model, config)|
-        types[model.to_s] = config.fields_to_include.reduce({}) do |h, (name, options)|
-          h[name] = field_type(model, name); h
+        types[model] = config.fields_to_include.reduce({}) do |h, (name, options)|
+          h[name] = (options[:lazy_load] ? :lazy_table : field_type(model, name))
+          h
         end
         types
       end

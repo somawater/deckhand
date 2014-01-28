@@ -4,7 +4,7 @@ class Deckhand::TemplatesController < Deckhand::BaseController
   helper 'deckhand/templates'
 
   def index
-    @model = Deckhand.config.models_by_name[params[:model]]
+    @model = params[:model]
 
     case params[:type]
     when 'card'

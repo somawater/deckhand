@@ -27,8 +27,15 @@ describe Deckhand::Configuration::ModelConfig do
         [:created_at, {}],
         [:groups, {}],
         [:twitter_handle, {link_to: 'http://twitter.com/:value'}],
-        [:address, {delegate: :summary, html: true, editable: {nested: true}}]
+        [:address, {delegate: :summary, html: true, editable: {nested: true}}],
+        [:text_messages, {table: [:created_at, :text], lazy_load: true}]
       ]
+
+    end
+
+    it "sets the 'lazy_table' type for lazy-loaded relations" do
+      lazy_field_type = Deckhand.config.field_types['Participant'][:text_messages]
+      expect(lazy_field_type).to eq :lazy_table
     end
   end
 
@@ -54,6 +61,10 @@ describe Deckhand::Configuration::ModelConfig do
     it 'excludes fields that have their own nested forms' do
       Deckhand.config.for_model(Participant).fields_to_edit.map(&:first).should_not include :address
     end
+  end
+
+  it "reads the type option on 'show' keywords" do
+    Deckhand.config.for_model('Campaign').type_override(:random_group).should == :relation
   end
 
   context '#label' do

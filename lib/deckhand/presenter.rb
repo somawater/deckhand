@@ -1,14 +1,22 @@
 class Deckhand::Presenter
 
+  def initialize(options = {})
+    @options = options
+  end
+
   def present(obj, visited = [], fields_to_include = nil)
-    model = obj.class
+    model = obj.class.to_s
     return obj unless Deckhand.config.has_model? model
     return core_fields(obj) if visited.include?(obj)
 
     fields_to_include ||= Deckhand.config.for_model(model).fields_to_include(flat_only: visited.any?)
 
     fields_to_include.reduce(core_fields(obj)) do |hash, (field, options)|
-      val = obj.public_send(field)
+      if options.try(:[], :lazy_load) && !@options[:eager_load]
+        val = []
+      else
+        val = obj.public_send(field)
+      end
 
       if Deckhand.config.attachment?(model, field)
         val = val.blank? ? nil : val.url
@@ -20,7 +28,7 @@ class Deckhand::Presenter
         subfields_to_include = [options[:delegate]]
       end
 
-      hash[field] = if val.is_a?(Array)
+      hash[field] = if val.is_a?(Enumerable)
         val.map {|subval| present(subval, visited + [obj], subfields_to_include) }
       else
         present val, visited + [obj], subfields_to_include

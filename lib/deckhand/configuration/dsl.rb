@@ -10,7 +10,7 @@ class Deckhand::Configuration::DSL
   def model(model_class, &block)
     options = {model: model_class, label_defaults: @config.global_config.model_label}
     model_config = Deckhand::Configuration::ModelConfig.new(options, &block)
-    @config.models_config[model_class] = model_config
+    @config.models_config[model_class.to_s] = model_config
   end
 
   def model_label(*methods)

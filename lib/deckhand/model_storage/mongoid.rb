@@ -2,30 +2,23 @@ require 'deckhand/model_storage/base'
 
 class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
 
-  def relation?(model, name)
-    model.relations.include? name.to_s
-  end
-
   def field_type(model, name)
     if f = field(model, name)
       f.options[:type].to_s.underscore
     elsif Deckhand.config.for_model(model).table_field?(name)
       :table
-    elsif r = relation(model, name)
+    elsif relation?(model, name)
       :relation
     end
   end
 
   def field(model, name)
-    model.fields.detect {|f| f.first == name.to_s }.last rescue nil
+    model.constantize.fields.detect {|f| f.first == name.to_s }.last rescue nil
   end
 
-  def relation(model, name)
-    model.relations[name.to_s]
-  end
-
-  def has_history?(model)
-    defined?(Mongoid::Audit::Trackable) && model.ancestors.include?(Mongoid::Audit::Trackable)
+  def relation?(model, name)
+    model.constantize.relations.include?(name.to_s) ||
+      Deckhand.config.for_model(model).type_override(name) == :relation
   end
 
   protected
