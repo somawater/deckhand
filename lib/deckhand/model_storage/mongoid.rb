@@ -6,12 +6,6 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
     model.relations.include? name.to_s
   end
 
-  def relation_model_name(model, name)
-    relation(model, name).instance_eval do
-      self[:class_name] || self[:name].to_s.camelize
-    end
-  end
-
   def field_type(model, name)
     if f = field(model, name)
       f.options[:type].to_s.underscore

@@ -35,7 +35,7 @@
       %tbody
         %tr(ng-repeat="nested_item in item.#{name}")
           - options[:table].each_with_index do |column, i|
-            %td= angular_binding 'nested_item', column, plural: name, link_to_item: i == 0
+            %td= angular_binding 'nested_item', column, link_to_item: i == 0
 
   .panel-footer
     - model_config.actions.each do |name, options|

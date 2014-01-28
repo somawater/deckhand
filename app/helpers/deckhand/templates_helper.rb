@@ -24,13 +24,11 @@ module Deckhand::TemplatesHelper
       content_tag :a, value, target: '_blank', 'ng-href' => "{{substitute(#{item}, '#{name}', '#{options[:link_to]}')}}"
 
     elsif options[:link_to_item]
-      relation_name = Deckhand.config.relation_model_name(@model, options[:plural]).to_s.singularize
-      ng_click = "showCard('#{relation_name}', #{item}.id)"
+      ng_click = "showCard(#{item}._model, #{item}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 
-    elsif Deckhand.config.relation?(@model, name)
-      relation_name = Deckhand.config.relation_model_name(@model, name)
-      ng_click = "showCard('#{relation_name}', item.#{name}.id)"
+    elsif model_config.relation?(name)
+      ng_click = "showCard(item.#{name}._model, item.#{name}.id)"
       content_tag :a, value, 'ng-click' => ng_click
 
     else
