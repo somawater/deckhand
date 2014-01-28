@@ -1,4 +1,5 @@
 window.extend = require('extend');
+window.slice = require('slice-keys');
 
 var moment = require('moment'),
   scroll = require('scroll'),
