@@ -24,7 +24,11 @@ class Deckhand::DataController < Deckhand::BaseController
     case params[:type]
     when 'action'
       form = model_config.action_form_class(params[:act]).new object: instance
-      render_json form.values
+      render_json(
+          title: form.title,
+          prompt: form.prompt,
+          values: form.values
+      )
     when 'edit'
       edit_fields = params[:edit_fields] || model_config.fields_to_edit
       initial_values = present(instance, [], edit_fields)
@@ -43,10 +47,18 @@ class Deckhand::DataController < Deckhand::BaseController
       if form.valid?
         begin
           result = form.execute
-          render_json(
-            result: present(result),
-            changed: form.changed_objects.map {|obj| present(obj) }
-          )
+          if result
+            render_json(
+              result: present(result),
+              success: form.success,
+              warning: form.warning,
+              info: form.info,
+              notice: form.notice,
+              changed: form.changed_objects.map {|obj| present(obj) }
+            )
+          else
+            render_error form.error
+          end
         rescue
           render_error $!.message
         end
@@ -57,10 +69,14 @@ class Deckhand::DataController < Deckhand::BaseController
     elsif model_config.has_action?(action)
       # TODO: begin/rescue/end the public_send and return a status code
       result = instance.public_send(params[:act].to_sym)
-      render_json(
-        result: present(result),
-        changed: [present(instance)]
-      )
+      if result
+        render_json(
+          result: present(result),
+          changed: [present(instance)]
+        )
+      else
+        render_error form.error
+      end
     else
       render_error 'unknown action'
     end

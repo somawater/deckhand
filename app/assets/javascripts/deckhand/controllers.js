@@ -66,14 +66,16 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   function($scope, $modalInstance, $upload, Model, context) {
 
   $scope.item = context.item;
-  $scope.title = context.title;
   $scope.form = {};
   $scope.choicesForSelect = {};
 
   Model.getFormData(extend({id: $scope.item.id}, context.formParams), function(form) {
-    Object.keys(form).forEach(function(key) {
+    $scope.title = form.title || context.title;
+    $scope.prompt = form.prompt;
+
+    Object.keys(form.values).forEach(function(key) {
       if (key.charAt(0) != '$') {
-        var data = form[key];
+        var data = form.values[key];
         $scope.form[key] = data.value;
         if (data.choices) {
           // FIXME this "form." prefix is weird
@@ -112,7 +114,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       data: {
         id: $scope.item.id,
         non_file_params: extend({form: $scope.form}, context.formParams)
-      },
+      }
     });
 
     $upload.upload(params).success(function(response) {
@@ -136,7 +138,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       if (fieldTypes[name] == 'lazy_table') {
         $scope.collapse[name] = true;
         $scope.lazyLoad[name] = true;
-      } else if (item[name].length == 0) {
+      } else if (!item[name] || item[name].length == 0) {
         $scope.collapse[name] = true;
       }
     })
@@ -177,6 +179,11 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   var processResponse = function(response) {
+    $scope.success = response.success;
+    $scope.warning = response.warning;
+    $scope.info = response.info;
+    $scope.notice = response.notice;
+
     response.changed.forEach(function(item) {
       $scope.refreshItem(item);
     })
@@ -200,7 +207,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
           context: function() {
             return {
               item: item,
-              title: $filter('readableMethodName')(action),
+              title: item._label + ": " + $filter('readableMethodName')(action),
               formParams: formParams,
               verb: 'act'
             };
