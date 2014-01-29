@@ -166,7 +166,6 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     $scope.success = response.success;
     $scope.warning = response.warning;
     $scope.info = response.info;
-    $scope.notice = response.notice;
 
     response.changed.forEach(function(item) {
       $scope.refreshItem(item);

@@ -53,7 +53,6 @@ class Deckhand::DataController < Deckhand::BaseController
               success: form.success,
               warning: form.warning,
               info: form.info,
-              notice: form.notice,
               changed: form.changed_objects.map {|obj| present(obj) }
             )
           else

@@ -12,6 +12,7 @@ class Deckhand::Form
   attr_accessor :object
   attr_accessor :success, :info, :warning, :error
   alias_method :notice, :info
+  alias_method :notice=, :info=
 
   def self.inherited(subclass)
     subclass.inputs = {}
