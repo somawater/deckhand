@@ -7,10 +7,10 @@ module Deckhand::TemplatesHelper
   def angular_binding(item, name, options = {})
 
     value = if options[:delegate]
-              "{{value(#{item}.#{name}, '#{options[:delegate]}')}}"
-            else
-              "{{value(#{item}, '#{name}')}}"
-            end
+      "{{value(#{item}.#{name}, '#{options[:delegate]}')}}"
+    else
+      "{{value(#{item}, '#{name}')}}"
+    end
 
     if options[:html]
       content_tag :div, '', 'ng-bind-html' => value.gsub(/^\{\{|\}\}$/, '')
