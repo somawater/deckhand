@@ -12,6 +12,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   $rootScope.showCard = function(model, id) {
+    if (!id) return;
+
     var entry = ModelStore.find(model, id);
 
     if (entry && entry.card) {
@@ -124,8 +126,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 }])
 
-.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore',
-  function($scope, $filter, $modal, Model, ModelStore) {
+.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter',
+  function($scope, $filter, $modal, Model, ModelStore, FieldFormatter) {
 
   $scope.collapse = {};
   $scope.lazyLoad = {};
@@ -155,26 +157,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     }
   };
 
-  $scope.value = function(item, attr) {
-    var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
-    var value;
-    if (!fieldTypes) {
-      value = item[attr];
-    } else if (fieldTypes[attr] == 'time') {
-      value = $filter('humanTime')(item[attr]);
-    } else if (fieldTypes[attr] == 'relation') {
-      obj = item[attr];
-      value = (obj ? obj._label : 'none');
-    } else {
-      value = item[attr];
-    }
-    return value;
-  };
-
-  $scope.substitute = function(item, attr, string) {
-    var value = $scope.value(item, attr);
-    return string.replace(':value', value);
-  };
+  $scope.format = FieldFormatter.format;
+  $scope.substitute = FieldFormatter.substitute;
 
   var processResponse = function(response) {
     response.changed.forEach(function(item) {

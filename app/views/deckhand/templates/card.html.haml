@@ -15,9 +15,10 @@
         - if options[:editable]
           %dd.editable(ng-click="edit('#{name}', #{options[:editable].to_json})")
             %i.glyphicon.glyphicon-pencil.edit-icon
-            = angular_binding 'item', name, options
+            %dh-field(model=@model item="item" name=name options="#{options.to_json}")
         - else
-          %dd= angular_binding 'item', name, options
+          %dd
+            %dh-field(model=@model item="item" name=name options="#{options.to_json}")
 
   - model_config.table_fields.each do |name, options|
     %h4.table-title(ng-click="toggleTable('#{name}')")
@@ -34,7 +35,8 @@
         %tbody
           %tr(ng-repeat="nested_item in item.#{name}")
             - options[:table].each_with_index do |column, i|
-              %td= angular_binding 'nested_item', column, link_to_item: i == 0
+              %td
+                %dh-field(item="nested_item" name=column options="#{{link_to_item: i == 0}.to_json}")
 
   .panel-footer
     - model_config.actions.each do |name, options|

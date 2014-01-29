@@ -2,8 +2,7 @@ window.extend = require('extend');
 window.slice = require('slice-keys');
 
 var moment = require('moment'),
-  scroll = require('scroll'),
-  include = require('./lib/include');
+  scroll = require('scroll');
 
 require('angular');
 require('./lib/angular-resource');
@@ -18,39 +17,9 @@ window.Deckhand = angular.module('Deckhand',
 
 require('./controllers');
 require('./services');
+require('./directives');
 
-Deckhand.directive('ckeditor', function() {
-  var link = function(scope, element, attrs, ngModel) {
-    var editor;
-
-    var setupEditor = function() {
-      editor = CKEDITOR.replace(element[0]);
-
-      // the editor may have been loaded before the form data
-      scope.$watch(attrs.ngModel, function(value) {
-        if (value) {
-          setTimeout(function() { editor.setData(value); }, 0);
-        }
-      })
-
-      editor.on('change', function() {
-        ngModel.$setViewValue(editor.getData());
-      })
-    };
-
-    if (window.CKEDITOR) {
-      setupEditor();
-    } else if (DeckhandGlobals.ckeditor != '') {
-      include(DeckhandGlobals.ckeditor, function() {
-        setupEditor();
-      });
-    }
-  };
-
-  return {require: 'ngModel', link: link};
-})
-
-.filter('humanTime', function() {
+Deckhand.filter('humanTime', function() {
   return function(time) {
     return time ? moment(new Date(time)).fromNow() : 'never';
   }

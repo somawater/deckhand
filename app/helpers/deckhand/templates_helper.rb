@@ -4,39 +4,6 @@ module Deckhand::TemplatesHelper
     @model_config ||= Deckhand.config.for_model(@model)
   end
 
-  def angular_binding(item, name, options = {})
-
-    value = if options[:delegate]
-      "{{value(#{item}.#{name}, '#{options[:delegate]}')}}"
-    else
-      "{{value(#{item}, '#{name}')}}"
-    end
-
-    if options[:html]
-      content_tag :div, '', 'ng-bind-html' => value.gsub(/^\{\{|\}\}$/, '')
-
-    elsif options[:thumbnail]
-      content_tag :a, target: '_blank', 'ng-href' => value do
-        content_tag :img, '', 'ng-src' => value
-      end
-
-    elsif options[:link_to]
-      content_tag :a, value, target: '_blank', 'ng-href' => "{{substitute(#{item}, '#{name}', '#{options[:link_to]}')}}"
-
-    elsif options[:link_to_item]
-      ng_click = "showCard(#{item}._model, #{item}.id)"
-      content_tag :a, value, 'ng-click' => ng_click
-
-    elsif Deckhand.config.relation?(@model, name)
-      ng_click = "showCard(#{item}.#{name}._model, #{item}.#{name}.id)"
-      content_tag :a, value, 'ng-click' => ng_click
-
-    else
-      value
-    end
-
-  end
-
   def show_action?(condition)
     condition ? "item['#{condition}']" : 'true'
   end

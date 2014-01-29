@@ -52,4 +52,29 @@ Deckhand.factory('Search', ['$resource', function($resource) {
     register: register
   };
 
+}])
+
+.factory('FieldFormatter', ['$filter', function($filter) {
+  var format = function(item, attr) {
+    var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
+    var value;
+    if (!fieldTypes) {
+      value = item[attr];
+    } else if (fieldTypes[attr] == 'time') {
+      value = $filter('humanTime')(item[attr]);
+    } else if (fieldTypes[attr] == 'relation') {
+      obj = item[attr];
+      value = (obj ? obj._label : 'none');
+    } else {
+      value = item[attr];
+    }
+    return value;
+  };
+
+  var substitute = function(item, attr, string) {
+    var value = format(item, attr);
+    return string.replace(':value', value);
+  };
+
+  return {format: format, substitute: substitute};
 }]);
