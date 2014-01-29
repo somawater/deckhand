@@ -1,8 +1,10 @@
 .modal-header
-  %h3 {{item._label}}: {{title}}
+  %h3 {{title}}
 
 .modal-body
   .alert.alert-danger(ng-show="error") {{error}}
+  %span(ng-show="prompt") {{prompt}}
+
   %form.form-horizontal
     - @inputs.each do |name, options = {}|
       .form-group

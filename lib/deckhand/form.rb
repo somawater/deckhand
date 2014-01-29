@@ -10,6 +10,8 @@ class Deckhand::Form
   class_attribute :inputs
 
   attr_accessor :object
+  attr_accessor :success, :info, :warning, :error
+  alias_method :notice, :info
 
   def self.inherited(subclass)
     subclass.inputs = {}
@@ -54,6 +56,12 @@ class Deckhand::Form
 
   def changed_objects
     raise NotImplementedError
+  end
+
+  def title
+  end
+
+  def prompt
   end
 
   private
