@@ -1,4 +1,5 @@
-var include = require('./lib/include');
+var include = require('./lib/include'),
+  moment = require('moment');
 
 Deckhand.directive('ckeditor', function() {
   var link = function(scope, element, attrs, ngModel) {
@@ -31,6 +32,25 @@ Deckhand.directive('ckeditor', function() {
   return {require: 'ngModel', link: link};
 })
 
+.directive('dhTime', ['$timeout', function($timeout) {
+  function link(scope, element, attrs) {
+    scope.$watch('time', function(value) {
+      var time = value ? new Date(value) : null;
+      scope.shortTime = (time ? moment(time).fromNow() : 'never');
+      scope.fullTime = (time ? moment(time).format('MMM Do, YYYY h:mm:ss a Z') : 'never');
+      scope.shown = scope.shortTime;
+    })
+  };
+
+  return {
+    link: link,
+    scope: {time: '@'},
+    restrict: 'E',
+    replace: true,
+    template: '<span title="{{fullTime}}">{{shortTime}}</span>'
+  };
+}])
+
 .directive('dhField', ['FieldFormatter', '$rootScope', function(FieldFormatter, $rootScope) {
   function link(scope, element, attrs) {
     scope.name = attrs.name;
@@ -44,10 +64,13 @@ Deckhand.directive('ckeditor', function() {
   return {
     link: link,
     restrict: 'E',
-    scope: {item: '=item'},
+    scope: {item: '='},
     template: function(tElement, tAttrs) {
       // TODO pass options globally instead of to each item?
       var options = JSON.parse(tAttrs.options), value;
+
+      var types = DeckhandGlobals.fieldTypes[tAttrs.model];
+      var type = (types ? types[tAttrs.name] : null);
 
       if (options.delegate) {
         value = "{{format(item[name], '"+options.delegate+"')}}";
@@ -69,14 +92,14 @@ Deckhand.directive('ckeditor', function() {
       } else if (options.link_to_item) {
         return '<a ng-click="showCard(item._model, item.id)">'+value+'</a>';
 
+      } else if (type == 'relation') {
+        return '<a ng-click="showCard(item[name]._model, item[name].id)">'+value+'</a>';
+
+      } else if (type == 'time') {
+        return '<dh-time time="'+value+'"/>';
+
       } else {
-        var types = DeckhandGlobals.fieldTypes[tAttrs.model];
-        var type = (types ? types[tAttrs.name] : null);
-        if (type == 'relation') {
-          return '<a ng-click="showCard(item[name]._model, item[name].id)">'+value+'</a>';
-        } else {
-          return value;
-        }
+        return value;
       }
     }
   };

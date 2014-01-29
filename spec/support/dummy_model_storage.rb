@@ -2,10 +2,6 @@ require 'deckhand/model_storage/base'
 
 class Deckhand::ModelStorage::Dummy < Deckhand::ModelStorage::Base
 
-  def relation?(model, name)
-    false
-  end
-
   def field_type(model, name)
     nil
   end

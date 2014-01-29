@@ -60,8 +60,6 @@ Deckhand.factory('Search', ['$resource', function($resource) {
     var value;
     if (!fieldTypes) {
       value = item[attr];
-    } else if (fieldTypes[attr] == 'time') {
-      value = $filter('humanTime')(item[attr]);
     } else if (fieldTypes[attr] == 'relation') {
       obj = item[attr];
       value = (obj ? obj._label : 'none');

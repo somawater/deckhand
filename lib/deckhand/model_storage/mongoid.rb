@@ -16,6 +16,10 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
     model.constantize.fields.detect {|f| f.first == name.to_s }.last rescue nil
   end
 
+  def relation_model_name(model, name)
+    model.constantize.relations[name.to_s].try :class_name
+  end
+
   def relation?(model, name)
     model.constantize.relations.include?(name.to_s) ||
       Deckhand.config.for_model(model).type_override(name) == :relation

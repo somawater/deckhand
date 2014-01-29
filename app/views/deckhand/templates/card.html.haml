@@ -21,6 +21,9 @@
             %dh-field(model=@model item="item" name=name options="#{options.to_json}")
 
   - model_config.table_fields.each do |name, options|
+    -# FIXME just export all this type info to the client
+    - nested_model = Deckhand.config.model_storage.relation_model_name(@model, name)
+
     %h4.table-title(ng-click="toggleTable('#{name}')")
       %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")
       = options[:alias] || readable_method_name(name)
@@ -36,7 +39,7 @@
           %tr(ng-repeat="nested_item in item.#{name}")
             - options[:table].each_with_index do |column, i|
               %td
-                %dh-field(item="nested_item" name=column options="#{{link_to_item: i == 0}.to_json}")
+                %dh-field(model=nested_model item="nested_item" name=column options="#{{link_to_item: i == 0}.to_json}")
 
   .panel-footer
     - model_config.actions.each do |name, options|
