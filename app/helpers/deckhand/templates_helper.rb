@@ -15,15 +15,15 @@ module Deckhand::TemplatesHelper
   def angular_input(name, options)
     args = {'ng-model' => name, 'class' => 'form-control'}
 
-    if options[:type] == :boolean
+    if options[:model]
+      args['typeahead'] = "object for object in getObjectsTypeahead($viewValue, '#{options[:model]}') | filter:$viewValue"
+    elsif options[:type] == :boolean
       args['type'] = 'checkbox'
       args.delete('class')
-
     elsif options[:type] == :file
       args['type'] = 'file'
       args['ng-file-select'] = "onFileSelect($files, '#{name}')"
       args.delete('ng-model')
-
     elsif options[:choices]
       # nothing
     else

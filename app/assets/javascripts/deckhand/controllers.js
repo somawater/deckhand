@@ -64,8 +64,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 }])
 
-.controller('ModalFormCtrl', ['$scope', '$modalInstance', '$upload', 'Model', 'context',
-  function($scope, $modalInstance, $upload, Model, context) {
+.controller('ModalFormCtrl', ['$scope', '$modalInstance', '$upload', 'Model', 'context', 'Search',
+  function($scope, $modalInstance, $upload, Model, context, Search) {
 
   $scope.item = context.item;
   $scope.form = {};
@@ -124,6 +124,20 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     }).error(function(response) {
       $scope.error = response.error;
     });
+  };
+
+  $scope.getObjectsTypeahead = function(val, model) {
+      Search.query({term: val}, function(res) {
+          var objects = [];
+          angular.forEach(res, function(item){
+              if (item._model == model) {
+                  objects.push(item._label);
+              }
+          });
+          console.log("=====================");
+          console.log(objects);
+          return objects;
+      });
   };
 
 }])
