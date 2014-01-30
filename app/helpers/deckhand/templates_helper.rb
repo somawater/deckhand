@@ -34,6 +34,9 @@ module Deckhand::TemplatesHelper
       content_tag(:select, '', args) do
         content_tag :option, '{{choice[0]}}', 'ng-repeat' => "choice in choicesForSelect['#{name}']", 'ng-value' => 'choice[1]'
       end
+    elsif options[:editable] == {with: :textarea}
+      args['rows'] = 4
+      content_tag :textarea, '', args
     elsif options[:editable] == {with: :ckeditor}
       args['ckeditor'] = true
       content_tag :textarea, '', args
