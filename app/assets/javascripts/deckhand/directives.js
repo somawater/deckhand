@@ -74,11 +74,13 @@ Deckhand.directive('ckeditor', function() {
 
       if (options.delegate) {
         value = "{{format(item[name], '"+options.delegate+"')}}";
+      } else if (options.multiline) {
+        value = "{{format(item, name, 'multiline')}}";
       } else {
         value = "{{format(item, name)}}";
       }
 
-      if (options.html) {
+      if (options.html || options.multiline) {
         value = value.replace(/^{{|}}$/g, '');
         return '<div ng-bind-html="'+value+'"></div>';
 
