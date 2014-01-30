@@ -33,7 +33,7 @@ class Deckhand::DataController < Deckhand::BaseController
       edit_fields = params[:edit_fields] || model_config.fields_to_edit
       initial_values = present(instance, [], edit_fields)
       # FIXME this and the implementation of form.values need to be merged
-      render_json Hash[*(initial_values.map {|k,v| [k, {value: v}]}.flatten)]
+      render_json values: Hash[*(initial_values.map {|k,v| [k, {value: v}]}.flatten)]
     else
       raise "unknown type: #{params[:type]}"
     end
@@ -82,7 +82,8 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def update
-    if instance.update_attributes params[:form].except(:id)
+    # FIXME mongoid-specific
+    if instance.update_attributes params[:form].except(:id), without_protection: true
       render_json changed: [present(instance)]
     else
       render_error instance.errors.full_messages.join('; ')
