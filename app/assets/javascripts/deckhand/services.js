@@ -69,7 +69,7 @@ Deckhand.factory('Search', ['$resource', function($resource) {
     }
 
     if (modifier == 'multiline') {
-      value = value.replace(/\n/, '<br/>');
+      value = value.replace(/\r\n|\r|\n/g, '<br/>');
     }
 
     return value;
