@@ -10,14 +10,17 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def show
-    fields = if params[:fields]
-      requested = params[:fields].split(',').compact.map(&:to_sym)
+    fields = get_model_fields_to_show(params[:fields].split(',')) if params[:fields]
+    render_json present(instance, [], fields)
+  end
+
+  def get_model_fields_to_show(fields)
+    if fields
+      requested = fields.compact.map(&:to_sym)
       model_config.fields_to_show.select do |field, options|
         requested.include?(field)
       end
     end
-
-    render_json present(instance, [], fields)
   end
 
   def form
@@ -30,10 +33,20 @@ class Deckhand::DataController < Deckhand::BaseController
           values: form.values
       )
     when 'edit'
-      edit_fields = params[:edit_fields] || model_config.fields_to_edit
+      edit_fields = get_model_fields_to_show(params[:edit_fields]) || model_config.fields_to_edit
       initial_values = present(instance, [], edit_fields)
+
       # FIXME this and the implementation of form.values need to be merged
-      render_json Hash[*(initial_values.map {|k,v| [k, {value: v}]}.flatten)]
+      form_presentation = Hash.new { |hash, key| hash[key] = {} }
+      initial_values.each do |k, v|
+        if edit_fields.find {|edit| edit[0] == k }
+          form_presentation[:values][k] = {value: v}
+        else
+          form_presentation[k] = v
+        end
+      end
+
+      render_json form_presentation
     else
       raise "unknown type: #{params[:type]}"
     end
