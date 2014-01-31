@@ -15,6 +15,10 @@ body {
       top: 10px;
     }
   }
+
+  .glyphicon-search.loading {
+    opacity: 0.25;
+  }
 }
 
 [ng-click], #search-results li {
@@ -37,6 +41,10 @@ body {
       padding-left: 15px;
     }
   }
+}
+
+.list-group-item h4 {
+  margin-top: 0;
 }
 
 h4.table-title {
@@ -116,5 +124,11 @@ dl.dl-horizontal {
         }
       }
     }
+
+    img {
+      max-width: 100%;
+      margin: 5px 10px 5px 0;
+    }
+
   }
 }

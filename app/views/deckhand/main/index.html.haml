@@ -18,19 +18,14 @@
   .container
     .row
       .col-sm-4(ng-controller="SearchCtrl")
-        %form(ng-submit="search()")
-          .form-group
-            %i.glyphicon.glyphicon-search(ng-hide="term")
-            %i.glyphicon.glyphicon-remove(ng-show="term" ng-click="reset()")
-            %input#search-input.form-control(type="text" ng-model="term" autofocus)
+        .form-group
+          %i.glyphicon.glyphicon-search(ng-class="{loading: loading}")
+          %input#search-input.form-control(type="text" ng-model="result" autofocus
+            typeahead="result as result._label for result in search($viewValue)"
+            typeahead-loading="loading"
+            typeahead-template-url="typeahead-template"
+            typeahead-on-select="show()")
 
-        #search-results.list-group
-          %a.list-group-item(ng-repeat="result in results" ng-click="showCard(result._model, result.id)") {{result._label}}
-
-        %ul#no-results.list-group(ng-show="noResults")
-          %li.list-group-item No results
-
-        %h4(ng-show="cards.length > 0") Open cards
         #opened-cards.list-group
           %a.list-group-item(ng-repeat="item in cards" ng-click="showCard(item._model, item.id)")
             {{item._label}}
@@ -41,3 +36,6 @@
       #cards
         %div(ng-repeat="item in cards" ng-include="cardTemplate(item)")
 
+%script(type="text/ng-template" id="typeahead-template")
+  %a
+    %span {{match.label}}

@@ -49,17 +49,13 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 .controller('SearchCtrl', ['$scope', 'Search', 'Model', function($scope, Search, Model) {
 
-  $scope.search = function() {
-    $scope.noResults = false;
-    $scope.results = Search.query({term: $scope.term}, function(results) {
-      if (results.length == 0) $scope.noResults = true;
-    });
+  $scope.search = function(term) {
+    return Search.query({term: term}).$promise;
   };
 
-  $scope.reset = function() {
-    $scope.term = null;
-    $scope.results = [];
-    $scope.noResults = false;
+  $scope.show = function() {
+    $scope.showCard($scope.result._model, $scope.result.id);
+    $scope.result = null;
   };
 
 }])
