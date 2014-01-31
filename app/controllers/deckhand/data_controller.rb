@@ -17,7 +17,7 @@ class Deckhand::DataController < Deckhand::BaseController
       end
     end
 
-    render_json present(instance, [], fields)
+    render_json present(instance, fields)
   end
 
   def form
@@ -25,13 +25,13 @@ class Deckhand::DataController < Deckhand::BaseController
     when 'action'
       form = model_config.action_form_class(params[:act]).new object: instance
       render_json(
-          title: form.title,
-          prompt: form.prompt,
-          values: form.values
+        title: form.title,
+        prompt: form.prompt,
+        values: form.values
       )
     when 'edit'
       edit_fields = params[:edit_fields] || model_config.fields_to_edit
-      initial_values = present(instance, [], edit_fields)
+      initial_values = present(instance, edit_fields)
       # FIXME this and the implementation of form.values need to be merged
       render_json values: Hash[*(initial_values.map {|k,v| [k, {value: v}]}.flatten)]
     else

@@ -29,7 +29,7 @@ module Deckhand
 
       DSL.new(self).instance_eval &initializer_block
 
-      setup_field_types
+      setup_field_types if model_storage
     end
 
     def reset
