@@ -4,14 +4,13 @@ class Deckhand::Presenter
     @options = options
   end
 
-  def present(obj, visited = [], fields_to_include = nil)
+  def present(obj, fields = nil)
     model = obj.class.to_s
     return obj unless Deckhand.config.has_model? model
-    return core_fields(obj) if visited.include?(obj)
 
-    fields_to_include ||= Deckhand.config.for_model(model).fields_to_include(flat_only: visited.any?)
+    fields ||= Deckhand.config.for_model(model).fields_to_include
 
-    fields_to_include.reduce(core_fields(obj)) do |hash, (field, options)|
+    fields.reduce(core_fields(obj)) do |hash, (field, options)|
       if options.try(:[], :lazy_load) && !@options[:eager_load]
         val = []
       else
@@ -22,16 +21,18 @@ class Deckhand::Presenter
         val = val.blank? ? nil : val.url
       end
 
-      if options.try(:[], :table)
-        subfields_to_include = options[:table].map {|f| [f, {}] }
+      subfields = if options.try(:[], :table)
+        options[:table].map {|f| [f, {}] }
       elsif options.try(:[], :delegate)
-        subfields_to_include = [options[:delegate]]
+        [options[:delegate]]
+      else
+        []
       end
 
       hash[field] = if val.is_a?(Enumerable)
-        val.map {|subval| present(subval, visited + [obj], subfields_to_include) }
+        val.map {|subval| present(subval, subfields) }
       else
-        present val, visited + [obj], subfields_to_include
+        present val, subfields
       end
       hash
     end

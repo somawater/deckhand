@@ -43,7 +43,7 @@ describe Deckhand::Presenter do
       bar.foos = [foo]
     end
 
-    it 'prevents infinite loops' do
+    it 'does not cause infinite loops' do
       h = Deckhand::Presenter.new.present(foo)
       expect(h).to eq({
         _model: 'Foo',
@@ -53,14 +53,7 @@ describe Deckhand::Presenter do
           {
             _model: 'Bar',
             _label: 'bar',
-            id: 'bar',
-            foos: [
-              {
-                _model: 'Foo',
-                _label: 'foo',
-                id: 'foo'
-              }
-            ]
+            id: 'bar'
           }
         ]
       })
@@ -108,7 +101,7 @@ describe Deckhand::Presenter do
       })
     end
 
-    it "doesn't include table fields when nested" do
+    it "doesn't include non-core fields when nested" do
       h = Deckhand::Presenter.new.present(baz)
       h.should eq({
         _model: 'Baz',
@@ -117,8 +110,39 @@ describe Deckhand::Presenter do
         foo: {
           _model: 'Foo',
           _label: nil,
+          id: nil
+        }
+      })
+    end
+  end
+
+  context 'with delegation' do
+    before do
+      Deckhand.configure do
+        model Foo do
+          show :bar, delegate: :bonk
+        end
+
+        model Bar do
+          show :baz
+        end
+      end
+      Deckhand.config.run
+    end
+
+    let(:foo) { Foo.new bar: Bar.new(bonk: 5) }
+
+    it 'includes delegate fields when nested' do
+      h = Deckhand::Presenter.new.present(foo)
+      h.should eq({
+        _model: 'Foo',
+        _label: nil,
+        id: nil,
+        bar: {
+          _model: 'Bar',
+          _label: nil,
           id: nil,
-          thing: 'thing'
+          bonk: 5
         }
       })
     end
