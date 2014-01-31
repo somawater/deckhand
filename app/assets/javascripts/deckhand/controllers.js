@@ -110,12 +110,19 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     var filenames = Object.keys($scope.files);
     var files = filenames.map(function(name) { return $scope.files[name] });
 
+    // for typeahead selections, send only the instance's id to the server
+    var formData = {};
+    Object.keys($scope.form).forEach(function(key) {
+      var value = $scope.form[key];
+      formData[key] = (value && value.id ? value.id : value);
+    })
+
     extend(params, {
       fileFormDataName: filenames,
       file: files,
       data: {
         id: $scope.item.id,
-        non_file_params: extend({form: $scope.form}, context.formParams)
+        non_file_params: extend({form: formData}, context.formParams)
       }
     });
 
@@ -126,22 +133,10 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     });
   };
 
-  $scope.getObjectsTypeahead = function(val, model) {
-    // http://docs.angularjs.org/api/ng.$q
-    var defered = $q.defer();
-
-    Search.query({term: val}, function(res) {
-      var objects = [];
-      angular.forEach(res, function(item) {
-        if (item._model == model) {
-          objects.push(item);
-        }
-      });
-      return defered.resolve(objects);
-    });
-
-    return defered.promise;
+  $scope.search = function(val, model) {
+    return Search.query({term: val, model: model}).$promise;
   };
+
 }])
 
 .controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter',

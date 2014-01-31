@@ -22,3 +22,7 @@
 .modal-footer
   %button.btn.btn-default(ng-click="cancel()") cancel
   %button.btn.btn-primary(ng-click="submit()") continue
+
+%script(type="text/ng-template" id="typeahead-template")
+  %a
+    %span {{match.label}}

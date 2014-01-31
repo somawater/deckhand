@@ -1,7 +1,13 @@
 class Deckhand::ModelStorage::Base
 
-  def search(term)
-    Deckhand.config.models_config.map do |model, config|
+  def search(term, model = nil)
+    search_configs = if model
+      [[model, Deckhand.config.for_model(model)]]
+    else
+      Deckhand.config.models_config
+    end
+
+    search_configs.map do |model, config|
       next unless config.searchable?
 
       options = config.search_options

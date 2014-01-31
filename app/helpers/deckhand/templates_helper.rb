@@ -16,7 +16,8 @@ module Deckhand::TemplatesHelper
     args = {'ng-model' => name, 'class' => 'form-control'}
 
     if options[:model]
-      args['typeahead'] = "object as object._label for object in getObjectsTypeahead($viewValue, '#{options[:model]}')"
+      args['typeahead'] = "object as object._label for object in search($viewValue, '#{options[:model]}')"
+      args['typeahead-template-url'] = 'typeahead-template'
     elsif options[:type] == :boolean
       args['type'] = 'checkbox'
       args.delete('class')
