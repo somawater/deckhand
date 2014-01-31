@@ -16,7 +16,7 @@ module Deckhand::TemplatesHelper
     args = {'ng-model' => name, 'class' => 'form-control'}
 
     if options[:model]
-      args['typeahead'] = "object for object in getObjectsTypeahead($viewValue, '#{options[:model]}') | filter:$viewValue"
+      args['typeahead'] = "object for object in getObjectsTypeahead($viewValue, '#{options[:model]}')"
     elsif options[:type] == :boolean
       args['type'] = 'checkbox'
       args.delete('class')

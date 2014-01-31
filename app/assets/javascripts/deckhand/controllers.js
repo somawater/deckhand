@@ -127,7 +127,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   $scope.getObjectsTypeahead = function(val, model) {
-      Search.query({term: val}, function(res) {
+      var result = Search.query({term: val}, function(res) {
           var objects = [];
           angular.forEach(res, function(item){
               if (item._model == model) {
@@ -138,6 +138,9 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
           console.log(objects);
           return objects;
       });
+
+      console.log(result);
+      return result;
   };
 
 }])
