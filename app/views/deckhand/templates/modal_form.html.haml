@@ -14,6 +14,7 @@
               %label
                 = angular_input "form.#{name}", options
                 = readable_method_name name
+
         - else
           %label.col-sm-3.control-label= readable_method_name name
           .col-sm-9= angular_input "form.#{name}", options
@@ -21,3 +22,7 @@
 .modal-footer
   %button.btn.btn-default(ng-click="cancel()") cancel
   %button.btn.btn-primary(ng-click="submit()") continue
+
+%script(type="text/ng-template" id="typeahead-template")
+  %a
+    %span {{match.label}}

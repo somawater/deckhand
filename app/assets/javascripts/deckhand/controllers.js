@@ -64,8 +64,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 }])
 
-.controller('ModalFormCtrl', ['$scope', '$modalInstance', '$upload', 'Model', 'context',
-  function($scope, $modalInstance, $upload, Model, context) {
+.controller('ModalFormCtrl', ['$scope', '$q', '$modalInstance', '$upload', 'Model', 'context', 'Search',
+  function($scope, $q, $modalInstance, $upload, Model, context, Search) {
 
   $scope.item = context.item;
   $scope.form = {};
@@ -110,13 +110,20 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     var filenames = Object.keys($scope.files);
     var files = filenames.map(function(name) { return $scope.files[name] });
 
+    // for typeahead selections, send only the instance's id to the server
+    var formData = {};
+    Object.keys($scope.form).forEach(function(key) {
+      var value = $scope.form[key];
+      formData[key] = (value && value.id ? value.id : value);
+    })
+
     extend(params, {
       fileFormDataName: filenames,
       file: files,
       data: {
         id: $scope.item.id,
-        non_file_params: extend({form: $scope.form}, context.formParams)
-      },
+        non_file_params: extend({form: formData}, context.formParams)
+      }
     });
 
     $upload.upload(params).success(function(response) {
@@ -124,6 +131,10 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
     }).error(function(response) {
       $scope.error = response.error;
     });
+  };
+
+  $scope.search = function(val, model) {
+    return Search.query({term: val, model: model}).$promise;
   };
 
 }])
