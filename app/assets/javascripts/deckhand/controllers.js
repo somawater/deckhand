@@ -64,8 +64,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 }])
 
-.controller('ModalFormCtrl', ['$scope', '$modalInstance', '$upload', 'Model', 'context', 'Search',
-  function($scope, $modalInstance, $upload, Model, context, Search) {
+.controller('ModalFormCtrl', ['$scope', '$q', '$modalInstance', '$upload', 'Model', 'context', 'Search',
+  function($scope, $q, $modalInstance, $upload, Model, context, Search) {
 
   $scope.item = context.item;
   $scope.form = {};
@@ -116,7 +116,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       data: {
         id: $scope.item.id,
         non_file_params: extend({form: $scope.form}, context.formParams)
-      },
+      }
     });
 
     $upload.upload(params).success(function(response) {
@@ -127,22 +127,21 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   $scope.getObjectsTypeahead = function(val, model) {
-      var result = Search.query({term: val}, function(res) {
-          var objects = [];
-          angular.forEach(res, function(item){
-              if (item._model == model) {
-                  objects.push(item._label);
-              }
-          });
-          console.log("=====================");
-          console.log(objects);
-          return objects;
+    // http://docs.angularjs.org/api/ng.$q
+    var defered = $q.defer();
+
+    Search.query({term: val}, function(res) {
+      var objects = [];
+      angular.forEach(res, function(item) {
+        if (item._model == model) {
+          objects.push(item);
+        }
       });
+      return defered.resolve(objects);
+    });
 
-      console.log(result);
-      return result;
+    return defered.promise;
   };
-
 }])
 
 .controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter',
