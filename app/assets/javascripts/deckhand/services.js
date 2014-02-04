@@ -2,6 +2,43 @@ Deckhand.factory('Search', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.searchPath);
 }])
 
+// Angular-UI Bootstrap alert service for Angular.js
+// https://coderwall.com/p/r_bvhg
+.factory('AlertService', ['$rootScope', function($rootScope) {
+
+  var AlertService;
+
+  $rootScope.alerts = [];
+
+  var add = function(type, message) {
+    if (message === undefined || message == null) return;
+    $rootScope.alerts.push({type: type, message: message, close: function() {
+        AlertService.close(this);
+      }
+    });
+  }
+
+  var close = function(alert) {
+    this.closeIndex($rootScope.alerts.indexOf(alert));
+  }
+
+  var closeIndex = function(index) {
+    $rootScope.alerts.splice(index, 1);
+  }
+
+  var clear = function() {
+    $rootScope.alerts = [];
+  }
+
+  return AlertService = {
+    add: add,
+    close: close,
+    closeIndex: closeIndex,
+    clear: clear
+  };
+
+}])
+
 .factory('Model', ['$resource', function($resource) {
   return $resource(DeckhandGlobals.showPath, null, {
     act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'},

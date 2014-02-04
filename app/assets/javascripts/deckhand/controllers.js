@@ -135,8 +135,8 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 }])
 
-.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter',
-  function($scope, $filter, $modal, Model, ModelStore, FieldFormatter) {
+.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService',
+  function($scope, $filter, $modal, Model, ModelStore, FieldFormatter, AlertService) {
 
   $scope.collapse = {};
   $scope.lazyLoad = {};
@@ -170,9 +170,9 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   $scope.substitute = FieldFormatter.substitute;
 
   var processResponse = function(response) {
-    $scope.success = response.success;
-    $scope.warning = response.warning;
-    $scope.info = response.info;
+    AlertService.add('success', response.success);
+    AlertService.add('warning', response.warning);
+    AlertService.add('info', response.info);
 
     response.changed.forEach(function(item) {
       $scope.refreshItem(item);

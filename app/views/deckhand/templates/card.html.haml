@@ -9,10 +9,6 @@
       {{item._label}}
 
   .panel-body
-    .alert.alert-success(ng-show="success") {{success}}
-    .alert.alert-warning(ng-show="warning") {{warning}}
-    .alert.alert-info(ng-show="info") {{info}}
-
     %dl.dl-horizontal
       - model_config.flat_fields.each do |name, options|
         %dt= options[:alias] || readable_method_name(name)
