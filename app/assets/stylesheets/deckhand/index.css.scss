@@ -8,10 +8,6 @@ a {
   &:active {
     color: $pink;
   }
-
-  &:not(:active) {
-    transition: 500ms;
-  }
 }
 
 #search {
@@ -100,6 +96,9 @@ h4.table-title {
     }
   }
 
+  a:not(:active) {
+    transition: 500ms;
+  }
 }
 
 .modal-header h3 {
