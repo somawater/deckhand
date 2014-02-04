@@ -1,5 +1,17 @@
+$pink: rgb(255, 71, 199);
+
 body {
   padding-top: 1em;
+}
+
+a {
+  &:active {
+    color: $pink;
+  }
+
+  &:not(:active) {
+    transition: 500ms;
+  }
 }
 
 #search {
