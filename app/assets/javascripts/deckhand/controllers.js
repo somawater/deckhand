@@ -185,8 +185,6 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   $scope.act = function(item, action, options) {
-    if (!options) options = {confirm: 'Are you sure?'};
-
     if (options.form) {
       var formParams = {model: item._model, act: action, type: 'action'};
       var url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
@@ -206,11 +204,14 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       });
 
       modalInstance.result.then(processResponse);
-      return;
-    }
 
-    if (!('confirm' in options) || confirm(options.confirm)) {
-      Model.act({model: item._model, id: item.id, act: action}, processResponse);
+    } else {
+      if (!options.hasOwnProperty('confirm')) {
+        options.confirm = "Are you sure?";
+      }
+      if (!options.confirm || confirm(options.confirm)) {
+        Model.act({model: item._model, id: item.id, act: action}, processResponse);
+      }
     }
   };
 
