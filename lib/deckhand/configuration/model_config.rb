@@ -70,8 +70,12 @@ class Deckhand::Configuration::ModelConfig
   end
 
   def fields_to_include(options = {})
-    action_conditions = actions.map {|a| a.last[:if] }.compact.map {|f| [f, {}] }
-    fields_to_show(options) + action_conditions # TODO de-duplicate
+    @fields_to_include ||= fields_to_show(options).dup.tap do |fields|
+      names = fields.map(&:first)
+      actions.map {|a| a.last[:if] }.compact.each do |action|
+        fields << [action, {}] unless names.include?(action)
+      end
+    end
   end
 
   def searchable?
@@ -89,6 +93,10 @@ class Deckhand::Configuration::ModelConfig
   def type_override(name)
     field_conf = fields_to_show.detect {|n, options| n == name }
     field_conf ? field_conf.last[:type] : nil
+  end
+
+  def field_options(name)
+    fields_to_include.detect {|n, _| n == name }.try :last
   end
 
 end
