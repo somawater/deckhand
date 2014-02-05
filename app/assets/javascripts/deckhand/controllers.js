@@ -135,20 +135,19 @@ Deckhand.app.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
 }])
 
-.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService',
-  function($scope, $filter, $modal, Model, ModelStore, FieldFormatter, AlertService) {
+.controller('CardCtrl', ['$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService', 'ModelConfig',
+  function($scope, $filter, $modal, Model, ModelStore, FieldFormatter, AlertService, ModelConfig) {
 
   $scope.collapse = {};
   $scope.lazyLoad = {};
 
   $scope.init = function(item) {
-    var fieldTypes = Deckhand.fieldTypes[item._model];
-    Object.keys(fieldTypes).forEach(function(name) {
-      if (fieldTypes[name] == 'lazy_table') {
-        $scope.collapse[name] = true;
-        $scope.lazyLoad[name] = true;
-      } else if (fieldTypes[name] == 'table' && item[name].length == 0) {
-        $scope.collapse[name] = true;
+    ModelConfig.tableFields(item._model).forEach(function(field) {
+      if (field.lazy_load) {
+        $scope.collapse[field.name] = true;
+        $scope.lazyLoad[field.name] = true;
+      } else if (field.table && item[field.name].length == 0) {
+        $scope.collapse[field.name] = true;
       }
     })
   };

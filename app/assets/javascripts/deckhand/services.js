@@ -47,7 +47,7 @@ Deckhand.app.factory('Search', ['$resource', function($resource) {
   });
 }])
 
-.factory('ModelStore', [function() {
+.factory('ModelStore', ['ModelConfig', function(ModelConfig) {
 
   window.store = {};
 
@@ -68,12 +68,14 @@ Deckhand.app.factory('Search', ['$resource', function($resource) {
       entry.item = item;
     }
 
-    Object.keys(item).forEach(function(field) {
-      var type = Deckhand.fieldTypes[item._model][field];
-      if (type == 'table') {
-        item[field].forEach(register);
-      } else if (type == 'relation' && item[field] && item[field]._model) {
-        register(item[field]);
+    Object.keys(item).forEach(function(name) {
+      var field = ModelConfig.field(item._model, name);
+      if (!field) return;
+
+      if (field.table) {
+        item[name].forEach(register);
+      } else if (field.type == 'relation' && item[name] && item[name]._model) {
+        register(item[name]);
       }
     });
 
@@ -91,14 +93,12 @@ Deckhand.app.factory('Search', ['$resource', function($resource) {
 
 }])
 
-.factory('FieldFormatter', [function() {
+.factory('FieldFormatter', ['ModelConfig', function(ModelConfig) {
   var format = function(item, attr, modifier) {
-    var fieldTypes = Deckhand.fieldTypes[item._model];
+    var type = ModelConfig.type(item._model, attr);
     var value;
 
-    if (!fieldTypes) {
-      value = item[attr];
-    } else if (fieldTypes[attr] == 'relation') {
+    if (type == 'relation') {
       obj = item[attr];
       value = (obj ? obj._label : 'none');
     } else {
@@ -118,4 +118,30 @@ Deckhand.app.factory('Search', ['$resource', function($resource) {
   };
 
   return {format: format, substitute: substitute};
+}])
+
+.factory('ModelConfig', [function() {
+
+  var field = function(model, name) {
+    if (!Deckhand.models[model]) return null;
+    return Deckhand.models[model][name];
+  }
+
+  var type = function(model, name) {
+    var f = field(model, name);
+    return (f ? f.type : null);
+  };
+
+  var tableFields = function(model) {
+    var modelConfig = Deckhand.models[model];
+    if (!modelConfig) return [];
+    return Object.keys(modelConfig).filter(function(name) {
+      return modelConfig.hasOwnProperty(name);
+    }).map(function(name) {
+      return modelConfig[name];
+    });
+  };
+
+  return {field: field, type: type, tableFields: tableFields};
 }]);
+

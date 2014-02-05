@@ -9,10 +9,12 @@ class Deckhand::Configuration::ModelDSL < Deckhand::Configuration::SimpleDSL
       @store[key] ||= []
       if args.last.is_a?(Hash)
         options = args.last
-        args[0..-2].each {|a| @store[key] << [a, options] }
+        args[0..-2].each {|a| @store[key] << [a, options.dup] }
       else
-        options = block ? {block: block} : {}
-        args.each {|a| @store[key] << [a, options] }
+        args.each do |a|
+          options = block ? {block: block} : {}
+          @store[key] << [a, options]
+        end
       end
     end
   end

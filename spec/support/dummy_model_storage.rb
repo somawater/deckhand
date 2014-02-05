@@ -3,7 +3,12 @@ require 'deckhand/model_storage/base'
 class Deckhand::ModelStorage::Dummy < Deckhand::ModelStorage::Base
 
   def field_type(model, name)
-    nil
+    case name
+    when :email
+      'string'
+    else
+      nil
+    end
   end
 
   def field(model, name)

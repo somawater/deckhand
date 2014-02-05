@@ -35,12 +35,16 @@ class Deckhand::Configuration::ModelConfig
   end
 
   def fields_to_show(options = {})
+    @fields_to_show ||= @dsl.show.each do |name, options|
+      complete_options(name, options)
+    end
+
     if options[:flat_only]
-      @dsl.show.reject {|name, options| options[:table] }
+      @fields_to_show.reject {|name, options| options[:table] }
     elsif options[:table_only]
-      @dsl.show.select {|name, options| options[:table] }
+      @fields_to_show.select {|name, options| options[:table] }
     else
-      @dsl.show
+      @fields_to_show
     end
   end
 
@@ -54,7 +58,7 @@ class Deckhand::Configuration::ModelConfig
 
   def fields_to_edit
     @fields_to_edit ||= begin
-      show_and_edit = @dsl.show.select do |name, options|
+      show_and_edit = fields_to_show.select do |name, options|
         options[:editable] && (!options[:editable].is_a?(Hash) || !options[:editable][:nested])
       end
       edit_only = @dsl.edit || []
@@ -69,12 +73,13 @@ class Deckhand::Configuration::ModelConfig
     @dsl.action || []
   end
 
-  def fields_to_include(options = {})
-    @fields_to_include ||= fields_to_show(options).dup.tap do |fields|
+  def fields_to_include
+    @fields_to_include ||= fields_to_show.dup.tap do |fields|
       names = fields.map(&:first)
       actions.map {|a| a.last[:if] }.compact.each do |action|
         fields << [action, {}] unless names.include?(action)
       end
+      fields.each {|name, options| complete_options(name, options) }
     end
   end
 
@@ -86,17 +91,28 @@ class Deckhand::Configuration::ModelConfig
     {scope: @dsl.search_scope, fields: @dsl.search_on}
   end
 
-  def table_field?(name)
-    fields_to_show(table_only: true).map(&:first).include? name
-  end
-
-  def type_override(name)
-    field_conf = fields_to_show.detect {|n, options| n == name }
-    field_conf ? field_conf.last[:type] : nil
-  end
-
   def field_options(name)
     fields_to_include.detect {|n, _| n == name }.try :last
+  end
+
+  def as_json(*args)
+    Hash[fields_to_include]
+  end
+
+  private
+
+  def complete_options(name, options)
+    unless options.include? :type
+      options[:type] = if options[:class_name]
+        :relation
+      else
+        Deckhand.config.model_storage.field_type @model, name
+      end
+    end
+
+    unless options.include? :name
+      options[:name] = name
+    end
   end
 
 end

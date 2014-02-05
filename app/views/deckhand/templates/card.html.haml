@@ -22,7 +22,7 @@
 
   - model_config.table_fields.each do |name, options|
     -# FIXME just export all this type info to the client
-    - nested_model = Deckhand.config.model_storage.relation_class_name(@model, name)
+    - nested_model = Deckhand.config.model_storage.relation_class_name(@model.constantize, name)
 
     %h4.table-title(ng-click="toggleTable('#{name}')")
       %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")

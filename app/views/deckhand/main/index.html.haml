@@ -1,15 +1,11 @@
 - content_for :head do
-  = stylesheet_link_tag 'deckhand/bootstrap-3.0.3/css/bootstrap'
-  = stylesheet_link_tag 'deckhand'
-  = stylesheet_link_tag 'deckhand/theme'
-
   :javascript
     window.Deckhand = {
       searchPath: '#{deckhand.search_data_path}',
       showPath: '#{deckhand.data_path}',
       templatePath: '#{deckhand.templates_path}',
       ckeditor: "#{Deckhand.config.plugins.ckeditor}",
-      fieldTypes: #{Deckhand.config.field_types.to_json}
+      models: #{Deckhand.config.models_config.to_json}
     };
 
   = javascript_include_tag 'deckhand/index'

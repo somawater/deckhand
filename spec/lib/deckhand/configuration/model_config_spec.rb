@@ -21,21 +21,16 @@ describe Deckhand::Configuration::ModelConfig do
 
   context '#fields_to_show' do
 
-    it "reads 'show' keywords and options" do
+    it "reads 'show' keywords and options, adding types and names" do
       expect(Deckhand.config.for_model(Participant).fields_to_show).to eq [
-        [:email, {}],
-        [:created_at, {}],
-        [:groups, {}],
-        [:twitter_handle, {link_to: 'http://twitter.com/:value'}],
-        [:address, {delegate: :summary, html: true, editable: {nested: true}}],
-        [:text_messages, {table: [:created_at, :text], lazy_load: true}]
+        [:email, {type: 'string', name: :email}],
+        [:created_at, {type: nil, name: :created_at}],
+        [:groups, {type: nil, name: :groups}],
+        [:twitter_handle, {link_to: 'http://twitter.com/:value', type: nil, name: :twitter_handle}],
+        [:address, {delegate: :summary, html: true, editable: {nested: true}, type: nil, name: :address}],
+        [:text_messages, {table: [:created_at, :text], lazy_load: true, type: nil, name: :text_messages}]
       ]
 
-    end
-
-    it "sets the 'lazy_table' type for lazy-loaded relations" do
-      lazy_field_type = Deckhand.config.field_types['Participant'][:text_messages]
-      expect(lazy_field_type).to eq :lazy_table
     end
   end
 
@@ -61,10 +56,6 @@ describe Deckhand::Configuration::ModelConfig do
     it 'excludes fields that have their own nested forms' do
       Deckhand.config.for_model(Participant).fields_to_edit.map(&:first).should_not include :address
     end
-  end
-
-  it "reads the type option on 'show' keywords" do
-    Deckhand.config.for_model('Campaign').type_override(:random_group).should == :relation
   end
 
   context '#label' do

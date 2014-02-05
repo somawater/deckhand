@@ -4,26 +4,19 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
 
   def field_type(model, name)
     if f = field(model, name)
-      f.options[:type].to_s.underscore
-    elsif Deckhand.config.for_model(model).table_field?(name)
-      :table
-    elsif relation?(model, name)
+      type = f.options[:type]
+      type ? type.to_s.underscore : nil
+    elsif model.relations.include?(name.to_s)
       :relation
     end
   end
 
   def field(model, name)
-    model.constantize.fields.detect {|f| f.first == name.to_s }.last rescue nil
+    model.fields.detect {|f| f.first == name.to_s }.last rescue nil
   end
 
   def relation_class_name(model, name)
-    Deckhand.config.for_model(model).field_options(name).try(:[], :class_name) or
-      model.constantize.relations[name.to_s].try :class_name
-  end
-
-  def relation?(model, name)
-    model.constantize.relations.include?(name.to_s) or
-      Deckhand.config.for_model(model).type_override(name) == :relation
+    model.relations[name.to_s].try :class_name
   end
 
   protected

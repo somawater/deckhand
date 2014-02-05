@@ -28,8 +28,6 @@ module Deckhand
       self.global_config = OpenStruct.new(model_label: [:id])
 
       DSL.new(self).instance_eval &initializer_block
-
-      setup_field_types if model_storage
     end
 
     def reset
@@ -51,18 +49,6 @@ module Deckhand
     def attachment?(model, name)
       # this is specific to Paperclip
       model.respond_to?(:attachment_definitions) and model.attachment_definitions.try(:include?, name)
-    end
-
-    private
-
-    def setup_field_types
-      @field_types = models_config.reduce({}) do |types, (model, config)|
-        types[model] = config.fields_to_include.reduce({}) do |h, (name, options)|
-          h[name] = (options[:lazy_load] ? :lazy_table : model_storage.field_type(model, name))
-          h
-        end
-        types
-      end
     end
 
   end

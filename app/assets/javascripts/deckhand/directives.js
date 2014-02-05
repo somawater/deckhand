@@ -51,7 +51,9 @@ Deckhand.app.directive('ckeditor', function() {
   };
 }])
 
-.directive('dhField', ['FieldFormatter', '$rootScope', function(FieldFormatter, $rootScope) {
+.directive('dhField', ['FieldFormatter', '$rootScope', 'ModelConfig',
+  function(FieldFormatter, $rootScope, ModelConfig) {
+
   function link(scope, element, attrs) {
     scope.name = attrs.name;
     scope.format = FieldFormatter.format;
@@ -64,9 +66,7 @@ Deckhand.app.directive('ckeditor', function() {
   function template(tElement, tAttrs) {
     // TODO pass options globally instead of to each item?
     var options = JSON.parse(tAttrs.options), value;
-
-    var types = Deckhand.fieldTypes[tAttrs.model];
-    var type = (types ? types[tAttrs.name] : null);
+    var type = ModelConfig.type(tAttrs.model, tAttrs.name);
 
     if (options.delegate) {
       value = "{{format(item[name], '"+options.delegate+"')}}";

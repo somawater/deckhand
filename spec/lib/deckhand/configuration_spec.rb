@@ -14,10 +14,4 @@ describe Deckhand::Configuration do
     expect(config.model_storage).to be_kind_of Deckhand::ModelStorage::Dummy
   end
 
-  context '#field_types' do
-    it "sets type to 'html' when specified" do
-      Deckhand.config.field_types['Participant'][:summary] = :html
-    end
-  end
-
 end
