@@ -37,7 +37,12 @@ describe Deckhand::Configuration::ModelConfig do
   context '#fields_to_include' do
     it 'includes fields used as conditions for actions' do
       fields_to_include = Deckhand.config.for_model(Participant).fields_to_include
-      expect(fields_to_include.map(&:first)).to include :promotable?
+      expect(fields_to_include).to include [:promotable?, {type: nil, name: :promotable?}]
+    end
+
+    it 'includes fields used in tables by related models' do
+      fields_to_include = Deckhand.config.for_model(Participant).fields_to_include
+      expect(fields_to_include).to include [:last_active_at, {type: nil, name: :last_active_at}]
     end
   end
 

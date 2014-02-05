@@ -1,9 +1,10 @@
 require 'deckhand/configuration/model_dsl'
 
 class Deckhand::Configuration::ModelConfig
-  attr_reader :model
+  attr_reader :model, :fields_to_show, :fields_to_include
 
   def initialize(options = {}, &block)
+
     default_options = {
       singular: [:label, :fields_to_show, :search_scope],
       defaults: {show: [], exclude: []}
@@ -11,6 +12,20 @@ class Deckhand::Configuration::ModelConfig
     @label_defaults = options.delete(:label_defaults)
     @model = options.delete(:model)
     @dsl = Deckhand::Configuration::ModelDSL.new(default_options.merge(options), &block)
+
+    @fields_to_show = @dsl.show.each do |name, options|
+      complete_options(name, options)
+    end
+
+    @fields_to_include = fields_to_show.dup.tap do |fields|
+      names = fields.map(&:first)
+      actions.map {|a| a.last[:if] }.compact.each do |action|
+        unless names.include?(action)
+          fields << [action, complete_options(action, {})]
+        end
+      end
+    end
+
   end
 
   # a model's label can either be a symbol name of a method on that model,
@@ -34,26 +49,12 @@ class Deckhand::Configuration::ModelConfig
     model.const_get(action.to_s.camelize)
   end
 
-  def fields_to_show(options = {})
-    @fields_to_show ||= @dsl.show.each do |name, options|
-      complete_options(name, options)
-    end
-
-    if options[:flat_only]
-      @fields_to_show.reject {|name, options| options[:table] }
-    elsif options[:table_only]
-      @fields_to_show.select {|name, options| options[:table] }
-    else
-      @fields_to_show
-    end
-  end
-
   def flat_fields
-    fields_to_show(flat_only: true)
+    fields_to_show.reject {|name, options| options[:table] }
   end
 
   def table_fields
-    fields_to_show(table_only: true)
+    fields_to_show.select {|name, options| options[:table] }
   end
 
   def fields_to_edit
@@ -73,16 +74,6 @@ class Deckhand::Configuration::ModelConfig
     @dsl.action || []
   end
 
-  def fields_to_include
-    @fields_to_include ||= fields_to_show.dup.tap do |fields|
-      names = fields.map(&:first)
-      actions.map {|a| a.last[:if] }.compact.each do |action|
-        fields << [action, {}] unless names.include?(action)
-      end
-      fields.each {|name, options| complete_options(name, options) }
-    end
-  end
-
   def searchable?
     !!search_options[:fields]
   end
@@ -95,8 +86,14 @@ class Deckhand::Configuration::ModelConfig
     fields_to_include.detect {|n, _| n == name }.try :last
   end
 
+  def add_field_to_include(name)
+    unless fields_to_include.map(&:first).include? name
+      fields_to_include << [name, complete_options(name, {})]
+    end
+  end
+
   def as_json(*args)
-    Hash[fields_to_include]
+    Hash[fields_to_include].as_json(*args)
   end
 
   private
@@ -113,6 +110,7 @@ class Deckhand::Configuration::ModelConfig
     unless options.include? :name
       options[:name] = name
     end
+    options
   end
 
 end

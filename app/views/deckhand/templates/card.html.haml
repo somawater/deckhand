@@ -15,14 +15,14 @@
         - if options[:editable]
           %dd.editable(ng-click="edit('#{name}', #{options[:editable].to_json})")
             %i.glyphicon.glyphicon-pencil.edit-icon
-            %dh-field(model=@model item="item" name=name options="#{options.to_json}")
+            %dh-field(model=@model item="item" name=name)
         - else
           %dd
-            %dh-field(model=@model item="item" name=name options="#{options.to_json}")
+            %dh-field(model=@model item="item" name=name)
 
   - model_config.table_fields.each do |name, options|
     -# FIXME just export all this type info to the client
-    - nested_model = Deckhand.config.model_storage.relation_class_name(@model.constantize, name)
+    - nested_model = Deckhand.config.model_storage.relation_class_name(@model, name)
 
     %h4.table-title(ng-click="toggleTable('#{name}')")
       %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")
@@ -33,13 +33,16 @@
       %table.table
         %thead
           %tr
+            %th &nbsp;
             - options[:table].each do |column|
               %th= readable_method_name column
         %tbody
           %tr(ng-repeat="nested_item in item.#{name}")
+            %td
+              %a.glyphicon.glyphicon-new-window(ng-click="showCard(nested_item._model, nested_item.id)")
             - options[:table].each_with_index do |column, i|
               %td
-                %dh-field(model=nested_model item="nested_item" name=column options="#{{link_to_item: i == 0}.to_json}")
+                %dh-field(model=nested_model item="nested_item" name=column)
 
   - if model_config.actions.any?
     .panel-footer

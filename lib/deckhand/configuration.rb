@@ -28,6 +28,20 @@ module Deckhand
       self.global_config = OpenStruct.new(model_label: [:id])
 
       DSL.new(self).instance_eval &initializer_block
+
+      models_config.each do |model, config|
+        config.table_fields.each do |name, options|
+          class_name = model_storage.relation_class_name(model, name)
+
+          if has_model?(class_name)
+            relation_config = for_model(class_name)
+            options[:table].each do |column|
+              relation_config.add_field_to_include(column)
+            end
+          end
+
+        end
+      end
     end
 
     def reset

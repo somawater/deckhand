@@ -16,7 +16,7 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
   end
 
   def relation_class_name(model, name)
-    model.relations[name.to_s].try :class_name
+    model.constantize.relations[name.to_s].try :class_name
   end
 
   protected

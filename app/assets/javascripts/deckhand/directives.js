@@ -64,13 +64,15 @@ Deckhand.app.directive('ckeditor', function() {
   };
 
   function template(tElement, tAttrs) {
-    // TODO pass options globally instead of to each item?
-    var options = JSON.parse(tAttrs.options), value;
-    var type = ModelConfig.type(tAttrs.model, tAttrs.name);
+    var field = ModelConfig.field(tAttrs.model, tAttrs.name), value;
 
-    if (options.delegate) {
-      value = "{{format(item[name], '"+options.delegate+"')}}";
-    } else if (options.multiline) {
+    if (!field) {
+      return '{{format(item, name)}}';
+    }
+
+    if (field.delegate) {
+      value = "{{format(item[name], '"+field.delegate+"')}}";
+    } else if (field.multiline) {
       value = "{{format(item, name, 'multiline')}}";
     } else {
       value = "{{format(item, name)}}";
@@ -78,31 +80,28 @@ Deckhand.app.directive('ckeditor', function() {
 
     var output;
 
-    if (options.html || options.multiline) {
+    if (field.html || field.multiline) {
       value = value.replace(/^{{|}}$/g, '');
       output = '<div ng-bind-html="'+value+'"></div>';
 
-    } else if (options.thumbnail) {
+    } else if (field.thumbnail) {
       output = '<a target="_blank" ng-href="'+value+'"><img ng-src="'+value+'"</a>';
 
-    } else if (options.link_to) {
+    } else if (field.link_to) {
       output = '<a target="_blank" ' +
-        'ng-href="{{substitute(item, name, \''+options.link_to+'\')}}">'+value+'</a>';
+        'ng-href="{{substitute(item, name, \''+field.link_to+'\')}}">'+value+'</a>';
 
-    } else if (options.link_to_item) {
-      output = '<a ng-click="showCard(item._model, item.id)">'+value+'</a>';
-
-    } else if (type == 'relation') {
+    } else if (field.type == 'relation') {
       output = '<a ng-click="showCard(item[name]._model, item[name].id)">'+value+'</a>';
 
-    } else if (type == 'time') {
+    } else if (field.type == 'time') {
       output = '<dh-time time="'+value+'"/>';
 
     } else {
       output = value;
     }
 
-    if (options.editable) {
+    if (field.editable) {
       output = '<div class="editable"><i class="glyphicon glyphicon-pencil edit-icon"></i>' + output + '</div>';
     }
 
