@@ -31,6 +31,18 @@ a {
   }
 }
 
+#opened-cards .list-group-item {
+  position: relative;
+  padding-right: 33px;
+
+  .glyphicon {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+  }
+}
+
+
 [ng-click], #search-results li {
   cursor: pointer;
 }

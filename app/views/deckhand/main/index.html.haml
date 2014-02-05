@@ -26,6 +26,7 @@
         #opened-cards.list-group
           %a.list-group-item(ng-repeat="item in cards" ng-click="showCard(item._model, item.id)")
             {{item._label}}
+            %i.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
 
 .container
   .row
