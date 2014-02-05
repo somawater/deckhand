@@ -1,6 +1,6 @@
 var qs = require('querystring'), union = require('./lib/union');
 
-Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
+Deckhand.app.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   function($rootScope, Model, ModelStore) {
 
   $rootScope.cards = [];
@@ -42,7 +42,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   $rootScope.cardTemplate = function(item) {
-    return DeckhandGlobals.templatePath + '?' + qs.stringify({model: item._model, type: 'card'});
+    return Deckhand.templatePath + '?' + qs.stringify({model: item._model, type: 'card'});
   };
 
 }])
@@ -98,9 +98,9 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
     var params;
     if (context.verb == 'update') {
-      params = {url: DeckhandGlobals.showPath, method: 'PUT'};
+      params = {url: Deckhand.showPath, method: 'PUT'};
     } else if (context.verb == 'act') {
-      params = {url: DeckhandGlobals.showPath + '/act', method: 'PUT'};
+      params = {url: Deckhand.showPath + '/act', method: 'PUT'};
     }
 
     var filenames = Object.keys($scope.files);
@@ -142,7 +142,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   $scope.lazyLoad = {};
 
   $scope.init = function(item) {
-    var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
+    var fieldTypes = Deckhand.fieldTypes[item._model];
     Object.keys(fieldTypes).forEach(function(name) {
       if (fieldTypes[name] == 'lazy_table') {
         $scope.collapse[name] = true;
@@ -187,7 +187,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   $scope.act = function(item, action, options) {
     if (options.form) {
       var formParams = {model: item._model, act: action, type: 'action'};
-      var url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
+      var url = Deckhand.templatePath + '?' + qs.stringify(formParams);
       var modalInstance = $modal.open({
         templateUrl: url,
         controller: 'ModalFormCtrl',
@@ -224,7 +224,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
 
     if (name && !options.nested) { // single-field editing
       formParams.edit_fields = [name];
-      url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
+      url = Deckhand.templatePath + '?' + qs.stringify(formParams);
 
       // this is a workaround for an issue with Angular where it doesn't
       // stringify parameters the same way that Node's querystring does,
@@ -233,7 +233,7 @@ Deckhand.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
       delete formParams.edit_fields;
 
     } else { // all editable fields at once
-      url = DeckhandGlobals.templatePath + '?' + qs.stringify(formParams);
+      url = Deckhand.templatePath + '?' + qs.stringify(formParams);
     }
 
     var modalInstance = $modal.open({

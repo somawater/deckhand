@@ -4,12 +4,12 @@
   = stylesheet_link_tag 'deckhand/theme'
 
   :javascript
-    window.DeckhandGlobals = {
+    window.Deckhand = {
       searchPath: '#{deckhand.search_data_path}',
       showPath: '#{deckhand.data_path}',
       templatePath: '#{deckhand.templates_path}',
-      fieldTypes: #{Deckhand.config.field_types.to_json},
-      ckeditor: "#{Deckhand.config.plugins.ckeditor}"
+      ckeditor: "#{Deckhand.config.plugins.ckeditor}",
+      fieldTypes: #{Deckhand.config.field_types.to_json}
     };
 
   = javascript_include_tag 'deckhand/index'

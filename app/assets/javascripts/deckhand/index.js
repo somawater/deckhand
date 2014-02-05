@@ -12,14 +12,14 @@ require('./lib/angular-ui-bootstrap-0.10.0');
 require('./lib/angular-ui-bootstrap-tpls-0.10.0');
 require('./lib/angular-file-upload');
 
-window.Deckhand = angular.module('Deckhand',
+Deckhand.app = angular.module('Deckhand',
   ['ngResource', 'ngSanitize', 'ngAnimate', 'angularFileUpload', 'ui.bootstrap']);
 
 require('./controllers');
 require('./services');
 require('./directives');
 
-Deckhand.filter('humanTime', function() {
+Deckhand.app.filter('humanTime', function() {
   return function(time) {
     return time ? moment(new Date(time)).fromNow() : 'never';
   }

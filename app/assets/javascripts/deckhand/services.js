@@ -1,5 +1,5 @@
-Deckhand.factory('Search', ['$resource', function($resource) {
-  return $resource(DeckhandGlobals.searchPath);
+Deckhand.app.factory('Search', ['$resource', function($resource) {
+  return $resource(Deckhand.searchPath);
 }])
 
 // Angular-UI Bootstrap alert service for Angular.js
@@ -40,10 +40,10 @@ Deckhand.factory('Search', ['$resource', function($resource) {
 }])
 
 .factory('Model', ['$resource', function($resource) {
-  return $resource(DeckhandGlobals.showPath, null, {
-    act: {method: 'PUT', url: DeckhandGlobals.showPath + '/act'},
-    getFormData: {method: 'GET', url: DeckhandGlobals.showPath + '/form'},
-    update: {method: 'PUT', url: DeckhandGlobals.showPath}
+  return $resource(Deckhand.showPath, null, {
+    act: {method: 'PUT', url: Deckhand.showPath + '/act'},
+    getFormData: {method: 'GET', url: Deckhand.showPath + '/form'},
+    update: {method: 'PUT', url: Deckhand.showPath}
   });
 }])
 
@@ -69,7 +69,7 @@ Deckhand.factory('Search', ['$resource', function($resource) {
     }
 
     Object.keys(item).forEach(function(field) {
-      var type = DeckhandGlobals.fieldTypes[item._model][field];
+      var type = Deckhand.fieldTypes[item._model][field];
       if (type == 'table') {
         item[field].forEach(register);
       } else if (type == 'relation' && item[field] && item[field]._model) {
@@ -93,7 +93,7 @@ Deckhand.factory('Search', ['$resource', function($resource) {
 
 .factory('FieldFormatter', [function() {
   var format = function(item, attr, modifier) {
-    var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
+    var fieldTypes = Deckhand.fieldTypes[item._model];
     var value;
 
     if (!fieldTypes) {

@@ -1,7 +1,7 @@
 var include = require('./lib/include'),
   moment = require('moment');
 
-Deckhand.directive('ckeditor', function() {
+Deckhand.app.directive('ckeditor', function() {
   var link = function(scope, element, attrs, ngModel) {
     var editor;
 
@@ -22,8 +22,8 @@ Deckhand.directive('ckeditor', function() {
 
     if (window.CKEDITOR) {
       setupEditor();
-    } else if (DeckhandGlobals.ckeditor != '') {
-      include(DeckhandGlobals.ckeditor, function() {
+    } else if (Deckhand.ckeditor != '') {
+      include(Deckhand.ckeditor, function() {
         setupEditor();
       });
     }
@@ -65,7 +65,7 @@ Deckhand.directive('ckeditor', function() {
     // TODO pass options globally instead of to each item?
     var options = JSON.parse(tAttrs.options), value;
 
-    var types = DeckhandGlobals.fieldTypes[tAttrs.model];
+    var types = Deckhand.fieldTypes[tAttrs.model];
     var type = (types ? types[tAttrs.name] : null);
 
     if (options.delegate) {
