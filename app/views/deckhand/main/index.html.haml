@@ -24,7 +24,8 @@
             typeahead="result as result._label for result in search($viewValue)"
             typeahead-loading="loading"
             typeahead-template-url="typeahead-template"
-            typeahead-on-select="show()")
+            typeahead-on-select="show()"
+            typeahead-wait-ms="300")
 
         #opened-cards.list-group
           %a.list-group-item(ng-repeat="item in cards" ng-click="showCard(item._model, item.id)")
