@@ -91,7 +91,7 @@ Deckhand.factory('Search', ['$resource', function($resource) {
 
 }])
 
-.factory('FieldFormatter', ['$filter', function($filter) {
+.factory('FieldFormatter', [function() {
   var format = function(item, attr, modifier) {
     var fieldTypes = DeckhandGlobals.fieldTypes[item._model];
     var value;

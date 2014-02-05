@@ -32,7 +32,7 @@ Deckhand.directive('ckeditor', function() {
   return {require: 'ngModel', link: link};
 })
 
-.directive('dhTime', ['$timeout', function($timeout) {
+.directive('dhTime', [function() {
   function link(scope, element, attrs) {
     scope.$watch('time', function(value) {
       var time = value ? new Date(value) : null;
@@ -61,48 +61,58 @@ Deckhand.directive('ckeditor', function() {
     };
   };
 
+  function template(tElement, tAttrs) {
+    // TODO pass options globally instead of to each item?
+    var options = JSON.parse(tAttrs.options), value;
+
+    var types = DeckhandGlobals.fieldTypes[tAttrs.model];
+    var type = (types ? types[tAttrs.name] : null);
+
+    if (options.delegate) {
+      value = "{{format(item[name], '"+options.delegate+"')}}";
+    } else if (options.multiline) {
+      value = "{{format(item, name, 'multiline')}}";
+    } else {
+      value = "{{format(item, name)}}";
+    }
+
+    var output;
+
+    if (options.html || options.multiline) {
+      value = value.replace(/^{{|}}$/g, '');
+      output = '<div ng-bind-html="'+value+'"></div>';
+
+    } else if (options.thumbnail) {
+      output = '<a target="_blank" ng-href="'+value+'"><img ng-src="'+value+'"</a>';
+
+    } else if (options.link_to) {
+      output = '<a target="_blank" ' +
+        'ng-href="{{substitute(item, name, \''+options.link_to+'\')}}">'+value+'</a>';
+
+    } else if (options.link_to_item) {
+      output = '<a ng-click="showCard(item._model, item.id)">'+value+'</a>';
+
+    } else if (type == 'relation') {
+      output = '<a ng-click="showCard(item[name]._model, item[name].id)">'+value+'</a>';
+
+    } else if (type == 'time') {
+      output = '<dh-time time="'+value+'"/>';
+
+    } else {
+      output = value;
+    }
+
+    if (options.editable) {
+      output = '<div class="editable"><i class="glyphicon glyphicon-pencil edit-icon"></i>' + output + '</div>';
+    }
+
+    return output;
+  };
+
   return {
     link: link,
     restrict: 'E',
     scope: {item: '='},
-    template: function(tElement, tAttrs) {
-      // TODO pass options globally instead of to each item?
-      var options = JSON.parse(tAttrs.options), value;
-
-      var types = DeckhandGlobals.fieldTypes[tAttrs.model];
-      var type = (types ? types[tAttrs.name] : null);
-
-      if (options.delegate) {
-        value = "{{format(item[name], '"+options.delegate+"')}}";
-      } else if (options.multiline) {
-        value = "{{format(item, name, 'multiline')}}";
-      } else {
-        value = "{{format(item, name)}}";
-      }
-
-      if (options.html || options.multiline) {
-        value = value.replace(/^{{|}}$/g, '');
-        return '<div ng-bind-html="'+value+'"></div>';
-
-      } else if (options.thumbnail) {
-        return '<a target="_blank" ng-href="'+value+'"><img ng-src="'+value+'"</a>';
-
-      } else if (options.link_to) {
-        return '<a target="_blank" ' +
-          'ng-href="{{substitute(item, name, \''+options.link_to+'\')}}">'+value+'</a>';
-
-      } else if (options.link_to_item) {
-        return '<a ng-click="showCard(item._model, item.id)">'+value+'</a>';
-
-      } else if (type == 'relation') {
-        return '<a ng-click="showCard(item[name]._model, item[name].id)">'+value+'</a>';
-
-      } else if (type == 'time') {
-        return '<dh-time time="'+value+'"/>';
-
-      } else {
-        return value;
-      }
-    }
+    template: template
   };
-}])
+}]);
