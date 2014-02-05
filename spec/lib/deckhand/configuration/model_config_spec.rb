@@ -20,7 +20,6 @@ describe Deckhand::Configuration::ModelConfig do
   end
 
   context '#fields_to_show' do
-
     it "reads 'show' keywords and options, adding types and names" do
       expect(Deckhand.config.for_model(Participant).fields_to_show).to eq [
         [:email, {type: 'string', name: :email}],
@@ -30,7 +29,6 @@ describe Deckhand::Configuration::ModelConfig do
         [:address, {delegate: :summary, html: true, editable: {nested: true}, type: nil, name: :address}],
         [:text_messages, {table: [:created_at, :text], lazy_load: true, type: nil, name: :text_messages}]
       ]
-
     end
   end
 
@@ -43,6 +41,16 @@ describe Deckhand::Configuration::ModelConfig do
     it 'includes fields used in tables by related models' do
       fields_to_include = Deckhand.config.for_model(Participant).fields_to_include
       expect(fields_to_include).to include [:last_active_at, {type: nil, name: :last_active_at}]
+    end
+
+    it 'includes class_name for relations' do
+      fields_to_include = Deckhand.config.for_model(Campaign).fields_to_include
+      expect(fields_to_include).to include [:participants, {
+        table: [:name, :email, :last_active_at],
+        type: :relation,
+        name: :participants,
+        class_name: 'Participant'
+      }]
     end
   end
 

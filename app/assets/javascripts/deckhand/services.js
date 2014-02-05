@@ -122,9 +122,15 @@ Deckhand.app.factory('Search', ['$resource', function($resource) {
 
 .factory('ModelConfig', [function() {
 
-  var field = function(model, name) {
+  var field = function(model, name, relation) {
     if (!Deckhand.models[model]) return null;
-    return Deckhand.models[model][name];
+    if (relation) {
+      var className = Deckhand.models[model][relation].class_name;
+      if (!Deckhand.models[className]) return null;
+      return Deckhand.models[className][name];
+    } else {
+      return Deckhand.models[model][name];
+    }
   }
 
   var type = function(model, name) {

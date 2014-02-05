@@ -64,7 +64,7 @@ Deckhand.app.directive('ckeditor', function() {
   };
 
   function template(tElement, tAttrs) {
-    var field = ModelConfig.field(tAttrs.model, tAttrs.name), value;
+    var field = ModelConfig.field(tAttrs.model, tAttrs.name, tAttrs.relation), value;
 
     if (!field) {
       return '{{format(item, name)}}';

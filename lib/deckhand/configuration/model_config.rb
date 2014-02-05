@@ -99,6 +99,10 @@ class Deckhand::Configuration::ModelConfig
   private
 
   def complete_options(name, options)
+    unless options.include? :class_name
+      options[:class_name] = Deckhand.config.model_storage.relation_class_name @model.to_s, name
+    end
+
     unless options.include? :type
       options[:type] = if options[:class_name]
         :relation
@@ -110,6 +114,7 @@ class Deckhand::Configuration::ModelConfig
     unless options.include? :name
       options[:name] = name
     end
+
     options
   end
 

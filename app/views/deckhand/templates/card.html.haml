@@ -21,8 +21,6 @@
             %dh-field(model=@model item="item" name=name)
 
   - model_config.table_fields.each do |name, options|
-    -# FIXME just export all this type info to the client
-    - nested_model = Deckhand.config.model_storage.relation_class_name(@model, name)
 
     %h4.table-title(ng-click="toggleTable('#{name}')")
       %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")
@@ -42,7 +40,7 @@
               %a.glyphicon.glyphicon-new-window(ng-click="showCard(nested_item._model, nested_item.id)")
             - options[:table].each_with_index do |column, i|
               %td
-                %dh-field(model=nested_model item="nested_item" name=column)
+                %dh-field(model=@model relation=name item="nested_item" name=column)
 
   - if model_config.actions.any?
     .panel-footer
