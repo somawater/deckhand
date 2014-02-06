@@ -15,6 +15,7 @@
     "angular": "1.2.2",
     "scroll": "*",
     "extend": "*",
-    "slice-keys": "*"
+    "slice-keys": "*",
+    "coffeeify": "*"
   }
 }
