@@ -17,6 +17,7 @@ Make the following changes in your main app:
 ```ruby
 # Gemfile
 gem 'deckhand', github: 'somawater/deckhand'
+gem 'sprockets-browserify', github: 'somawater/sprockets-browserify'
 ```
 
 ```ruby
