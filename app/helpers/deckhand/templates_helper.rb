@@ -17,7 +17,7 @@ module Deckhand::TemplatesHelper
 
     if options[:model]
       args['typeahead'] = "object as object._label for object in search($viewValue, '#{options[:model]}')"
-      args['typeahead-template-url'] = 'typeahead-template'
+      args['typeahead-template-url'] = 'typeahead-search'
     elsif options[:type] == :boolean
       args['type'] = 'checkbox'
       args.delete('class')
