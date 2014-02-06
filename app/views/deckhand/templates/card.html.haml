@@ -12,13 +12,8 @@
     %dl.dl-horizontal
       - model_config.flat_fields.each do |name, options|
         %dt= options[:alias] || readable_method_name(name)
-        - if options[:editable]
-          %dd.editable(ng-click="edit('#{name}', #{options[:editable].to_json})")
-            %i.glyphicon.glyphicon-pencil.edit-icon
-            %dh-field(model=@model item="item" name=name)
-        - else
-          %dd
-            %dh-field(model=@model item="item" name=name)
+        %dd
+          %dh-field(model=@model item="item" name=name)
 
   - model_config.table_fields.each do |name, options|
 

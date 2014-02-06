@@ -61,6 +61,9 @@ Deckhand.app.directive('ckeditor', function() {
     scope.showCard = function(model, id) {
       return $rootScope.showCard(model, id);
     };
+    scope.edit = function(name, options) {
+      return scope.$parent.edit(name, options);
+    }
   };
 
   function template(tElement, tAttrs) {
@@ -102,7 +105,7 @@ Deckhand.app.directive('ckeditor', function() {
     }
 
     if (field.editable) {
-      output = '<div class="editable"><i class="glyphicon glyphicon-pencil edit-icon"></i>' + output + '</div>';
+      output = '<div class="editable" ng-click="edit(name, '+JSON.stringify(field.editable)+')"><i class="glyphicon glyphicon-pencil edit-icon"></i>' + output + '</div>';
     }
 
     return output;
