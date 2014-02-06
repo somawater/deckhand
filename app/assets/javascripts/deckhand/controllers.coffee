@@ -63,9 +63,7 @@ Deckhand.app.controller 'RootCtrl', [
     $scope.item = context.item
     $scope.form = {}
     $scope.choicesForSelect = {}
-    Model.getFormData extend(
-      id: $scope.item.id
-    , context.formParams), (form) ->
+    Model.getFormData extend({id: $scope.item.id}, context.formParams), (form) ->
       $scope.title = form.title or context.title
       $scope.prompt = form.prompt
       Object.keys(form.values).forEach (key) ->
@@ -73,19 +71,14 @@ Deckhand.app.controller 'RootCtrl', [
           data = form.values[key]
           $scope.form[key] = data.value
           # FIXME this "form." prefix is weird
-          $scope.choicesForSelect["form." + key] = data.choices  if data.choices
-        return
-
-      return
+          $scope.choicesForSelect["form." + key] = data.choices if data.choices
 
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
-      return
 
     $scope.files = {}
     $scope.onFileSelect = ($files, name) ->
       $scope.files[name.replace(/(\.(.*))$/, "[$2]")] = $files[0]
-      return
 
     $scope.submit = ->
       $scope.error = null
@@ -99,34 +92,25 @@ Deckhand.app.controller 'RootCtrl', [
           url: Deckhand.showPath + "/act"
           method: "PUT"
       filenames = Object.keys($scope.files)
-      files = filenames.map((name) ->
-        $scope.files[name]
-      )
+      files = filenames.map (name) -> $scope.files[name]
 
       # for typeahead selections, send only the instance's id to the server
       formData = {}
-      Object.keys($scope.form).forEach (key) ->
-        value = $scope.form[key]
-        formData[key] = ((if value and value.id then value.id else value))
-        return
+      for key, value of $scope.form
+        formData[key] = (if value and value.id then value.id else value)
 
       extend params,
         fileFormDataName: filenames
         file: files
         data:
           id: $scope.item.id
-          non_file_params: extend(
-            form: formData
-          , context.formParams)
+          non_file_params: extend({form: formData}, context.formParams)
 
       $upload.upload(params).success((response) ->
         $modalInstance.close response
-        return
       ).error (response) ->
         $scope.error = response.error
-        return
 
-      return
 
     $scope.search = (val, model) ->
       Search.query(
@@ -231,7 +215,6 @@ Deckhand.app.controller 'RootCtrl', [
             verb: "update"
       )
       modalInstance.result.then processResponse
-      return
 
     $scope.refresh = ->
       Model.get
@@ -239,6 +222,5 @@ Deckhand.app.controller 'RootCtrl', [
         id: $scope.item.id
       , (newItem) ->
         $scope.refreshItem newItem
-        return
 
 ]
