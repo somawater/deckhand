@@ -215,6 +215,7 @@ Deckhand.app.controller('RootCtrl', ['$rootScope', 'Model', 'ModelStore',
   };
 
   $scope.edit = function(name, options) {
+    options = JSON.parse(options);
     if (options == true || !options) options = {};
 
     var item = (options.nested ? $scope.item[name] : $scope.item),

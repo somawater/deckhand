@@ -56,7 +56,7 @@ Deckhand.app.directive 'dhField', ['FieldFormatter', '$rootScope', 'ModelConfig'
       return '{{format(item, name)}}' unless field
 
       if field.delegate
-        value = "{{format(item[name], '"+field.delegate+"')}}"
+        value = "{{format(item[name], '#{field.delegate}')}}"
       else if field.multiline
         value = "{{format(item, name, 'multiline')}}"
       else
@@ -64,7 +64,7 @@ Deckhand.app.directive 'dhField', ['FieldFormatter', '$rootScope', 'ModelConfig'
 
       if field.html or field.multiline
         value = value.replace(/^{{|}}$/g, '')
-        output = "<div ng-bind-html=\"'#{value}'\"></div>"
+        output = "<div ng-bind-html=\"#{value}\"></div>"
 
       else if field.thumbnail
         output = "<a target='_blank' ng-href=\"'#{value}'\"><img ng-src=\"'#{value}'\"</a>"
@@ -84,7 +84,7 @@ Deckhand.app.directive 'dhField', ['FieldFormatter', '$rootScope', 'ModelConfig'
 
       if field.editable
         output = "<div class='editable'
-          ng-click=\"edit(name, '#{JSON.stringify(field.editable)}')\">
+          ng-click=\"edit(name, '#{JSON.stringify(field.editable).replace(/"/g, '&quot;')}')\">
           <i class='glyphicon glyphicon-pencil edit-icon'></i>
           #{output}</div>"
 

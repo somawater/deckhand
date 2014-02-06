@@ -17,7 +17,7 @@ Deckhand.app = angular.module('Deckhand',
 
 require('./controllers');
 require('./services');
-require('./directives.coffee');
+require('./directives');
 
 Deckhand.app.filter('humanTime', function() {
   return function(time) {
