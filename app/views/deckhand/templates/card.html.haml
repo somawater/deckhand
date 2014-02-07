@@ -1,11 +1,10 @@
-.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item)")
+.card.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item)")
 
   .panel-heading
     %h3.panel-title
       %span.right
         %a.glyphicon.glyphicon-refresh(ng-click="refresh()")
-        %a.glyphicon.glyphicon-pencil(ng-click="edit()")
-        %a.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
+        %a.glyphicon.glyphicon-remove(ng-click="remove(item)")
       {{item._label}}
 
   .panel-body
@@ -32,7 +31,7 @@
         %tbody
           %tr(ng-repeat="nested_item in item.#{name}")
             %td
-              %a.glyphicon.glyphicon-new-window(ng-click="showCard(nested_item._model, nested_item.id)")
+              %a.glyphicon.glyphicon-new-window(ng-click="show(nested_item._model, nested_item.id)")
             - options[:table].each_with_index do |column, i|
               %td
                 %dh-field(model=@model relation=name item="nested_item" name=column)

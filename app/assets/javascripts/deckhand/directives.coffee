@@ -1,5 +1,6 @@
 include = require('./lib/include')
 moment = require('moment')
+scroll = require("scroll")
 
 Deckhand.app.directive 'ckeditor', ->
   link = (scope, element, attrs, ngModel) ->
@@ -23,13 +24,23 @@ Deckhand.app.directive 'ckeditor', ->
 
   {require: 'ngModel', link: link}
 
-Deckhand.app.directive 'dhTime', ->
+.directive 'dhScrollTo', ->
+  (scope, element, attrs) ->
+    scope.$on attrs.dhScrollTo, (event, item) ->
+      if (item == scope.item)
+        scroll.top document.documentElement, element[0].offsetTop,
+          duration: 800
+          ease: 'outQuint'
+
+.directive 'dhTime', ->
   link = (scope, element, attrs) ->
     scope.$watch 'time', (value) ->
-      time = if value then new Date(value) else null
-      scope.shortTime = if time then moment(time).fromNow() else 'never'
-      scope.fullTime = if time then moment(time).format('MMM Do, YYYY h:mm:ss a Z') else 'never'
-      scope.shown = scope.shortTime
+      if value
+        time = moment(new Date(value))
+        scope.shortTime = time.fromNow()
+        element.attr 'title', time.format('MMM Do, YYYY h:mm:ss a Z')
+      else
+        scope.shortTime = 'never'
 
   {
     link: link
@@ -39,15 +50,31 @@ Deckhand.app.directive 'dhTime', ->
     template: '<span title="{{fullTime}}">{{shortTime}}</span>'
   }
 
-Deckhand.app.directive 'dhField', ['FieldFormatter', '$rootScope', 'ModelConfig',
-  (FieldFormatter, $rootScope, ModelConfig) ->
+.directive 'dhField', [
+  'FieldFormatter', '$rootScope', 'ModelConfig', 'Cards', 'ModalEditor'
+  (FieldFormatter, $rootScope, ModelConfig, Cards, ModalEditor) ->
 
     link = (scope, element, attrs) ->
       scope.name = attrs.name
       scope.format = FieldFormatter.format
       scope.substitute = FieldFormatter.substitute
-      scope.showCard = (model, id) -> $rootScope.showCard(model, id)
-      scope.edit = (name, options) -> scope.$parent.edit(name, options)
+      scope.show = Cards.show
+
+      scope.edit = (type) ->
+        switch type
+          when 'text'
+            if !scope.editing
+              scope.$broadcast 'startEditing'
+              scope.editing = true
+          else
+            ModalEditor.edit(scope.item, scope.name)
+
+    controller = ['$scope', ($scope) ->
+      this.stopEditing = ->
+        $scope.editing = false
+
+      return this
+    ]
 
     template = (tElement, tAttrs) ->
       field = ModelConfig.field(tAttrs.model, tAttrs.name, tAttrs.relation)
@@ -74,7 +101,7 @@ Deckhand.app.directive 'dhField', ['FieldFormatter', '$rootScope', 'ModelConfig'
           #{value}</a>"
 
       else if field.type == 'relation'
-        output = "<a ng-click=\"showCard(item[name]._model, item[name].id)\">#{value}</a>"
+        output = "<a ng-click=\"show(item[name]._model, item[name].id)\">#{value}</a>"
 
       else if field.type == 'time'
         output = "<dh-time time='#{value}'/>"
@@ -83,17 +110,105 @@ Deckhand.app.directive 'dhField', ['FieldFormatter', '$rootScope', 'ModelConfig'
         output = value
 
       if field.editable
-        output = "<div class='editable'
-          ng-click=\"edit(name, '#{JSON.stringify(field.editable).replace(/"/g, '&quot;')}')\">
-          <i class='glyphicon glyphicon-pencil edit-icon'></i>
-          #{output}</div>"
+        editType = if field.editable.with == 'ckeditor'
+          'ckeditor'
+        else if field.editable.nested
+          'nested'
+        else if field.type == 'file'
+          'upload'
+        else
+          'text'
+
+        output =
+          "<div class='dh-field editable'
+                ng-click=\"edit('#{editType}')\"
+                ng-class='{editing: editing, image: #{field.thumbnail}}'>
+            <i class='glyphicon glyphicon-pencil edit-icon'></i>
+            <div ng-hide='editing'>#{output}</div>
+            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"'#{editType}'\"/>
+          </div>"
+
+      else
+        output =
+          "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>
+            #{output}
+          </div>"
 
       return output
 
     {
       link: link
       restrict: 'E'
+      replace: true
       scope: {item: '='}
+      template: template
+      controller: controller
+    }
+]
+
+.directive 'dhFieldEditor', [
+  'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor'
+  (Model, $log, AlertService, $timeout, Cards, ModalEditor) ->
+
+    update = (scope, value) ->
+      $log.debug "#{scope.originalValue} => #{value}"
+      params =
+        id: scope.item.id
+        non_file_params:
+          model: scope.item._model
+          form: {}
+      params.non_file_params.form[scope.name] = value
+      Model.update params, null, ModalEditor.processResponse, (response) ->
+        scope.item[scope.name] = scope.originalValue
+        AlertService.add 'danger', (response.data?.error or 'The change was not saved!')
+
+    link = (scope, element, attrs, dhField) ->
+      scope.editType = attrs.editType
+
+      scope.$on 'startEditing', ->
+        $log.debug "startEditing: #{scope.editType}"
+        unless scope.setup
+          if scope.editType = 'text'
+            setupTextEditing(scope, element, dhField)
+          $log.debug scope.editType
+
+        if scope.editType = 'text'
+          $timeout -> element[0].focus()
+
+
+    setupTextEditing = (scope, element, dhField) ->
+      unwatch = scope.$watch 'item[name]', (value) ->
+        scope.originalValue = value
+        unwatch()
+
+      element.on 'keydown', (event) ->
+        if event.which is 27 # esc
+          scope.$apply -> dhField.stopEditing()
+        true
+
+      element.on 'blur', (event) ->
+        scope.$apply ->
+          scope.item[name] = scope.originalValue
+          dhField.stopEditing()
+
+      element.on 'keypress', (event) ->
+        if event.which is 13 # enter
+          scope.$apply ->
+            dhField.stopEditing()
+            newValue = scope.item[scope.name]
+            update scope, newValue if newValue != scope.originalValue
+
+      scope.setup = true
+
+    template = (tElement, tAttrs) ->
+      "<input class='form-control' type='text' ng-model='item[name]' autofocus/>"
+
+    {
+      require: '^dhField'
+      link: link
+      restrict: 'E'
+      replace: true
+      scope: {item: '=', name: '='}
       template: template
     }
 ]

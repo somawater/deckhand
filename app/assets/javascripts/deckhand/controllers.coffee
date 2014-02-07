@@ -1,45 +1,12 @@
 qs = require("querystring")
 union = require("./lib/union")
 
-Deckhand.app.controller 'RootCtrl', [
-  '$rootScope', 'Model', 'ModelStore'
-  ($rootScope, Model, ModelStore) ->
-    $rootScope.cards = []
-    window.itemEntries = {}
+Deckhand.app.controller 'CardListCtrl', [
+  '$scope', 'Model', 'Cards'
+  ($scope, Model, Cards) ->
+    $scope.cards = Cards.list()
 
-    focusCard = (index) ->
-      event = new CustomEvent "focusItem",
-        detail:
-          index: index
-
-      document.getElementById("cards").dispatchEvent event
-
-    $rootScope.showCard = (model, id) ->
-      return unless id
-      entry = ModelStore.find(model, id)
-      if entry and entry.card
-        focusCard $rootScope.cards.indexOf(entry.item)
-      else
-        Model.get
-          model: model
-          id: id
-        , (item) ->
-          entry = ModelStore.register(item)
-          entry.card = true
-          $rootScope.cards.unshift entry.item
-          focusCard 0
-
-    $rootScope.removeCard = (item) ->
-      $rootScope.cards.splice $rootScope.cards.indexOf(item), 1
-      ModelStore.find(item._model, item.id).card = false
-
-    $rootScope.refreshItem = (newItem) ->
-      entry = ModelStore.register(newItem)
-      if entry.card
-        index = $rootScope.cards.indexOf(entry.item)
-        $rootScope.cards.splice index, 1, entry.item # trigger animation
-
-    $rootScope.cardTemplate = (item) ->
+    $scope.cardTemplate = (item) ->
       Deckhand.templatePath + "?" + qs.stringify(
         model: item._model
         type: "card"
@@ -47,14 +14,18 @@ Deckhand.app.controller 'RootCtrl', [
 ]
 
 .controller 'SearchCtrl', [
-  '$scope', 'Search', 'Model'
-  ($scope, Search, Model) ->
+  '$scope', 'Search', 'Cards'
+  ($scope, Search, Cards) ->
     $scope.search = (term) ->
       Search.query(term: term).$promise
 
-    $scope.show = ->
-      $scope.showCard $scope.result._model, $scope.result.id
+    $scope.select = ->
+      $scope.show $scope.result._model, $scope.result.id
       $scope.result = null
+
+    $scope.cards = Cards.list()
+    $scope.show = Cards.show
+    $scope.remove = Cards.remove
 ]
 
 .controller 'ModalFormCtrl', [
@@ -66,12 +37,12 @@ Deckhand.app.controller 'RootCtrl', [
     Model.getFormData extend({id: $scope.item.id}, context.formParams), (form) ->
       $scope.title = form.title or context.title
       $scope.prompt = form.prompt
-      Object.keys(form.values).forEach (key) ->
-        unless key.charAt(0) is "$"
-          data = form.values[key]
-          $scope.form[key] = data.value
+      for key, value of form.values
+        do ->
+          return if key.charAt(0) is "$"
+          $scope.form[key] = value.value
           # FIXME this "form." prefix is weird
-          $scope.choicesForSelect["form." + key] = data.choices if data.choices
+          $scope.choicesForSelect["form." + key] = value.choices if value.choices
 
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
@@ -111,7 +82,6 @@ Deckhand.app.controller 'RootCtrl', [
       ).error (response) ->
         $scope.error = response.error
 
-
     $scope.search = (val, model) ->
       Search.query(
         term: val
@@ -120,17 +90,22 @@ Deckhand.app.controller 'RootCtrl', [
 ]
 
 .controller 'CardCtrl', [
-  '$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService', 'ModelConfig'
-  ($scope, $filter, $modal, Model, ModelStore, FieldFormatter, AlertService, ModelConfig) ->
+  '$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService', 'ModelConfig', 'Cards', 'ModalEditor'
+  ($scope, $filter, $modal, Model, ModelStore, FieldFormatter, AlertService, ModelConfig, Cards, ModalEditor) ->
     $scope.collapse = {}
     $scope.lazyLoad = {}
 
+    $scope.show = Cards.show
+    $scope.remove = Cards.remove
+
     $scope.init = (item) ->
-      ModelConfig.tableFields(item._model).forEach (field) ->
-        if field.lazy_load
-          $scope.collapse[field.name] = true
-          $scope.lazyLoad[field.name] = true
-        else $scope.collapse[field.name] = true  if field.table and item[field.name].length is 0
+      for field in ModelConfig.tableFields(item._model)
+        do ->
+          if field.lazy_load
+            $scope.collapse[field.name] = true
+            $scope.lazyLoad[field.name] = true
+          else if field.table and item[field.name].length is 0
+            $scope.collapse[field.name] = true
 
     $scope.toggleTable = (name) ->
       if $scope.lazyLoad[name]
@@ -151,15 +126,6 @@ Deckhand.app.controller 'RootCtrl', [
     $scope.format = FieldFormatter.format
     $scope.substitute = FieldFormatter.substitute
 
-    processResponse = (response) ->
-      AlertService.add "success", response.success
-      AlertService.add "warning", response.warning
-      AlertService.add "info", response.info
-      response.changed.forEach (item) -> $scope.refreshItem item
-
-      result = response.result
-      $scope.showCard result._model, result.id  if result and result._model
-
     $scope.act = (item, action, options) ->
       if options.form
         formParams = {model: item._model, act: action, type: "action"}
@@ -175,7 +141,7 @@ Deckhand.app.controller 'RootCtrl', [
               formParams: formParams
               verb: "act"
         )
-        modalInstance.result.then processResponse
+        modalInstance.result.then ModalEditor.processResponse
       else
         options.confirm = "Are you sure?" unless options.hasOwnProperty("confirm")
         if not options.confirm or confirm(options.confirm)
@@ -183,44 +149,16 @@ Deckhand.app.controller 'RootCtrl', [
             model: item._model
             id: item.id
             act: action
-          , processResponse
+          , ModalEditor.processResponse
 
-    $scope.edit = (name, options) ->
-      options = JSON.parse(options)
-      options = {} if options is true or not options
-      item = (if options.nested then $scope.item[name] else $scope.item)
-      formParams = {type: 'edit', model: item._model}
-
-      url = undefined
-      if name and not options.nested # single-field editing
-        formParams.edit_fields = [name]
-        url = Deckhand.templatePath + "?" + qs.stringify(formParams)
-
-        # this is a workaround for an issue with Angular where it doesn't
-        # stringify parameters the same way that Node's querystring does,
-        # e.g. http://stackoverflow.com/questions/18318714/angularjs-resource-cannot-pass-array-as-one-of-the-parameters
-        formParams["edit_fields[]"] = formParams.edit_fields
-        delete formParams.edit_fields
-      else # all editable fields at once
-        url = Deckhand.templatePath + "?" + qs.stringify(formParams)
-
-      modalInstance = $modal.open(
-        templateUrl: url
-        controller: "ModalFormCtrl"
-        resolve:
-          context: ->
-            item: item
-            title: "edit"
-            formParams: formParams
-            verb: "update"
-      )
-      modalInstance.result.then processResponse
+    $scope.edit = (name) ->
+      ModalEditor.edit item, name
 
     $scope.refresh = ->
       Model.get
         model: $scope.item._model
         id: $scope.item.id
       , (newItem) ->
-        $scope.refreshItem newItem
+        Cards.refresh newItem
 
 ]

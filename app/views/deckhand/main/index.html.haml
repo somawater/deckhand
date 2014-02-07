@@ -20,13 +20,13 @@
             typeahead="result as result._label for result in search($viewValue)"
             typeahead-loading="loading"
             typeahead-template-url="typeahead-search"
-            typeahead-on-select="show()"
+            typeahead-on-select="select()"
             typeahead-wait-ms="300")
 
         #opened-cards.list-group
-          %a.list-group-item(ng-repeat="item in cards" ng-click="showCard(item._model, item.id)")
+          %a.list-group-item(ng-repeat="item in cards" ng-click="show(item._model, item.id)")
             {{item._label}}
-            %i.glyphicon.glyphicon-remove(ng-click="removeCard(item)")
+            %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
 
 .container
   .row
@@ -35,8 +35,8 @@
       #alerts
         %alert(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
 
-      #cards
-        %div(ng-repeat="item in cards" ng-include="cardTemplate(item)")
+      #cards(ng-controller='CardListCtrl')
+        %div(ng-repeat="item in cards" ng-include="cardTemplate(item)" dh-scroll-to='showCard')
 
 %script(type="text/ng-template" id="typeahead-search")
   %a

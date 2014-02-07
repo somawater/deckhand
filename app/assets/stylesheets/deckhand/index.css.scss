@@ -117,37 +117,74 @@ h4.table-title {
   margin: 0;
 }
 
-dl.dl-horizontal {
-  dd {
-    // workaround for size changes during animation
-    // FIXME this should be based on text height
-    min-height: 20px;
+.card {
+  dl.dl-horizontal {
+    dt {
+      padding: 2px 0;
+    }
 
-    padding-left: 4px;
+    dd {
+      // workaround for size changes during animation
+      // FIXME this should be based on text height
+      min-height: 20px;
 
-    .editable {
-      position: relative;
+      margin-left: 170px;
+    }
+  }
+}
+
+.dh-field {
+  padding: 2px 0 2px 10px;
+  min-height: 20px;
+
+  img {
+    max-width: 100%;
+    margin: 5px 10px 5px 0;
+  }
+
+  &.editable {
+    position: relative;
+
+    .edit-icon {
+      display: none;
+    }
+
+    &:hover {
+      background-color: #f5f5f5;
+      border-radius: 4px;
+
       .edit-icon {
-        display: none;
-      }
-
-      &:hover {
+        display: block;
         background-color: #f5f5f5;
         border-radius: 4px;
+        position: absolute;
+        right: 0;
+        height: 20px;
+        width: 20px;
+        line-height: 20px;
+        text-align: center;
+      }
+    }
 
-        .edit-icon {
-          display: block;
-          position: absolute;
-          right: 4px;
-          top: 3px;
+    &.editing {
+      padding: 0;
+
+      .input-group {
+        button {
+          padding: 1px 5px;
         }
       }
     }
 
-    img {
-      max-width: 100%;
-      margin: 5px 10px 5px 0;
+    input[type="text"] {
+      font-size: 14px;
+      height: 24px;
+      padding-left: 9px;
     }
 
   }
+}
+
+td > .dh-field {
+  padding: 0;
 }
