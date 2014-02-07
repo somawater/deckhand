@@ -19,6 +19,10 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
     model.constantize.relations[name.to_s].try :class_name
   end
 
+  def update(instance, attributes)
+    instance.update_attributes attributes, without_protection: true
+  end
+
   protected
 
   def query(scope, term, fields)

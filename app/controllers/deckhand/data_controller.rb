@@ -82,8 +82,7 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def update
-    # FIXME mongoid-specific
-    if instance.update_attributes params[:form].except(:id), without_protection: true
+    if Deckhand.config.model_storage.update instance, params[:form].except(:id)
       render_json changed: [present(instance)]
     else
       render_error instance.errors.full_messages.join('; ')
