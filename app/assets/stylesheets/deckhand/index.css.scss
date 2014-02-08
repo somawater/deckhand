@@ -10,6 +10,21 @@ a {
   }
 }
 
+.wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.above {
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+}
+
+.behind {
+  padding-top: 60px;
+}
+
 #search {
   position: fixed;
   width: 100%;

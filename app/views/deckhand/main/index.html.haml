@@ -10,33 +10,35 @@
 
   = javascript_include_tag 'deckhand/index'
 
-#search
-  .container
-    .row
-      .col-sm-4(ng-controller="SearchCtrl")
-        .form-group
-          %i.glyphicon.glyphicon-search(ng-class="{loading: loading}")
-          %input#search-input.form-control(type="text" ng-model="result" autofocus
-            typeahead="result as result._label for result in search($viewValue)"
-            typeahead-loading="loading"
-            typeahead-template-url="typeahead-search"
-            typeahead-on-select="select()"
-            typeahead-wait-ms="300")
+.wrapper
+  .above
+    #alerts.col-sm-10.col-sm-offset-1
+      %alert(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
 
-        #opened-cards.list-group
-          %a.list-group-item(ng-repeat="item in cards" ng-click="show(item._model, item.id)")
-            {{item._label}}
-            %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
+  .behind
+    #search
+      .container
+        .row
+          .col-sm-4(ng-controller="SearchCtrl")
+            .form-group
+              %i.glyphicon.glyphicon-search(ng-class="{loading: loading}")
+              %input#search-input.form-control(type="text" ng-model="result" autofocus
+                typeahead="result as result._label for result in search($viewValue)"
+                typeahead-loading="loading"
+                typeahead-template-url="typeahead-search"
+                typeahead-on-select="select()"
+                typeahead-wait-ms="300")
 
-.container
-  .row
-    .col-sm-8.col-sm-offset-4
+            #opened-cards.list-group
+              %a.list-group-item(ng-repeat="item in cards" ng-click="show(item._model, item.id)")
+                {{item._label}}
+                %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
 
-      #alerts
-        %alert(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
-
-      #cards(ng-controller='CardListCtrl')
-        %div(ng-repeat="item in cards" ng-include="cardTemplate(item)" dh-scroll-to='showCard')
+    .container
+      .row
+        .col-sm-8.col-sm-offset-4
+          #cards(ng-controller='CardListCtrl')
+            %div(ng-repeat="item in cards" ng-include="cardTemplate(item)" dh-scroll-to='showCard')
 
 %script(type="text/ng-template" id="typeahead-search")
   %a
