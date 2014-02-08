@@ -107,6 +107,8 @@ class Deckhand::Configuration::ModelConfig
     unless options.include? :type
       options[:type] = if options[:class_name]
         :relation
+      elsif Deckhand.config.attachment?(@model, name)
+        :file
       else
         Deckhand.config.model_storage.field_type @model, name
       end

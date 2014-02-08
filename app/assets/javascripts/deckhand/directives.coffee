@@ -62,7 +62,7 @@ Deckhand.app.directive 'ckeditor', ->
 
       scope.edit = (type) ->
         switch type
-          when 'text'
+          when 'text', 'upload'
             if !scope.editing
               scope.$broadcast 'startEditing'
               scope.editing = true
@@ -125,7 +125,7 @@ Deckhand.app.directive 'ckeditor', ->
                 ng-class='{editing: editing, image: #{field.thumbnail}}'>
             <i class='glyphicon glyphicon-pencil edit-icon'></i>
             <div ng-hide='editing'>#{output}</div>
-            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"'#{editType}'\"/>
+            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
           </div>"
 
       else
@@ -147,8 +147,8 @@ Deckhand.app.directive 'ckeditor', ->
 ]
 
 .directive 'dhFieldEditor', [
-  'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor'
-  (Model, $log, AlertService, $timeout, Cards, ModalEditor) ->
+  'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor', '$upload'
+  (Model, $log, AlertService, $timeout, Cards, ModalEditor, $upload) ->
 
     update = (scope, value) ->
       $log.debug "#{scope.originalValue} => #{value}"
@@ -160,7 +160,7 @@ Deckhand.app.directive 'ckeditor', ->
       params.non_file_params.form[scope.name] = value
       Model.update params, null, ModalEditor.processResponse, (response) ->
         scope.item[scope.name] = scope.originalValue
-        AlertService.add 'danger', (response.data?.error or 'The change was not saved!')
+        AlertService.add 'danger', (response.data?.error or 'The change was not saved')
 
     link = (scope, element, attrs, dhField) ->
       scope.editType = attrs.editType
@@ -168,13 +168,31 @@ Deckhand.app.directive 'ckeditor', ->
       scope.$on 'startEditing', ->
         $log.debug "startEditing: #{scope.editType}"
         unless scope.setup
-          if scope.editType = 'text'
-            setupTextEditing(scope, element, dhField)
-          $log.debug scope.editType
+          scope.setup = true
+          switch scope.editType
+            when 'text'
+              setupTextEditing(scope, element, dhField)
 
-        if scope.editType = 'text'
-          $timeout -> element[0].focus()
+        switch scope.editType
+          when 'text'
+            $timeout -> element[0].focus()
+          when 'upload'
+            $timeout ->
+              element[0].click()
+              $timeout -> dhField.stopEditing()
 
+      scope.onFileSelect = ($files) ->
+        $upload.upload(
+          url: Deckhand.showPath
+          method: 'PUT'
+          fileFormDataName: "form[#{scope.name}]"
+          file: $files[0]
+          data:
+            id: scope.item.id
+            model: scope.item._model
+        ).success(ModalEditor.processResponse)
+        .error (response) ->
+          AlertService.add 'danger', (response.data?.error or 'The upload failed')
 
     setupTextEditing = (scope, element, dhField) ->
       unwatch = scope.$watch 'item[name]', (value) ->
@@ -194,14 +212,20 @@ Deckhand.app.directive 'ckeditor', ->
       element.on 'keypress', (event) ->
         if event.which is 13 # enter
           scope.$apply ->
-            dhField.stopEditing()
+
             newValue = scope.item[scope.name]
             update scope, newValue if newValue != scope.originalValue
 
-      scope.setup = true
-
     template = (tElement, tAttrs) ->
-      "<input class='form-control' type='text' ng-model='item[name]' autofocus/>"
+      switch tAttrs.editType
+        when 'text'
+          "<input class='form-control' type='text' ng-model='item[name]' autofocus/>"
+        when 'upload'
+          "<input type='file' ng-file-select=\"onFileSelect($files)\"/>"
+        when 'ckeditor'
+          "<textarea></textarea>"
+        else
+          $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
     {
       require: '^dhField'

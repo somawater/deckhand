@@ -60,15 +60,16 @@ Deckhand.app.factory "Search", [
     register = (item) ->
       model = item._model
       id = item.id
-      $log.debug "register: #{model} #{id}"
 
       store[model] or= {}
       store[model][id] or= {card: false}
 
       entry = store[model][id]
       if entry.item
+        $log.debug "register (hit): #{model} #{id}"
         extend true, entry.item, item
       else
+        $log.debug "register (miss): #{model} #{id}"
         entry.item = item
 
       for name, value of item

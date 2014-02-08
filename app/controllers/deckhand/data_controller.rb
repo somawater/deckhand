@@ -127,7 +127,7 @@ class Deckhand::DataController < Deckhand::BaseController
     non_file_params = JSON.load(params[:non_file_params])
 
     # copy this first so we can load the instance
-    params[:model] = non_file_params['model']
+    params[:model] ||= non_file_params['model']
 
     non_file_params['form'].tap do |form|
       # remove the previous values for the file attachment fields

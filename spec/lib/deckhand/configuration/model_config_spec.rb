@@ -3,7 +3,11 @@ require File.dirname(__FILE__) + '/../../../support/example_config'
 
 describe Deckhand::Configuration::ModelConfig do
 
-  before(:all) { Deckhand.config.run }
+  before do
+    Group.stub attachment_definitions: {logo: {}}
+    Deckhand.config.run
+  end
+
   subject { Deckhand.config.for_model(Participant) }
 
   context '#search_options' do
@@ -52,12 +56,6 @@ describe Deckhand::Configuration::ModelConfig do
         class_name: 'Participant'
       }]
     end
-  end
-
-  context 'fields_to_edit' do
-    before do
-      Group.stub attachment_definitions: {logo: {}}
-    end
 
     it 'auto-detects Paperclip fields' do
       Deckhand.config.attachment?(Group, :logo).should be_true
@@ -65,7 +63,9 @@ describe Deckhand::Configuration::ModelConfig do
       logo_config = fields_to_edit.detect {|x| x.first == :logo }.last
       expect(logo_config[:type]).to eq :file
     end
+  end
 
+  context 'fields_to_edit' do
     it 'excludes fields that have their own nested forms' do
       Deckhand.config.for_model(Participant).fields_to_edit.map(&:first).should_not include :address
     end
