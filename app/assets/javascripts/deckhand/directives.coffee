@@ -224,6 +224,8 @@ Deckhand.app.directive 'ckeditor', ->
           "<input type='file' ng-file-select=\"onFileSelect($files)\"/>"
         when 'ckeditor'
           "<textarea></textarea>"
+        when 'nested'
+          '<span></span>'
         else
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
