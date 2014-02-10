@@ -41,3 +41,14 @@
 %script(type="text/ng-template" id="typeahead-search")
   %a
     %span {{match.label}}
+
+%script(type="text/ng-template" id="modal-ckeditor")
+  .modal-header
+    %h3 {{title}}
+
+  .modal-body.ckeditor
+    %textarea(ckeditor="true" ng-model="form[name]")
+
+  .modal-footer.ckeditor
+    %button.btn.btn-default(ng-click="cancel()") cancel
+    %button.btn.btn-primary(ng-click="submit()") continue

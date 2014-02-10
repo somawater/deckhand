@@ -34,6 +34,8 @@ Deckhand.app.controller 'CardListCtrl', [
     $scope.item = context.item
     $scope.form = {}
     $scope.choicesForSelect = {}
+    $scope.name = context.name
+
     Model.getFormData extend({id: $scope.item.id}, context.formParams), (form) ->
       $scope.title = form.title or context.title
       $scope.prompt = form.prompt
