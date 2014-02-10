@@ -213,7 +213,11 @@ Deckhand.app.factory "Search", [
 
         if name and not nested # single-field editing
           formParams.edit_fields = [name]
-          url = Deckhand.templatePath + "?" + qs.stringify(formParams)
+
+          if options?.with == 'ckeditor'
+            url = 'modal-ckeditor'
+          else
+            url = Deckhand.templatePath + "?" + qs.stringify(formParams)
 
           # this is a workaround for an issue with Angular where it doesn't
           # stringify parameters the same way that Node's querystring does,
@@ -232,6 +236,7 @@ Deckhand.app.factory "Search", [
               title: "edit"
               formParams: formParams
               verb: "update"
+              name: name
         ).result.then processResponse
 
       processResponse: processResponse
