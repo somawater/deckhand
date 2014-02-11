@@ -1,6 +1,6 @@
 class Deckhand::DataController < Deckhand::BaseController
 
-  before_filter :combine_params, only: [:act, :update]
+  before_filter :normalize_params, only: [:act, :update]
 
   delegate :present, :present_results, :to => :presenter
 
@@ -137,7 +137,7 @@ class Deckhand::DataController < Deckhand::BaseController
   # and stringifies them in a way that Rails can't deal with automatically,
   # so we put them into a subtree keyed with "non_file_params" and parse
   # them here.
-  def combine_params
+  def normalize_params
     return unless params[:non_file_params]
 
     non_file_params = JSON.load(params[:non_file_params])
@@ -158,6 +158,8 @@ class Deckhand::DataController < Deckhand::BaseController
 
     params.merge! non_file_params
     params.delete :non_file_params
+
+    Rails.logger.debug "  Normalized parameters: #{params.inspect}"
   end
 
 end
