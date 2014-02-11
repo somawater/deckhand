@@ -11,12 +11,12 @@ class Deckhand::TemplatesController < Deckhand::BaseController
       render 'deckhand/templates/card'
 
     when 'action'
-      form_class = Deckhand.config.for_model(@model).action_form_class(params[:act])
+      form_class = model_config.action_form_class(params[:act])
       @inputs = form_class.inputs
       render 'deckhand/templates/modal_form'
 
     when 'edit'
-      @inputs = Deckhand.config.for_model(@model).fields_to_edit
+      @inputs = model_config.fields_to_edit
       if edit_fields = params[:edit_fields]
         @inputs = @inputs.reject {|name, options| !edit_fields.include? name.to_s }
       end

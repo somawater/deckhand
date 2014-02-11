@@ -1,9 +1,5 @@
 module Deckhand::TemplatesHelper
 
-  def model_config
-    @model_config ||= Deckhand.config.for_model(@model)
-  end
-
   def show_action?(condition)
     condition ? "item['#{condition}']" : 'true'
   end

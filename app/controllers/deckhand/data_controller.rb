@@ -112,10 +112,6 @@ class Deckhand::DataController < Deckhand::BaseController
     @instance ||= Deckhand.config.model_class(params[:model]).find(params[:id])
   end
 
-  def model_config
-    @model_config ||= Deckhand.config.for_model(params[:model])
-  end
-
   # this is a workaround for the way angular-file-upload works.
   # it splits up top-level parameters into their own parts of the response
   # and stringifies them in a way that Rails can't deal with automatically,
