@@ -10,14 +10,30 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def show
-    fields = if params[:fields]
-      requested = params[:fields].split(',').compact.map(&:to_sym)
-      model_config.fields_to_show.select do |field, options|
-        requested.include?(field)
-      end
-    end
+    if params[:id] == 'list'
+      plural = params[:model].pluralize
+      list = {_model: params[:model], _label: plural, id: 'list'}
 
-    render_json present(instance, fields)
+      list_config = model_config.list
+      scope = list_config[:scope] || 'all'
+
+      # TODO pagination
+      list[plural.downcase] = model_class.send(scope).to_a.map do |item|
+        present(item, list_config[:table])
+      end
+
+      render_json list
+
+    else
+      fields = if params[:fields]
+        requested = params[:fields].split(',').compact.map(&:to_sym)
+        model_config.fields_to_show.select do |field, options|
+          requested.include?(field)
+        end
+      end
+
+      render_json present(instance, fields)
+    end
   end
 
   def form
@@ -108,8 +124,12 @@ class Deckhand::DataController < Deckhand::BaseController
     render json: {error: message}, status: :unprocessable_entity
   end
 
+  def model_class
+    @model_class ||= Deckhand.config.model_class(params[:model])
+  end
+
   def instance
-    @instance ||= Deckhand.config.model_class(params[:model]).find(params[:id])
+    @instance ||= model_class.find(params[:id])
   end
 
   # this is a workaround for the way angular-file-upload works.

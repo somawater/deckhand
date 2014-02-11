@@ -28,6 +28,11 @@
             {{item._label}}
             %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
 
+        %ul
+          - Deckhand.config.models_to_list.each do |model|
+            %li
+              %a(ng-click="show('#{model}', 'list')")= model.pluralize
+
 .container
   .row
     .col-sm-8.col-sm-offset-4

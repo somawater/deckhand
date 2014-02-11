@@ -9,7 +9,7 @@ Deckhand.app.controller 'CardListCtrl', [
     $scope.cardTemplate = (item) ->
       Deckhand.templatePath + "?" + qs.stringify(
         model: item._model
-        type: "card"
+        type: (if item.id == 'list' then 'index_card' else 'card')
       )
 ]
 
@@ -101,6 +101,7 @@ Deckhand.app.controller 'CardListCtrl', [
     $scope.remove = Cards.remove
 
     $scope.init = (item) ->
+      return if item.id == 'list'
       for field in ModelConfig.tableFields(item._model)
         do ->
           if field.lazy_load

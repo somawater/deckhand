@@ -65,6 +65,10 @@ module Deckhand
       model.respond_to?(:attachment_definitions) and model.attachment_definitions.try(:include?, name)
     end
 
+    def models_to_list
+      models_config.select {|model, config| config.list }.map &:first
+    end
+
   end
 
 end

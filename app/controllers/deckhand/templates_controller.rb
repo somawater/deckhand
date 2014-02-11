@@ -7,6 +7,11 @@ class Deckhand::TemplatesController < Deckhand::BaseController
     @model = params[:model]
 
     case params[:type]
+    when 'index_card'
+      @name = @model.pluralize.downcase
+      @columns = model_config.list[:table]
+      render 'deckhand/templates/index_card'
+
     when 'card'
       render 'deckhand/templates/card'
 

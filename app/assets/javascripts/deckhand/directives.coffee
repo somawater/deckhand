@@ -80,7 +80,7 @@ Deckhand.app.directive 'ckeditor', ->
       field = ModelConfig.field(tAttrs.model, tAttrs.name, tAttrs.relation)
       value = null
 
-      return '{{format(item, name)}}' unless field
+      return '<span>{{format(item, name)}}</span>' unless field
 
       if field.delegate
         value = "{{format(item[name], '#{field.delegate}')}}"
