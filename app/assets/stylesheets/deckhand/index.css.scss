@@ -1,7 +1,7 @@
 $pink: rgb(255, 71, 199);
 
 body {
-  padding-top: 1em;
+  padding-top: 70px;
 }
 
 a {
@@ -10,38 +10,8 @@ a {
   }
 }
 
-#search {
-  position: fixed;
-  width: 100%;
 
-  .form-group {
-    position: relative;
-
-    .glyphicon {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
-  }
-
-  .glyphicon-search.loading {
-    opacity: 0.25;
-  }
-}
-
-#opened-cards .list-group-item {
-  position: relative;
-  padding-right: 33px;
-
-  .glyphicon {
-    position: absolute;
-    right: 10px;
-    top: 13px;
-  }
-}
-
-
-[ng-click], #search-results li {
+[ng-click] {
   cursor: pointer;
 }
 
@@ -65,6 +35,35 @@ a {
 
 .list-group-item h4 {
   margin-top: 0;
+}
+
+#search {
+  position: relative;
+
+  .glyphicon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    &.loading {
+      opacity: 0.25;
+    }
+  }
+}
+
+#opened-cards .list-group-item {
+  position: relative;
+  padding-right: 33px;
+
+  .glyphicon {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+  }
+}
+
+#sidebar {
+  position: fixed;
+  width: 100%;
 }
 
 h4.table-title {

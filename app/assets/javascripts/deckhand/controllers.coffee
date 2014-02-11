@@ -13,19 +13,25 @@ Deckhand.app.controller 'CardListCtrl', [
       )
 ]
 
-.controller 'SearchCtrl', [
+.controller 'SidebarCtrl', [
+  '$scope', 'Cards'
+  ($scope, Cards) ->
+    $scope.cards = Cards.list()
+    $scope.remove = Cards.remove
+    $scope.show = Cards.show
+]
+
+.controller 'NavCtrl', [
   '$scope', 'Search', 'Cards'
   ($scope, Search, Cards) ->
     $scope.search = (term) ->
       Search.query(term: term).$promise
 
     $scope.select = ->
-      $scope.show $scope.result._model, $scope.result.id
-      $scope.result = null
+      Cards.show $scope.result._model, $scope.result.id
+      $scope.result = null # clears the text field
 
-    $scope.cards = Cards.list()
     $scope.show = Cards.show
-    $scope.remove = Cards.remove
 ]
 
 .controller 'ModalFormCtrl', [

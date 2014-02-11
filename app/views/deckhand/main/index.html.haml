@@ -10,33 +10,40 @@
 
   = javascript_include_tag 'deckhand/index'
 
-#search
+%nav.navbar.navbar-default.navbar-fixed-top(role="navigation" ng-controller='NavCtrl')
+  .container
+    %a.navbar-brand Deckhand
+
+    %form.navbar-form.navbar-left
+      #search.form-group
+        %i.glyphicon.glyphicon-search(ng-class="{loading: loading}")
+        %input.form-control(type="text" ng-model="result" autofocus
+          typeahead="result as result._label for result in search($viewValue)"
+          typeahead-loading="loading"
+          typeahead-template-url="typeahead-search"
+          typeahead-on-select="select()"
+          typeahead-wait-ms="300")
+
+    %ul.nav.navbar-nav
+      %li.dropdown
+        %a.dropdown-toggle(href="#") Lists
+        %ul.dropdown-menu
+          - Deckhand.config.models_to_list.each do |model|
+            %li
+              %a(ng-click="show('#{model}', 'list')")= model.pluralize
+
+#sidebar(ng-controller='SidebarCtrl')
   .container
     .row
-      .col-sm-4(ng-controller="SearchCtrl")
-        .form-group
-          %i.glyphicon.glyphicon-search(ng-class="{loading: loading}")
-          %input#search-input.form-control(type="text" ng-model="result" autofocus
-            typeahead="result as result._label for result in search($viewValue)"
-            typeahead-loading="loading"
-            typeahead-template-url="typeahead-search"
-            typeahead-on-select="select()"
-            typeahead-wait-ms="300")
-
+      .col-sm-4
         #opened-cards.list-group
           %a.list-group-item(ng-repeat="item in cards" ng-click="show(item._model, item.id)")
             {{item._label}}
             %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
 
-        %ul
-          - Deckhand.config.models_to_list.each do |model|
-            %li
-              %a(ng-click="show('#{model}', 'list')")= model.pluralize
-
 .container
   .row
     .col-sm-8.col-sm-offset-4
-
       #alerts
         %alert(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
 
