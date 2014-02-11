@@ -150,8 +150,8 @@ Deckhand.app.directive 'ckeditor', ->
   'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor', '$upload'
   (Model, $log, AlertService, $timeout, Cards, ModalEditor, $upload) ->
 
-    update = (scope, value) ->
-      $log.debug "#{scope.originalValue} => #{value}"
+    updateText = (scope, value) ->
+      $log.debug "#{scope.previousValue} => #{value}"
       params =
         id: scope.item.id
         non_file_params:
@@ -159,7 +159,7 @@ Deckhand.app.directive 'ckeditor', ->
           form: {}
       params.non_file_params.form[scope.name] = value
       Model.update params, null, ModalEditor.processResponse, (response) ->
-        scope.item[scope.name] = scope.originalValue
+        scope.item[scope.name] = scope.previousValue
         AlertService.add 'danger', (response.data?.error or 'The change was not saved')
 
     link = (scope, element, attrs, dhField) ->
@@ -167,19 +167,21 @@ Deckhand.app.directive 'ckeditor', ->
 
       scope.$on 'startEditing', ->
         $log.debug "startEditing: #{scope.editType}"
-        unless scope.setup
-          scope.setup = true
+
+        unless scope.setupRanOnce
+          scope.setupRanOnce = true
           switch scope.editType
             when 'text'
-              setupTextEditing(scope, element, dhField)
+              setupTextInputHandlers(scope, element, dhField)
 
         switch scope.editType
           when 'text'
-            $timeout -> element[0].focus()
+            scope.previousValue = scope.item[scope.name]
+            $timeout (-> element[0].focus()), 20
           when 'upload'
             $timeout ->
               element[0].click()
-              $timeout -> dhField.stopEditing()
+              dhField.stopEditing()
 
       scope.onFileSelect = ($files) ->
         $upload.upload(
@@ -194,32 +196,28 @@ Deckhand.app.directive 'ckeditor', ->
         .error (response) ->
           AlertService.add 'danger', (response.data?.error or 'The upload failed')
 
-    setupTextEditing = (scope, element, dhField) ->
-      unwatch = scope.$watch 'item[name]', (value) ->
-        scope.originalValue = value
-        unwatch()
-
+    setupTextInputHandlers = (scope, element, dhField) ->
       element.on 'keydown', (event) ->
         if event.which is 27 # esc
-          scope.$apply -> dhField.stopEditing()
-        true
+          @blur()
+          scope.$apply ->
+            scope.item[scope.name] = scope.previousValue
 
-      element.on 'blur', (event) ->
+      element.on 'blur', ->
         scope.$apply ->
-          scope.item[name] = scope.originalValue
           dhField.stopEditing()
 
       element.on 'keypress', (event) ->
         if event.which is 13 # enter
+          @blur()
           scope.$apply ->
-
             newValue = scope.item[scope.name]
-            update scope, newValue if newValue != scope.originalValue
+            updateText scope, newValue if newValue != scope.previousValue
 
     template = (tElement, tAttrs) ->
       switch tAttrs.editType
         when 'text'
-          "<input class='form-control' type='text' ng-model='item[name]' autofocus/>"
+          "<input class='form-control' type='text' ng-model='item[name]'/>"
         when 'upload'
           "<input type='file' ng-file-select=\"onFileSelect($files)\"/>"
         when 'ckeditor'
