@@ -83,11 +83,14 @@ Deckhand.app.directive 'ckeditor', ->
       return '<span>{{format(item, name)}}</span>' unless field
 
       if field.delegate
-        value = "{{format(item[name], '#{field.delegate}')}}"
-      else if field.multiline
-        value = "{{format(item, name, 'multiline')}}"
+        args = ['item[name]', "'#{field.delegate}'"]
       else
-        value = "{{format(item, name)}}"
+        args = ['item', 'name']
+
+      if field.multiline
+        args.push "'multiline'"
+
+      value = "{{format(#{args.join(", ")})}}"
 
       if field.html or field.multiline
         value = value.replace(/^{{|}}$/g, '')

@@ -9,7 +9,7 @@
     - @inputs.each do |name, options|
       = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
 
-    - @input_groups.each do |group_name, group|
+    - (@input_groups || []).each do |group_name, group|
       %fieldset
         %legend
           = readable_method_name group_name
