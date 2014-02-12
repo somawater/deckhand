@@ -10,7 +10,7 @@
   .panel-body
     %dl.dl-horizontal
       - model_config.flat_fields.each do |name, options|
-        %dt= options[:alias] || readable_method_name(name)
+        %dt= options[:label] || readable_method_name(name)
         %dd
           %dh-field(model=@model item="item" name=name)
 
@@ -18,7 +18,7 @@
 
     %h4.table-title(ng-click="toggleTable('#{name}')")
       %span.glyphicon.glyphicon-chevron-down(ng-class="{collapsed: collapse['#{name}']}")
-      = options[:alias] || readable_method_name(name)
+      = options[:label] || readable_method_name(name)
       %span(ng-show="!lazyLoad['#{name}']") ({{item.#{name}.length}})
 
     %div(collapse="collapse['#{name}']")
@@ -40,4 +40,4 @@
     .panel-footer
       - model_config.actions.each do |name, options|
         %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if])}")
-          = options[:alias] || readable_method_name(name)
+          = options[:label] || readable_method_name(name)
