@@ -1,0 +1,11 @@
+.form-group
+  - if options[:type] == :boolean
+    .col-sm-9.col-sm-offset-3
+      .checkbox
+        %label
+          = angular_input "#{prefix}.#{name}", options
+          = readable_method_name name
+
+  - else
+    %label.col-sm-3.control-label= readable_method_name name
+    .col-sm-9= angular_input "#{prefix}.#{name}", options

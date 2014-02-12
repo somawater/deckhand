@@ -17,7 +17,7 @@ class Deckhand::TemplatesController < Deckhand::BaseController
 
     when 'action'
       form_class = model_config.action_form_class(params[:act])
-      @inputs = form_class.inputs
+      @input_groups, @inputs = form_class.inputs.partition {|_, options| options[:multiple] }
       render 'deckhand/templates/modal_form'
 
     when 'edit'

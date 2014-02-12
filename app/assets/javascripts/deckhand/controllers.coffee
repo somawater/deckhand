@@ -61,17 +61,9 @@ Deckhand.app.controller 'CardListCtrl', [
 
     $scope.submit = ->
       $scope.error = null
-      params = undefined
-      if context.verb is "update"
-        params =
-          url: Deckhand.showPath
-          method: "PUT"
-      else if context.verb is "act"
-        params =
-          url: Deckhand.showPath + "/act"
-          method: "PUT"
-      filenames = Object.keys($scope.files)
-      files = filenames.map (name) -> $scope.files[name]
+      params = switch context.verb
+        when "update" then {url: Deckhand.showPath, method: "PUT"}
+        when "act" then {url: Deckhand.showPath + "/act", method: "PUT"}
 
       # for typeahead selections, send only the instance's id to the server
       formData = {}
@@ -79,8 +71,8 @@ Deckhand.app.controller 'CardListCtrl', [
         formData[key] = (if value and value.id then value.id else value)
 
       extend params,
-        fileFormDataName: filenames
-        file: files
+        fileFormDataName: (name for name, file of $scope.files)
+        file: (file for name, file of $scope.files)
         data:
           id: $scope.item.id
           non_file_params: extend({form: formData}, context.formParams)
@@ -91,10 +83,8 @@ Deckhand.app.controller 'CardListCtrl', [
         $scope.error = response.error
 
     $scope.search = (val, model) ->
-      Search.query(
-        term: val
-        model: model
-      ).$promise
+      Search.query(term: val, model: model).$promise
+
 ]
 
 .controller 'CardCtrl', [

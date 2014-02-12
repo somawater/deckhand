@@ -38,6 +38,7 @@ a {
 }
 
 #search {
+  width: 260px;
   position: relative;
 
   .glyphicon {
@@ -198,4 +199,26 @@ td > .dh-field {
 
 .modal-footer.ckeditor {
   margin-top: 0;
+}
+
+fieldset .well {
+  position: relative;
+  padding-right: 29px;
+
+  .close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+}
+
+legend .glyphicon {
+  float: right;
+  text-decoration: none;
 }
