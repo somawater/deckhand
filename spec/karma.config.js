@@ -7,20 +7,27 @@ module.exports = function(config) {
     basePath: '..',
 
     // frameworks to use
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'browserify'],
+
+    preprocessors: {
+      'app/assets/javascripts/deckhand/index.coffee': ['browserify'],
+      'spec/**/*.coffee': ['coffee']
+    },
+
+    browserify: {
+      extensions: ['.coffee'],
+      transform: ['coffeeify'],
+      watch: true,
+      debug: true
+    },
 
     // list of files / patterns to load in the browser
     files: [
-//      //libs
-//      'app/assets/javascripts/deckhand/node_modules/angular/lib/*.js',
-//      'app/assets/javascripts/deckhand/node_modules/angular/**/*.js',
-//      'app/assets/javascripts/deckhand/node_modules/**/*.js',
-//      'app/assets/javascripts/deckhand/lib/**/*.js',
+      'spec/support/karma_init.coffee',
+      'app/assets/javascripts/deckhand/index.coffee',
 
-//      //application
-//      'app/assets/javascripts/deckhand/*.+(coffee|js)',
       {
-        pattern: 'app/assets/javascripts/**/*.+(coffee|js)',
+        pattern: 'app/assets/javascripts/deckhand/*.+(coffee|js)',
         watched: true,
         included: false,
         served: false
