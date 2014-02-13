@@ -11,8 +11,8 @@ module.exports = (config) ->
     ]
 
     preprocessors:
-      'app/assets/javascripts/deckhand/**/*': ['browserify']
-      '**/*.coffee': ['coffee']
+      'app/assets/javascripts/deckhand/index.coffee': ['browserify']
+      'spec/**/*.coffee': ['coffee']
 
     browserify:
       extensions: ['.coffee']
@@ -23,8 +23,15 @@ module.exports = (config) ->
 
     # list of files / patterns to load in the browser
     files: [
+      'spec/support/karma_init.coffee'
+      'app/assets/javascripts/deckhand/index.coffee'
+      {
+        pattern: 'app/assets/javascripts/deckhand/*.+(coffee|js)'
+        watched: true
+        included: false
+        served: false
+      }
       'spec/support/**/*.+(coffee|js)'
-      'app/assets/javascripts/deckhand/index.coffee',
       'spec/javascripts/**/*_spec.+(coffee|js)'
     ]
 
