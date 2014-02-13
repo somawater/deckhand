@@ -19,17 +19,16 @@ module.exports = function(config) {
 
 //      //application
 //      'app/assets/javascripts/deckhand/*.+(coffee|js)',
-
-      //specs
-      'spec/support/**/*.+(coffee|js)',
-      'spec/javascripts/**/*_spec.+(coffee|js)',
-
       {
         pattern: 'app/assets/javascripts/**/*.+(coffee|js)',
         watched: true,
         included: false,
         served: false
-      }
+      },
+
+      //specs
+      'spec/support/**/*.+(coffee|js)',
+      'spec/javascripts/**/*_spec.+(coffee|js)'
     ],
 
     // list of files to exclude
