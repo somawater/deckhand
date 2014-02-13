@@ -26,7 +26,7 @@ Deckhand.app.factory "Search", [
       $rootScope.alerts.splice index, 1
 
     clear = ->
-      $rootScope.alerts = []
+      $rootScope.alerts.length = 0
 
     return AlertService =
       add: add
