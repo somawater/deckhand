@@ -24,15 +24,16 @@ module.exports = (config) ->
     # list of files / patterns to load in the browser
     files: [
       'spec/support/karma_init.coffee'
-      'app/assets/javascripts/deckhand/index.coffee'
+      'app/assets/javascripts/deckhand/index.coffee' # load the application, have browserify serve it
       {
+        # watch application files, but do not serve them from Karma since they are served by browserify
         pattern: 'app/assets/javascripts/deckhand/*.+(coffee|js)'
         watched: true
         included: false
         served: false
       }
-      'spec/support/**/*.+(coffee|js)'
-      'spec/javascripts/**/*_spec.+(coffee|js)'
+      'spec/support/**/*.+(coffee|js)' # load specs dependencies
+      'spec/javascripts/**/*_spec.+(coffee|js)' # load the specs
     ]
 
     # list of files to exclude
@@ -63,7 +64,7 @@ module.exports = (config) ->
     # - Safari (only Mac; has to be installed with `npm install karma-safari-launcher`)
     # - PhantomJS
     # - IE (only Windows; has to be installed with `npm install karma-ie-launcher`)
-    browsers: ['Chrome']
+    browsers: ['PhantomJS']
 
     # If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000
