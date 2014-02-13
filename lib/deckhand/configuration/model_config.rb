@@ -3,10 +3,12 @@ require 'deckhand/configuration/model_dsl'
 class Deckhand::Configuration::ModelConfig
   attr_reader :model, :fields_to_show, :fields_to_include
 
+  delegate :list, :to => :@dsl
+
   def initialize(options = {}, &block)
 
     default_options = {
-      singular: [:label, :fields_to_show, :search_scope],
+      singular: [:label, :fields_to_show, :search_scope, :list],
       defaults: {show: [], exclude: []}
     }
     @label_defaults = options.delete(:label_defaults)

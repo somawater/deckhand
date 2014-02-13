@@ -6,18 +6,18 @@
   %span(ng-show="prompt") {{prompt}}
 
   %form.form-horizontal
-    - @inputs.each do |name, options = {}|
-      .form-group
-        - if options[:type] == :boolean
-          .col-sm-9.col-sm-offset-3
-            .checkbox
-              %label
-                = angular_input "form.#{name}", options
-                = readable_method_name name
+    - @inputs.each do |name, options|
+      = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
 
-        - else
-          %label.col-sm-3.control-label= readable_method_name name
-          .col-sm-9= angular_input "form.#{name}", options
+    - (@input_groups || []).each do |group_name, group|
+      %fieldset
+        %legend
+          = readable_method_name group_name
+          %a.glyphicon.glyphicon-plus(ng-click="form.#{group_name}.push({})")
+        .well(ng-repeat="nested_item in form.#{group_name}")
+          %button.close(ng-click="form.#{group_name}.splice($index)") &times;
+          - group[:inputs].each do |name, options|
+            = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'nested_item'
 
 .modal-footer
   %button.btn.btn-default(ng-click="cancel()") cancel

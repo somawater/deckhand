@@ -1,7 +1,7 @@
 $pink: rgb(255, 71, 199);
 
 body {
-  padding-top: 1em;
+  padding-top: 70px;
 }
 
 a {
@@ -54,34 +54,7 @@ a {
   position: fixed;
   width: 100%;
 
-  .form-group {
-    position: relative;
-
-    .glyphicon {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-    }
-  }
-
-  .glyphicon-search.loading {
-    opacity: 0.25;
-  }
-}
-
-#opened-cards .list-group-item {
-  position: relative;
-  padding-right: 33px;
-
-  .glyphicon {
-    position: absolute;
-    right: 10px;
-    top: 13px;
-  }
-}
-
-
-[ng-click], #search-results li {
+[ng-click] {
   cursor: pointer;
 }
 
@@ -105,6 +78,36 @@ a {
 
 .list-group-item h4 {
   margin-top: 0;
+}
+
+#search {
+  width: 260px;
+  position: relative;
+
+  .glyphicon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    &.loading {
+      opacity: 0.25;
+    }
+  }
+}
+
+#opened-cards .list-group-item {
+  position: relative;
+  padding-right: 33px;
+
+  .glyphicon {
+    position: absolute;
+    right: 10px;
+    top: 13px;
+  }
+}
+
+#sidebar {
+  position: fixed;
+  width: 100%;
 }
 
 h4.table-title {
@@ -214,6 +217,10 @@ h4.table-title {
           padding: 1px 5px;
         }
       }
+
+      .edit-icon {
+        display: none;
+      }
     }
 
     input[type="text"] {
@@ -235,4 +242,34 @@ td > .dh-field {
 
 .modal-footer.ckeditor {
   margin-top: 0;
+}
+
+.modal-body.ckeditor {
+  padding: 0;
+}
+
+.modal-footer.ckeditor {
+  margin-top: 0;
+}
+
+fieldset .well {
+  position: relative;
+  padding-right: 29px;
+
+  .close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+}
+
+legend .glyphicon {
+  float: right;
+  text-decoration: none;
 }

@@ -1,6 +1,6 @@
 class Deckhand::DataController < Deckhand::BaseController
 
-  before_filter :combine_params, only: [:act, :update]
+  before_filter :normalize_params, only: [:act, :update]
 
   delegate :present, :present_results, :to => :presenter
 
@@ -10,14 +10,30 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def show
-    fields = if params[:fields]
-      requested = params[:fields].split(',').compact.map(&:to_sym)
-      model_config.fields_to_show.select do |field, options|
-        requested.include?(field)
-      end
-    end
+    if params[:id] == 'list'
+      plural = params[:model].pluralize
+      list = {_model: params[:model], _label: plural, id: 'list'}
 
-    render_json present(instance, fields)
+      list_config = model_config.list
+      scope = list_config[:scope] || 'all'
+
+      # TODO pagination
+      list[plural.downcase] = model_class.send(scope).to_a.map do |item|
+        present(item, list_config[:table])
+      end
+
+      render_json list
+
+    else
+      fields = if params[:fields]
+        requested = params[:fields].split(',').compact.map(&:to_sym)
+        model_config.fields_to_show.select do |field, options|
+          requested.include?(field)
+        end
+      end
+
+      render_json present(instance, fields)
+    end
   end
 
   def form
@@ -108,12 +124,12 @@ class Deckhand::DataController < Deckhand::BaseController
     render json: {error: message}, status: :unprocessable_entity
   end
 
-  def instance
-    @instance ||= Deckhand.config.model_class(params[:model]).find(params[:id])
+  def model_class
+    @model_class ||= Deckhand.config.model_class(params[:model])
   end
 
-  def model_config
-    @model_config ||= Deckhand.config.for_model(params[:model])
+  def instance
+    @instance ||= model_class.find(params[:id])
   end
 
   # this is a workaround for the way angular-file-upload works.
@@ -121,7 +137,7 @@ class Deckhand::DataController < Deckhand::BaseController
   # and stringifies them in a way that Rails can't deal with automatically,
   # so we put them into a subtree keyed with "non_file_params" and parse
   # them here.
-  def combine_params
+  def normalize_params
     return unless params[:non_file_params]
 
     non_file_params = JSON.load(params[:non_file_params])
@@ -142,6 +158,8 @@ class Deckhand::DataController < Deckhand::BaseController
 
     params.merge! non_file_params
     params.delete :non_file_params
+
+    Rails.logger.debug "  Normalized parameters: #{params.inspect}"
   end
 
 end

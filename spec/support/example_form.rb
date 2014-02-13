@@ -9,6 +9,12 @@ class ExampleForm < Deckhand::Form
   input :there, type: :boolean, default: false
   input :nowhere
 
+  multiple :positions do
+    input :left_side
+    input :right_side
+    input :intensity, type: Integer
+  end
+
   def forty_one
     41
   end

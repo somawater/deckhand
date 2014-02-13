@@ -1,0 +1,23 @@
+.card.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item)")
+
+  .panel-heading
+    %h3.panel-title
+      %span.right
+        %a.glyphicon.glyphicon-refresh(ng-click="refresh()")
+        %a.glyphicon.glyphicon-remove(ng-click="remove(item)")
+      {{item._label}} ({{item.#{@name}.length}})
+
+  %div(collapse="collapse['#{@name}']")
+    %table.table
+      %thead
+        %tr
+          %th &nbsp;
+          - @columns.each do |column|
+            %th= readable_method_name column
+      %tbody
+        %tr(ng-repeat="nested_item in item.#{@name}")
+          %td
+            %a.glyphicon.glyphicon-new-window(ng-click="show(nested_item._model, nested_item.id)")
+          - @columns.each_with_index do |column, i|
+            %td
+              %dh-field(model=@model item="nested_item" name=column)

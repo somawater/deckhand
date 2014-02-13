@@ -7,16 +7,21 @@ class Deckhand::TemplatesController < Deckhand::BaseController
     @model = params[:model]
 
     case params[:type]
+    when 'index_card'
+      @name = @model.pluralize.downcase
+      @columns = model_config.list[:table]
+      render 'deckhand/templates/index_card'
+
     when 'card'
       render 'deckhand/templates/card'
 
     when 'action'
-      form_class = Deckhand.config.for_model(@model).action_form_class(params[:act])
-      @inputs = form_class.inputs
+      form_class = model_config.action_form_class(params[:act])
+      @input_groups, @inputs = form_class.inputs.partition {|_, options| options[:multiple] }
       render 'deckhand/templates/modal_form'
 
     when 'edit'
-      @inputs = Deckhand.config.for_model(@model).fields_to_edit
+      @inputs = model_config.fields_to_edit
       if edit_fields = params[:edit_fields]
         @inputs = @inputs.reject {|name, options| !edit_fields.include? name.to_s }
       end

@@ -15,7 +15,23 @@ describe Deckhand::Form do
     form.here.should be_true
     form.there.should be_false
     form.nowhere.should be_nil
+    form.positions.should == []
     form.thing.should == thing
+  end
+
+  it 'handles list values' do
+    form = ExampleForm.new(
+      object: thing,
+      positions: [
+        {left_side: 'high', 'right_side' => 'low', intensity: '8'},
+        {'left_side' => 'low', right_side: 'low', intensity: '3'}
+      ]
+    )
+
+    form.positions.should == [
+      {'left_side' => 'high', 'right_side' => 'low', 'intensity' => 8},
+      {'left_side' => 'low', 'right_side' => 'low', 'intensity' => 3}
+    ]
   end
 
 end

@@ -20,8 +20,20 @@ class Deckhand::Form
 
   class << self
     def input(name, options = {})
+      if @current_multiple_input
+        @current_multiple_input[:inputs][name] = options
+      else
+        attr_accessor name
+        self.inputs[name] = options
+      end
+    end
+
+    def multiple(name, options = {}, &block)
       attr_accessor name
-      self.inputs[name] = options
+      @current_multiple_input = {inputs: {}, multiple: true, default: []}.merge(options)
+      self.inputs[name] = @current_multiple_input
+      block.call
+      @current_multiple_input = nil
     end
 
     def object_name(name)
@@ -69,16 +81,31 @@ class Deckhand::Form
 
   def resolve_value(value, options)
     type = options[:type]
+
     if !value and default = options[:default]
-      (default == true || default == false) ? default : send(default)
+      [true, false, []].include?(default) ? default : send(default)
+
     elsif type == :boolean
       !!value
+
     elsif !value
       nil
+
     elsif type == Integer
       value.to_i
+
     elsif type == Float
       value.to_f
+
+    elsif options[:multiple]
+      value.map do |subval|
+        resolved = subval.map do |k, v|
+          sym = k.to_sym
+          [sym, resolve_value(v, options[:inputs][sym])]
+        end.flatten
+        ActiveSupport::HashWithIndifferentAccess.new Hash[*resolved]
+      end
+
     else
       value
     end
