@@ -36,5 +36,5 @@ describe 'AlertService', ->
 
   it 'clears alerts', ->
     subject.add('info', 'not important') for [1..10]
-    subject.clear
+    subject.clear()
     expect(rootScope.alerts.length).toBe 0
