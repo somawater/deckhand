@@ -43,16 +43,13 @@
                 {{item._label}}
                 %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
 
-    #alerts.col-sm-10.col-sm-offset-1
+    #alerts.col-sm-12
       %alert.fader-animation(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
 
   .behind
     .container
       .row
         .col-sm-8.col-sm-offset-4
-          #alerts
-            %alert(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
-
           #cards(ng-controller='CardListCtrl')
             %div(ng-repeat="item in cards" ng-include="cardTemplate(item)" dh-scroll-to='showCard')
 
