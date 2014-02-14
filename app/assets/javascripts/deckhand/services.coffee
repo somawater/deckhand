@@ -24,6 +24,7 @@ Deckhand.app.factory "Search", [
         $timeout (->
           AlertService.close alert
         ), 15 * 1000
+      alert
 
     close = (alert) ->
       closeIndex $rootScope.alerts.indexOf(alert)
