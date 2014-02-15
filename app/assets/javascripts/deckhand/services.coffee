@@ -8,21 +8,25 @@ Deckhand.app.factory "Search", [
 ]
 
 .factory "AlertService", [
-  "$rootScope"
-  ($rootScope) ->
+  "$rootScope", "$timeout"
+  ($rootScope, $timeout) ->
     AlertService = undefined
     $rootScope.alerts = []
+
     add = (type, message) ->
       return if message is `undefined` or not message?
-      $rootScope.alerts.push
+      alert =
         type: type
         message: message
         close: -> AlertService.close this
+      $rootScope.alerts.push alert
+      alert
 
     close = (alert) ->
-      @closeIndex $rootScope.alerts.indexOf(alert)
+      closeIndex $rootScope.alerts.indexOf(alert)
 
     closeIndex = (index) ->
+      return if index < 0
       $rootScope.alerts.splice index, 1
 
     clear = ->

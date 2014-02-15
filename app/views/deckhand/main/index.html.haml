@@ -32,6 +32,10 @@
             %li
               %a(ng-click="show('#{model}', 'list')")= model.pluralize
 
+#alerts
+  %alert.fader-animation(ng-repeat="alert in alerts" type="alert.type" close="alert.close()")
+    .container {{alert.message}}
+
 #sidebar(ng-controller='SidebarCtrl')
   .container
     .row
@@ -44,8 +48,6 @@
 .container
   .row
     .col-sm-8.col-sm-offset-4
-      #alerts
-        %alert(ng-repeat="alert in alerts" type="alert.type" close="alert.close()") {{alert.message}}
 
       #cards(ng-controller='CardListCtrl')
         %div(ng-repeat="item in cards" ng-include="cardTemplate(item)" dh-scroll-to='showCard')
