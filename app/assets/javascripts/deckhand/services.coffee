@@ -20,10 +20,6 @@ Deckhand.app.factory "Search", [
         message: message
         close: -> AlertService.close this
       $rootScope.alerts.push alert
-      unless type == "error"
-        $timeout (->
-          AlertService.close alert
-        ), 15 * 1000
       alert
 
     close = (alert) ->

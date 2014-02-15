@@ -10,20 +10,6 @@ a {
   }
 }
 
-.wrapper {
-  position: relative;
-  width: 100%;
-}
-
-.above {
-  position: fixed;
-  width: 100%;
-  z-index: 10;
-}
-
-.behind {
-}
-
 //http://www.johnpapa.net/preparing-for-animations-in-angular-1-2-0/
 .fader-animation {
   .ng-enter,.ng-leave {
@@ -56,13 +42,24 @@ a {
 
 #alerts {
   padding: 0;
-  margin-top: -20px;
+  top: 50px;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+  opacity: 0.9;
 }
 
 .alert {
-  padding: 3px;
+  padding: 4px 0;
   margin-bottom: 0;
   border-radius: 0;
+  .close {
+    height: 20px;
+    width: 20px;
+    position: relative;
+    top: -1px;
+    margin-right: 5px;
+  }
 }
 
 #search {
