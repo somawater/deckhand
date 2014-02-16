@@ -43,6 +43,7 @@
         #opened-cards.list-group
           %a.list-group-item(ng-repeat="item in cards" ng-click="show(item._model, item.id)")
             {{item._label}}
+            .label.label-default {{item._model|inflector:'humanize'}}
             %i.glyphicon.glyphicon-remove(ng-click="remove(item)")
 
 .container
@@ -54,7 +55,9 @@
 
 %script(type="text/ng-template" id="typeahead-search")
   %a
-    %span {{match.label}}
+    %span
+      {{match.label}}
+      .label.label-default {{match.model._model|inflector:'humanize'}}
 
 %script(type="text/ng-template" id="modal-ckeditor")
   .modal-header
