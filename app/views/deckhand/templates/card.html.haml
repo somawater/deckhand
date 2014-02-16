@@ -3,6 +3,7 @@
   .panel-heading
     %h3.panel-title
       %span.right
+        .label.label-default {{item._model|inflector:'humanize'}}
         %a.glyphicon.glyphicon-refresh(ng-click="refresh()")
         %a.glyphicon.glyphicon-remove(ng-click="remove(item)")
       {{item._label}}
