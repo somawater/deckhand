@@ -5,7 +5,8 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
   def field_type(model, name)
     if f = field(model, name)
       type = f.options[:type]
-      type ? type.to_s.underscore : nil
+      type = (type ? type.to_s.underscore : nil)
+      type == 'date' ? 'time' : type
     elsif model.relations.include?(name.to_s)
       :relation
     end
