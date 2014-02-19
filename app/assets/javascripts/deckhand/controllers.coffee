@@ -29,7 +29,8 @@ Deckhand.app.controller 'CardListCtrl', [
     $scope.choicesForSelect = {}
     $scope.name = context.name
 
-    Model.getFormData extend({id: $scope.item.id}, context.formParams), (form) ->
+    itemId = $scope.item.id if $scope.item
+    Model.getFormData extend({id: itemId}, context.formParams), (form) ->
       $scope.title = form.title or context.title
       $scope.prompt = form.prompt
       for key, value of form.values
@@ -75,8 +76,8 @@ Deckhand.app.controller 'CardListCtrl', [
 ]
 
 .controller 'NavCtrl', [
-    '$scope', '$modal', 'Search', 'Cards'
-    ($scope, $modal, Search, Cards) ->
+    '$scope', '$filter', '$modal', 'Search', 'Cards','ModalEditor'
+    ($scope, $filter, $modal, Search, Cards, ModalEditor) ->
       $scope.search = (term) ->
         Search.query(term: term).$promise
 
@@ -86,9 +87,7 @@ Deckhand.app.controller 'CardListCtrl', [
 
       $scope.show = Cards.show
 
-      $scope.act = (action, options) ->
-        console.log("===========================")
-        console.log(action)
+      $scope.act = (action) ->
         formParams = {act: action, type: "action"}
         url = Deckhand.templatePath + "?" + qs.stringify(formParams)
         modalInstance = $modal.open(

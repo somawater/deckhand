@@ -39,7 +39,7 @@ class Deckhand::DataController < Deckhand::BaseController
   def form
     case params[:type]
     when 'action'
-      form = model_config.action_form_class(params[:act]).new object: instance
+      form = form_class.new object: instance
       render_json(
         title: form.title,
         prompt: form.prompt,
@@ -59,7 +59,7 @@ class Deckhand::DataController < Deckhand::BaseController
     action = params[:act].to_sym
 
     if model_config.has_action_form?(action)
-      form = model_config.action_form_class(action).new params[:form].merge(object: instance)
+      form = form_class.new params[:form].merge(object: instance)
       if form.valid?
         begin
           result = form.execute
@@ -129,7 +129,7 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def instance
-    @instance ||= model_class.find(params[:id])
+    @instance ||= model_class.find(params[:id]) if params[:id]
   end
 
   # this is a workaround for the way angular-file-upload works.

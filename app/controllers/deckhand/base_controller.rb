@@ -17,4 +17,9 @@ class Deckhand::BaseController < ApplicationController
   end
   helper_method :model_config
 
+  def form_class
+    model_config ? model_config.action_form_class(params[:act]) : Module.const_get(params[:act])
+  end
+  helper_method :form_class
+
 end

@@ -21,7 +21,7 @@
         %ul.dropdown-menu
           - Deckhand.config.actions.each do |action, config|
             %li
-              %a(ng-click="act('#{action}', '#{config.to_json}'), ''")= config.label
+              %a(ng-click="act('#{action}')")= config.label
 
     %form.navbar-form.navbar-left
       #search.form-group

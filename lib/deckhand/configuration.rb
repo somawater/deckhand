@@ -48,7 +48,7 @@ module Deckhand
     end
 
     def actions
-      Hash[*actions_config.map { |action, config| [action_class(action), config]}.flatten]
+      @actions ||= Hash[*actions_config.map {|action, config| [action_class(action), config]}.flatten]
     end
 
     def model_class(model)
