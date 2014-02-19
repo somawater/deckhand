@@ -15,7 +15,7 @@ class Deckhand::TemplatesController < Deckhand::BaseController
     when 'card'
       render 'deckhand/templates/card'
 
-    when 'action'
+    when 'root_action', 'action'
       @input_groups, @inputs = form_class.inputs.partition {|_, options| options[:multiple] }
       render 'deckhand/templates/modal_form'
 

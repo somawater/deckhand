@@ -1,6 +1,6 @@
 class Deckhand::DataController < Deckhand::BaseController
 
-  before_filter :normalize_params, only: [:act, :update]
+  before_filter :normalize_params, only: [:root_act, :act, :update]
 
   delegate :present, :present_results, :to => :presenter
 
@@ -38,7 +38,7 @@ class Deckhand::DataController < Deckhand::BaseController
 
   def form
     case params[:type]
-    when 'action'
+    when 'root_action', 'action'
       form = form_class.new object: instance
       render_json(
         title: form.title,
@@ -55,31 +55,15 @@ class Deckhand::DataController < Deckhand::BaseController
     end
   end
 
+  def root_act
+    process_form
+  end
+
   def act
     action = params[:act].to_sym
 
-    if model_config.has_action_form?(action)
-      form = form_class.new params[:form].merge(object: instance)
-      if form.valid?
-        begin
-          result = form.execute
-          if result
-            render_json(
-              result: present(result),
-              success: form.success,
-              warning: form.warning,
-              info: form.info,
-              changed: form.changed_objects.map {|obj| present(obj) }
-            )
-          else
-            render_error form.error
-          end
-        rescue
-          render_error $!.message
-        end
-      else
-        render_error form.errors.full_messages.join('; ')
-      end
+    if model_config && model_config.has_action_form?(action)
+      process_form
 
     elsif model_config.has_action?(action)
       # TODO: begin/rescue/end the public_send and return a status code
@@ -107,6 +91,31 @@ class Deckhand::DataController < Deckhand::BaseController
 
   private
 
+  def process_form
+    form = form_class.new params[:form].merge(object: instance)
+    binding.pry
+    if form.valid?
+      begin
+        result = form.execute
+        if result
+          render_json(
+            result: present(result),
+            success: form.success,
+            warning: form.warning,
+            info: form.info,
+            changed: form.changed_objects.map { |obj| present(obj) }
+          )
+        else
+          render_error form.error
+        end
+      rescue
+        render_error $!.message
+      end
+    else
+      render_error form.errors.full_messages.join('; ')
+    end
+  end
+
   def presenter
     Deckhand::Presenter.new params.slice(:eager_load)
   end
@@ -129,7 +138,7 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def instance
-    @instance ||= model_class.find(params[:id]) if params[:id]
+    @instance ||= params[:id].blank? ? form_class.new : model_class.find(params[:id])
   end
 
   # this is a workaround for the way angular-file-upload works.
@@ -144,7 +153,17 @@ class Deckhand::DataController < Deckhand::BaseController
 
     # copy this first so we can load the instance
     params[:model] ||= non_file_params['model']
+    params[:act] ||= non_file_params['act']
 
+    fix_file_attachment_params(non_file_params)
+
+    params.merge! non_file_params
+    params.delete :non_file_params
+
+    Rails.logger.debug "  Normalized parameters: #{params.inspect}"
+  end
+
+  def fix_file_attachment_params(non_file_params)
     non_file_params['form'].tap do |form|
       # remove the previous values for the file attachment fields
       form.keys.each do |key|
@@ -155,11 +174,6 @@ class Deckhand::DataController < Deckhand::BaseController
       # add the uploaded files
       form.merge!(params[:form]) if params[:form]
     end
-
-    params.merge! non_file_params
-    params.delete :non_file_params
-
-    Rails.logger.debug "  Normalized parameters: #{params.inspect}"
   end
 
 end

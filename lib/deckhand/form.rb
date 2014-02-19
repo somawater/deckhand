@@ -42,7 +42,7 @@ class Deckhand::Form
   end
 
   def initialize(params = {})
-    self.object = params[:object]
+    self.object = params[:object] || new_model
 
     # because we're iterating through all inputs, not just the ones passed
     # to the constructor, this will set any missing inputs to nil or false
@@ -61,6 +61,13 @@ class Deckhand::Form
       }
       h
     end
+  end
+
+  def model
+  end
+
+  def new_model
+    model ? model.new : raise(NotImplementedError)
   end
 
   def execute

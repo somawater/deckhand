@@ -25,12 +25,12 @@ Deckhand.app.controller 'CardListCtrl', [
   '$scope', '$q', '$modalInstance', '$upload', 'Model', 'context', 'Search'
   ($scope, $q, $modalInstance, $upload, Model, context, Search) ->
     $scope.item = context.item
+    $scope.itemId = if $scope.item then $scope.item.id else null
     $scope.form = {}
     $scope.choicesForSelect = {}
     $scope.name = context.name
 
-    itemId = $scope.item.id if $scope.item
-    Model.getFormData extend({id: itemId}, context.formParams), (form) ->
+    Model.getFormData extend({id: $scope.itemId}, context.formParams), (form) ->
       $scope.title = form.title or context.title
       $scope.prompt = form.prompt
       for key, value of form.values
@@ -52,6 +52,7 @@ Deckhand.app.controller 'CardListCtrl', [
       params = switch context.verb
         when "update" then {url: Deckhand.showPath, method: "PUT"}
         when "act" then {url: Deckhand.showPath + "/act", method: "PUT"}
+        when "root_act" then {url: Deckhand.showPath + "/root_act", method: "PUT"}
 
       # for typeahead selections, send only the instance's id to the server
       formData = {}
@@ -62,7 +63,7 @@ Deckhand.app.controller 'CardListCtrl', [
         fileFormDataName: (name for name, file of $scope.files)
         file: (file for name, file of $scope.files)
         data:
-          id: $scope.item.id
+          id: $scope.itemId
           non_file_params: extend({form: formData}, context.formParams)
 
       $upload.upload(params).success((response) ->
@@ -88,7 +89,7 @@ Deckhand.app.controller 'CardListCtrl', [
       $scope.show = Cards.show
 
       $scope.act = (action) ->
-        formParams = {act: action, type: "action"}
+        formParams = {act: action, type: "root_action"}
         url = Deckhand.templatePath + "?" + qs.stringify(formParams)
         modalInstance = $modal.open(
           templateUrl: url
@@ -97,7 +98,7 @@ Deckhand.app.controller 'CardListCtrl', [
             context: ->
               title: $filter("readableMethodName")(action)
               formParams: formParams
-              verb: "act"
+              verb: "root_act"
         )
         modalInstance.result.then ModalEditor.processResponse
   ]

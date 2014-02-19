@@ -6,6 +6,7 @@ Deckhand::Engine.routes.draw do
       get 'form', :on => :collection, :as => :form
       get 'config', :on => :collection, :as => :config
       put 'act'
+      put 'root_act'
     end
     resources :templates, only: [:index]
   end
