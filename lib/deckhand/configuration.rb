@@ -20,32 +20,35 @@ module Deckhand
   class Configuration
     include Singleton
 
-    attr_accessor :initializer_block, :models_config, :global_config, :model_storage, :plugins
+    attr_accessor :initializer_block, :actions_config, :models_config, :global_config, :model_storage, :plugins
     attr_reader :field_types
 
     def run
+      self.actions_config = {}
       self.models_config = {}
       self.global_config = OpenStruct.new(model_label: [:id])
-
       DSL.new(self).instance_eval &initializer_block
-
-      models_config.each do |model, config|
-        config.table_fields.each do |name, options|
-          class_name = options[:class_name]
-
-          if has_model?(class_name)
-            relation_config = for_model(class_name)
-            options[:table].each do |column|
-              relation_config.add_field_to_include(column)
-            end
-          end
-
-        end
-      end
+      build_models_relations
     end
 
     def reset
       self.models_config = self.global_config = nil
+    end
+
+    def action_class(action)
+      actions_config.keys.detect {|k| k == action }.camelcase.constantize
+    end
+
+    def for_action(action)
+      actions_config[action.to_s]
+    end
+
+    def has_action?(action)
+      actions_config.include? action.to_s
+    end
+
+    def actions
+      Hash[*actions_config.map { |action, config| [action_class(action), config]}.flatten]
     end
 
     def model_class(model)
@@ -69,6 +72,21 @@ module Deckhand
       models_config.select {|model, config| config.list }.map &:first
     end
 
-  end
+    private
 
+    def build_models_relations
+      models_config.each do |model, config|
+        config.table_fields.each do |name, options|
+          class_name = options[:class_name]
+
+          if has_model?(class_name)
+            relation_config = for_model(class_name)
+            options[:table].each do |column|
+              relation_config.add_field_to_include(column)
+            end
+          end
+        end
+      end
+    end
+  end
 end

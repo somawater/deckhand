@@ -21,19 +21,6 @@ Deckhand.app.controller 'CardListCtrl', [
     $scope.show = Cards.show
 ]
 
-.controller 'NavCtrl', [
-  '$scope', 'Search', 'Cards'
-  ($scope, Search, Cards) ->
-    $scope.search = (term) ->
-      Search.query(term: term).$promise
-
-    $scope.select = ->
-      Cards.show $scope.result._model, $scope.result.id
-      $scope.result = null # clears the text field
-
-    $scope.show = Cards.show
-]
-
 .controller 'ModalFormCtrl', [
   '$scope', '$q', '$modalInstance', '$upload', 'Model', 'context', 'Search'
   ($scope, $q, $modalInstance, $upload, Model, context, Search) ->
@@ -86,6 +73,35 @@ Deckhand.app.controller 'CardListCtrl', [
       Search.query(term: val, model: model).$promise
 
 ]
+
+.controller 'NavCtrl', [
+    '$scope', '$modal', 'Search', 'Cards'
+    ($scope, $modal, Search, Cards) ->
+      $scope.search = (term) ->
+        Search.query(term: term).$promise
+
+      $scope.select = ->
+        Cards.show $scope.result._model, $scope.result.id
+        $scope.result = null # clears the text field
+
+      $scope.show = Cards.show
+
+      $scope.act = (action, options) ->
+        console.log("===========================")
+        console.log(action)
+        formParams = {act: action, type: "action"}
+        url = Deckhand.templatePath + "?" + qs.stringify(formParams)
+        modalInstance = $modal.open(
+          templateUrl: url
+          controller: "ModalFormCtrl"
+          resolve:
+            context: ->
+              title: $filter("readableMethodName")(action)
+              formParams: formParams
+              verb: "act"
+        )
+        modalInstance.result.then ModalEditor.processResponse
+  ]
 
 .controller 'CardCtrl', [
   '$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService', 'ModelConfig', 'Cards', 'ModalEditor'

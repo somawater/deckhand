@@ -14,6 +14,15 @@
   .container
     %a.navbar-brand Deckhand
 
+    %ul.nav.navbar-nav
+      %li.dropdown
+        %a.dropdown-toggle(href="#")
+          %span.glyphicon.glyphicon-plus
+        %ul.dropdown-menu
+          - Deckhand.config.actions.each do |action, config|
+            %li
+              %a(ng-click="act('#{action}', '#{config.to_json}'), ''")= config.label
+
     %form.navbar-form.navbar-left
       #search.form-group
         %i.glyphicon.glyphicon-search(ng-class="{loading: loading}")

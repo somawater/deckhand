@@ -1,3 +1,4 @@
+require 'deckhand/configuration/action_config'
 require 'deckhand/configuration/model_config'
 require 'deckhand/configuration/simple_dsl'
 
@@ -5,6 +6,12 @@ class Deckhand::Configuration::DSL
 
   def initialize(config)
     @config = config
+  end
+
+  def action(action_class, options)
+    default_options = {action: action_class}
+    action_config = Deckhand::Configuration::ActionConfig.new(options.merge(default_options))
+    @config.actions_config[action_class.to_s] = action_config
   end
 
   def model(model_class, &block)
