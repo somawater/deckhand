@@ -1,3 +1,4 @@
+require 'deckhand/configuration/action_config'
 require 'deckhand/configuration/model_config'
 require 'deckhand/configuration/simple_dsl'
 
@@ -7,14 +8,20 @@ class Deckhand::Configuration::DSL
     @config = config
   end
 
+  def action(action_class, options)
+    default_options = {action: action_class}
+    action_config = Deckhand::Configuration::ActionConfig.new(options.merge(default_options))
+    @config.global.actions[action_class.to_sym] = action_config
+  end
+
   def model(model_class, &block)
-    options = {model: model_class, label_defaults: @config.global_config.model_label}
+    options = {model: model_class, label_defaults: @config.global.model_label}
     model_config = Deckhand::Configuration::ModelConfig.new(options, &block)
-    @config.models_config[model_class.to_s] = model_config
+    @config.models[model_class.to_s] = model_config
   end
 
   def model_label(*methods)
-    @config.global_config.model_label = methods + @config.global_config.model_label
+    @config.global.model_label = methods + @config.global.model_label
   end
 
   def model_storage(sym)

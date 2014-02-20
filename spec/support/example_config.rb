@@ -3,6 +3,8 @@ Deckhand.configure do
   model_storage :dummy
   model_label :pretty_name, :name, :tag
 
+  action :start_conversation, label: 'Start talking'
+
   model Participant do
     search_on :name, :email
     search_on :shortcode, :match => :exact

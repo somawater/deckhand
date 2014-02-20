@@ -68,7 +68,7 @@ class Deckhand::Form
   end
 
   def changed_objects
-    raise NotImplementedError
+    []
   end
 
   def title

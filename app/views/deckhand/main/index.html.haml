@@ -5,7 +5,7 @@
       showPath: '#{deckhand.data_path}',
       templatePath: '#{deckhand.templates_path}',
       ckeditor: "#{Deckhand.config.plugins.ckeditor}",
-      models: #{Deckhand.config.models_config.to_json}
+      models: #{Deckhand.config.models.to_json}
     };
 
   = javascript_include_tag 'deckhand/index'
@@ -26,7 +26,17 @@
 
     %ul.nav.navbar-nav
       %li.dropdown
-        %a.dropdown-toggle(href="#") Lists
+        %a.dropdown-toggle(href="#")
+          %span.glyphicon.glyphicon-flash
+        %ul.dropdown-menu
+          - Deckhand.config.global.actions.each do |action, config|
+            %li
+              %a(ng-click="act('#{action}')")= config.label
+
+    %ul.nav.navbar-nav
+      %li.dropdown
+        %a.dropdown-toggle(href="#")
+          %span.glyphicon.glyphicon-th-list
         %ul.dropdown-menu
           - Deckhand.config.models_to_list.each do |model|
             %li

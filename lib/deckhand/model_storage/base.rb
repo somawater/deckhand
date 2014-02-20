@@ -4,7 +4,7 @@ class Deckhand::ModelStorage::Base
     search_configs = if model
       [[model, Deckhand.config.for_model(model)]]
     else
-      Deckhand.config.models_config
+      Deckhand.config.models
     end
 
     search_configs.map do |model, config|
