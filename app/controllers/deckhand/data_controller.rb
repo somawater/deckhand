@@ -93,7 +93,6 @@ class Deckhand::DataController < Deckhand::BaseController
 
   def process_form
     form = form_class.new params[:form].merge(object: instance)
-    binding.pry
     if form.valid?
       begin
         result = form.execute
