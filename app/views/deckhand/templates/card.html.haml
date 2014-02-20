@@ -39,5 +39,5 @@
   - if model_config.actions.any?
     .panel-footer
       - model_config.actions.each do |name, options|
-        %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if])}")
+        %button.btn.btn-default(ng-click="act(item, '#{name}', #{options.to_json})" ng-show="#{show_action?(options[:if], options[:unless])}")
           = options[:label] || readable_method_name(name)

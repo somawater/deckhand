@@ -1,7 +1,13 @@
 module Deckhand::TemplatesHelper
 
-  def show_action?(condition)
-    condition ? "item['#{condition}']" : 'true'
+  def show_action?(condition, unless_condition)
+    if condition
+      "item['#{condition}']"
+    elsif unless_condition
+      "!item['#{unless_condition}']"
+    else
+      'true'
+    end
   end
 
   def readable_method_name(name)
