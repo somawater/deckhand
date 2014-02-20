@@ -10,7 +10,8 @@ class Deckhand::Form
   class_attribute :inputs
 
   attr_accessor :object
-  attr_accessor :success, :info, :warning, :error
+  attr_accessor :success, :info, :warning
+  attr_writer :error
   alias_method :notice, :info
   alias_method :notice=, :info=
 
@@ -51,6 +52,10 @@ class Deckhand::Form
     end
 
     super()
+  end
+
+  def error
+    @error ||= object.errors.full_messages.join("; ") if object
   end
 
   def values

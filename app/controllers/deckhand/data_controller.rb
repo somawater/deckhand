@@ -111,7 +111,8 @@ class Deckhand::DataController < Deckhand::BaseController
         render_error $!.message
       end
     else
-      render_error form.errors.full_messages.join('; ')
+      #render_error form.errors.full_messages.join('; ')
+      render_error form.error
     end
   end
 
@@ -137,7 +138,8 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def instance
-    @instance ||= params[:id].blank? ? form_class.new : model_class.find(params[:id])
+    #@instance ||= params[:id].blank? ? form_class.new : model_class.find(params[:id])
+    @instance ||= model_class.find(params[:id]) unless params[:id].blank?
   end
 
   # this is a workaround for the way angular-file-upload works.
