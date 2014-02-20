@@ -1,6 +1,6 @@
 class Deckhand::DataController < Deckhand::BaseController
 
-  before_filter :normalize_params, only: [:root_act, :act, :update]
+  before_filter :normalize_params, only: [:act, :update]
 
   delegate :present, :present_results, :to => :presenter
 
@@ -38,7 +38,7 @@ class Deckhand::DataController < Deckhand::BaseController
 
   def form
     case params[:type]
-    when 'root_action', 'action'
+    when 'action'
       form = form_class.new object: instance
       render_json(
         title: form.title,
@@ -55,14 +55,10 @@ class Deckhand::DataController < Deckhand::BaseController
     end
   end
 
-  def root_act
-    process_form
-  end
-
   def act
     action = params[:act].to_sym
 
-    if model_config && model_config.has_action_form?(action)
+    if model_config.try(:has_action_form?, action) || Deckhand.config.has_action?(action)
       process_form
 
     elsif model_config.has_action?(action)
@@ -111,7 +107,6 @@ class Deckhand::DataController < Deckhand::BaseController
         render_error $!.message
       end
     else
-      #render_error form.errors.full_messages.join('; ')
       render_error form.error
     end
   end
@@ -134,12 +129,11 @@ class Deckhand::DataController < Deckhand::BaseController
   end
 
   def model_class
-    @model_class ||= Deckhand.config.model_class(params[:model])
+    @model_class ||= Deckhand.config.model_class(params[:model]) if params[:model]
   end
 
   def instance
-    #@instance ||= params[:id].blank? ? form_class.new : model_class.find(params[:id])
-    @instance ||= model_class.find(params[:id]) unless params[:id].blank?
+    @instance ||= model_class.try(:find, params[:id]) if params[:id]
   end
 
   # this is a workaround for the way angular-file-upload works.

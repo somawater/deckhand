@@ -184,8 +184,8 @@ Deckhand.app.factory "Search", [
 ]
 
 .factory 'ModalEditor', [
-  'ModelConfig', '$modal', 'Cards', 'AlertService'
-  (ModelConfig, $modal, Cards, AlertService) ->
+  'ModelConfig', '$modal', 'Cards', 'AlertService', '$filter'
+  (ModelConfig, $modal, Cards, AlertService, $filter) ->
 
     processResponse = (response) =>
       AlertService.add "success", response.success
@@ -197,6 +197,29 @@ Deckhand.app.factory "Search", [
       Cards.show result._model, result.id if result and result._model
 
     {
+      act: (action, item) ->
+        formParams = {act: action, type: "action"}
+
+        if item
+          formParams.model = item._model
+          title = "#{item._label}: #{$filter('readableMethodName')(action)}"
+        else
+          title = $filter("readableMethodName")(action)
+
+        url = Deckhand.templatePath + "?" + qs.stringify(formParams)
+
+        modalInstance = $modal.open(
+          templateUrl: url
+          controller: "ModalFormCtrl"
+          resolve:
+            context: ->
+              item: item
+              title: title
+              formParams: formParams
+              verb: "act"
+        )
+        modalInstance.result.then processResponse
+
       edit: (item, name) ->
         url = null
         if name

@@ -21,6 +21,22 @@ Deckhand.app.controller 'CardListCtrl', [
     $scope.show = Cards.show
 ]
 
+.controller 'NavCtrl', [
+  '$scope', '$modal', 'Search', 'Cards','ModalEditor'
+  ($scope, $modal, Search, Cards, ModalEditor) ->
+    $scope.search = (term) ->
+      Search.query(term: term).$promise
+
+    $scope.select = ->
+      Cards.show $scope.result._model, $scope.result.id
+      $scope.result = null # clears the text field
+
+    $scope.show = Cards.show
+
+    $scope.act = (action) ->
+      ModalEditor.act(action)
+]
+
 .controller 'ModalFormCtrl', [
   '$scope', '$q', '$modalInstance', '$upload', 'Model', 'context', 'Search'
   ($scope, $q, $modalInstance, $upload, Model, context, Search) ->
@@ -76,33 +92,6 @@ Deckhand.app.controller 'CardListCtrl', [
 
 ]
 
-.controller 'NavCtrl', [
-    '$scope', '$filter', '$modal', 'Search', 'Cards','ModalEditor'
-    ($scope, $filter, $modal, Search, Cards, ModalEditor) ->
-      $scope.search = (term) ->
-        Search.query(term: term).$promise
-
-      $scope.select = ->
-        Cards.show $scope.result._model, $scope.result.id
-        $scope.result = null # clears the text field
-
-      $scope.show = Cards.show
-
-      $scope.act = (action) ->
-        formParams = {act: action, type: "root_action"}
-        url = Deckhand.templatePath + "?" + qs.stringify(formParams)
-        modalInstance = $modal.open(
-          templateUrl: url
-          controller: "ModalFormCtrl"
-          resolve:
-            context: ->
-              title: $filter("readableMethodName")(action)
-              formParams: formParams
-              verb: "root_act"
-        )
-        modalInstance.result.then ModalEditor.processResponse
-  ]
-
 .controller 'CardCtrl', [
   '$scope', '$filter', '$modal', 'Model', 'ModelStore', 'FieldFormatter', 'AlertService', 'ModelConfig', 'Cards', 'ModalEditor'
   ($scope, $filter, $modal, Model, ModelStore, FieldFormatter, AlertService, ModelConfig, Cards, ModalEditor) ->
@@ -143,20 +132,7 @@ Deckhand.app.controller 'CardListCtrl', [
 
     $scope.act = (item, action, options) ->
       if options.form
-        formParams = {model: item._model, act: action, type: "action"}
-
-        url = Deckhand.templatePath + "?" + qs.stringify(formParams)
-        modalInstance = $modal.open(
-          templateUrl: url
-          controller: "ModalFormCtrl"
-          resolve:
-            context: ->
-              item: item
-              title: item._label + ": " + $filter("readableMethodName")(action)
-              formParams: formParams
-              verb: "act"
-        )
-        modalInstance.result.then ModalEditor.processResponse
+        ModalEditor.act(action, item)
       else
         options.confirm = "Are you sure?" unless options.hasOwnProperty("confirm")
         if not options.confirm or confirm(options.confirm)

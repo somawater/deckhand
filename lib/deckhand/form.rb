@@ -10,8 +10,7 @@ class Deckhand::Form
   class_attribute :inputs
 
   attr_accessor :object
-  attr_accessor :success, :info, :warning
-  attr_writer :error
+  attr_accessor :success, :info, :warning, :error
   alias_method :notice, :info
   alias_method :notice=, :info=
 
@@ -43,7 +42,7 @@ class Deckhand::Form
   end
 
   def initialize(params = {})
-    self.object = params[:object] || new_model
+    self.object = params[:object]
 
     # because we're iterating through all inputs, not just the ones passed
     # to the constructor, this will set any missing inputs to nil or false
@@ -52,10 +51,6 @@ class Deckhand::Form
     end
 
     super()
-  end
-
-  def error
-    @error ||= object.errors.full_messages.join("; ") if object
   end
 
   def values
@@ -68,19 +63,12 @@ class Deckhand::Form
     end
   end
 
-  def model
-  end
-
-  def new_model
-    model ? model.new : raise(NotImplementedError)
-  end
-
   def execute
     raise NotImplementedError
   end
 
   def changed_objects
-    raise NotImplementedError
+    []
   end
 
   def title

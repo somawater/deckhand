@@ -20,47 +20,38 @@ module Deckhand
   class Configuration
     include Singleton
 
-    attr_accessor :initializer_block, :actions_config, :models_config, :global_config, :model_storage, :plugins
+    attr_accessor :initializer_block, :models, :global, :model_storage, :plugins
     attr_reader :field_types
 
     def run
-      self.actions_config = {}
-      self.models_config = {}
-      self.global_config = OpenStruct.new(model_label: [:id])
+      self.models = {}
+      self.global = OpenStruct.new(model_label: [:id], actions: {})
       DSL.new(self).instance_eval &initializer_block
       build_models_relations
     end
 
     def reset
-      self.models_config = self.global_config = nil
-    end
-
-    def action_class(action)
-      actions_config.keys.detect {|k| k == action }.camelcase.constantize
-    end
-
-    def for_action(action)
-      actions_config[action.to_s]
-    end
-
-    def has_action?(action)
-      actions_config.include? action.to_s
-    end
-
-    def actions
-      @actions ||= Hash[*actions_config.map {|action, config| [action_class(action), config]}.flatten]
+      self.models = self.global = nil
     end
 
     def model_class(model)
-      models_config.keys.detect {|k| k == model }.constantize
+      models.keys.detect {|k| k == model }.constantize
     end
 
     def for_model(model)
-      models_config[model.to_s]
+      models[model.to_s]
     end
 
     def has_model?(model)
-      models_config.include? model.to_s
+      models.include? model.to_s
+    end
+
+    def action_form_class(action)
+      global.actions[action.to_sym].try :form_class
+    end
+
+    def has_action?(action)
+      global.actions.include? action.to_sym
     end
 
     def attachment?(model, name)
@@ -69,13 +60,13 @@ module Deckhand
     end
 
     def models_to_list
-      models_config.select {|model, config| config.list }.map &:first
+      models.select {|model, config| config.list }.map &:first
     end
 
     private
 
     def build_models_relations
-      models_config.each do |model, config|
+      models.each do |model, config|
         config.table_fields.each do |name, options|
           class_name = options[:class_name]
 

@@ -13,12 +13,12 @@ class Deckhand::BaseController < ApplicationController
   end
 
   def model_config
-    @model_config ||= Deckhand.config.for_model(params[:model])
+    @model_config ||= Deckhand.config.for_model(params[:model]) if params[:model]
   end
   helper_method :model_config
 
   def form_class
-    model_config ? model_config.action_form_class(params[:act]) : Module.const_get(params[:act])
+    model_config ? model_config.action_form_class(params[:act]) : Deckhand.config.action_form_class(params[:act])
   end
   helper_method :form_class
 
