@@ -1,0 +1,7 @@
+%fieldset
+  %legend
+    = group[:label] || readable_method_name(name)
+    %a.glyphicon.glyphicon-chevron-right
+  .panel
+    - group[:inputs].each do |name, options|
+      = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'nested_item'

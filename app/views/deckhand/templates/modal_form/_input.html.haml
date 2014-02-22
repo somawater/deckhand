@@ -8,4 +8,7 @@
 
   - else
     %label.col-sm-3.control-label= readable_method_name name
-    .col-sm-9= angular_input "#{prefix}.#{name}", options
+    .col-sm-9
+      = angular_input "#{prefix}.#{name}", options
+      -unless options[:help].blank?
+        %p.help-block.small= options[:help].html_safe

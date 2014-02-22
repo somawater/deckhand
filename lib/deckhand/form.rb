@@ -19,9 +19,19 @@ class Deckhand::Form
   end
 
   class << self
+    def group(name, options = {}, &block)
+      attr_accessor name
+      @current_group_input = {inputs: {}, group: true, default: []}.merge(options)
+      self.inputs[name] = @current_group_input
+      block.call
+      @current_group_input = nil
+    end
+
     def input(name, options = {})
       if @current_multiple_input
         @current_multiple_input[:inputs][name] = options
+      elsif @current_group_input
+        @current_group_input[:inputs][name] = options
       else
         attr_accessor name
         self.inputs[name] = options

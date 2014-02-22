@@ -2,22 +2,18 @@
   %h3 {{title}}
 
 .modal-body
-  .alert.alert-danger(ng-show="error") {{error}}
+  .alert.alert-danger(ng-show="error")
+    %span(ng-bind-html="error")
   %span(ng-show="prompt") {{prompt}}
 
   %form.form-horizontal
     - @inputs.each do |name, options|
-      = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
-
-    - (@input_groups || []).each do |group_name, group|
-      %fieldset
-        %legend
-          = readable_method_name group_name
-          %a.glyphicon.glyphicon-plus(ng-click="form.#{group_name}.push({})")
-        .well(ng-repeat="nested_item in form.#{group_name}")
-          %button.close(ng-click="form.#{group_name}.splice($index)") &times;
-          - group[:inputs].each do |name, options|
-            = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'nested_item'
+      -if options[:multiple]
+        = render 'deckhand/templates/modal_form/multiple', name: name, multiple: options
+      -elsif options[:group]
+        = render 'deckhand/templates/modal_form/group', name: name, group: options
+      -else
+        = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
 
 .modal-footer
   %button.btn.btn-default(ng-click="cancel()") cancel
