@@ -1,7 +1,8 @@
-%fieldset
-  %legend
+%fieldset(ng-init="isCollapsed_#{name} = true")
+  %legend(ng-click="isCollapsed_#{name} = !isCollapsed_#{name}")
     = group[:label] || readable_method_name(name)
-    %a.glyphicon.glyphicon-chevron-right
-  .panel
-    - group[:inputs].each do |name, options|
-      = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'nested_item'
+    %a.glyphicon.glyphicon-chevron-right(ng-show="isCollapsed_#{name}")
+    %a.glyphicon.glyphicon-chevron-down(ng-show="!isCollapsed_#{name}")
+  .panel(collapse="isCollapsed_#{name}")
+    - group[:inputs].each do |input_name, options|
+      = render 'deckhand/templates/modal_form/input', name: input_name, options: options, prefix: "form.#{name}"
