@@ -20,10 +20,11 @@ class Deckhand::Form
 
   class << self
     def group(name, options = {}, &block)
-      attr_accessor name
       @current_group_input = {inputs: {}, group: true, default: {}}.merge(options)
+      attr_accessor name
       self.inputs[name] = @current_group_input
       block.call
+      @current_group_input[:inputs].each {|name, options| @current_group_input[:default][name] = options[:default] if options[:default]}
       @current_group_input = nil
     end
 
@@ -39,10 +40,13 @@ class Deckhand::Form
     end
 
     def multiple(name, options = {}, &block)
-      attr_accessor name
       @current_multiple_input = {inputs: {}, multiple: true, default: []}.merge(options)
-      self.inputs[name] = @current_multiple_input
+      unless @current_group_input
+        attr_accessor name
+        self.inputs[name] = @current_multiple_input
+      end
       block.call
+      @current_group_input[:inputs][name] = @current_multiple_input if @current_group_input
       @current_multiple_input = nil
     end
 
@@ -93,7 +97,7 @@ class Deckhand::Form
     type = options[:type]
 
     if !value and default = options[:default]
-      [true, false, [], {}].include?(default) ? default : send(default)
+      [TrueClass, FalseClass, Array, Hash].include?(default.class) ? default : send(default)
 
     elsif type == :boolean
       !!value
