@@ -8,11 +8,11 @@
 
   %form.form-horizontal
     - @inputs.each do |name, options|
-      -if options[:multiple]
+      - if options[:multiple]
         = render 'deckhand/templates/modal_form/multiple', name: name, multiple: options
-      -elsif options[:group]
+      - elsif options[:group]
         = render 'deckhand/templates/modal_form/group', name: name, group: options
-      -else
+      - else
         = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
 
 .modal-footer
