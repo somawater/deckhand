@@ -1,9 +1,9 @@
 %fieldset
   %legend
+    %a.glyphicon.glyphicon-plus(ng-click="form.#{name}.push({})")
     = multiple[:label] || readable_method_name(name)
     - unless multiple[:help].blank?
-      %span.btn.glyphicon.glyphicon-question-sign(tooltip="#{multiple[:help].html_safe}" tooltip-trigger="mouseenter")
-    %a.glyphicon.glyphicon-plus(ng-click="form.#{name}.push({})")
+      .glyphicon.glyphicon-question-sign.small(tooltip="#{multiple[:help].html_safe}" tooltip-trigger="mouseenter")
   .well(ng-repeat="nested_item in form.#{name}")
     %button.close(ng-click="form.#{name}.splice($index)") &times;
     - multiple[:inputs].each do |name, options|
