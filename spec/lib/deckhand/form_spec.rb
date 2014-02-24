@@ -37,7 +37,7 @@ describe Deckhand::Form do
   context "with groups" do
     it 'accepts regular inputs' do
       form = ExampleForm.new(album: {title: 'Music for the Jilted Generation'})
-      expect(form.album[:title]).to eq('Music for the Jilted Generation')
+      expect(form.album.title).to eq('Music for the Jilted Generation')
     end
 
     it 'embeds list values within group' do
@@ -56,9 +56,8 @@ describe Deckhand::Form do
         {title: 'Poison'},
         {title: 'No Good (Start The Dance)'}
       ]})
-      expect(form.album[:songs].size).to eq(3)
-      expect(form.album[:songs].last[:title]).to eq('No Good (Start The Dance)')
+      expect(form.album.songs.size).to eq(3)
+      expect(form.album.songs.last.title).to eq('No Good (Start The Dance)')
     end
   end
-
 end

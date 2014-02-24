@@ -1,6 +1,7 @@
 require 'active_support/core_ext/class/attribute'
 require 'active_model'
 require 'backport/active_model/model'
+require 'recursive-open-struct'
 
 class Deckhand::Form
   extend ActiveModel::Callbacks
@@ -112,6 +113,9 @@ class Deckhand::Form
     elsif type == Float
       value.to_f
 
+    elsif options[:group]
+      RecursiveOpenStruct.new(value, recurse_over_arrays: true)
+
     elsif options[:multiple]
       value.map do |subval|
         resolved = subval.map do |k, v|
@@ -125,5 +129,4 @@ class Deckhand::Form
       value
     end
   end
-
 end
