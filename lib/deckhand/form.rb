@@ -41,12 +41,13 @@ class Deckhand::Form
 
     def multiple(name, options = {}, &block)
       @current_multiple_input = {inputs: {}, multiple: true, default: []}.merge(options)
-      unless @current_group_input
+      block.call
+      if @current_group_input
+        @current_group_input[:inputs][name] = @current_multiple_input
+      else
         attr_accessor name
         self.inputs[name] = @current_multiple_input
       end
-      block.call
-      @current_group_input[:inputs][name] = @current_multiple_input if @current_group_input
       @current_multiple_input = nil
     end
 
