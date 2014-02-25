@@ -27,6 +27,13 @@ module Deckhand::TemplatesHelper
       args['type'] = 'file'
       args['ng-file-select'] = "onFileSelect($files, '#{name}')"
       args.delete('ng-model')
+    elsif options[:type] == Time
+      args.delete('class')
+    elsif options[:type] == Integer
+      args['type'] = 'number'
+    elsif options[:type] == Float
+      args['type'] = 'number'
+      args['step'] = 0.01
     elsif options[:choices]
       # nothing
     else
@@ -43,6 +50,8 @@ module Deckhand::TemplatesHelper
     elsif options[:editable] == {with: :ckeditor}
       args['ckeditor'] = true
       content_tag :textarea, '', args
+    elsif options[:type] == Time
+      content_tag :div, content_tag(:timepicker), args
     else
       content_tag :input, '', args
     end

@@ -99,7 +99,7 @@ class Deckhand::Form
     type = options[:type]
 
     if !value and default = options[:default]
-      [TrueClass, FalseClass, Array, Hash].include?(default.class) ? default : send(default)
+      [TrueClass, FalseClass, Float, Time, Integer, String, Array, Hash].include?(default.class) ? default : send(default)
 
     elsif type == :boolean
       !!value
