@@ -1,0 +1,13 @@
+%fieldset(ng-init="isCollapsed_#{name} = true")
+  %legend(ng-click="isCollapsed_#{name} = !isCollapsed_#{name}")
+    %a.glyphicon.glyphicon-chevron-right(ng-show="isCollapsed_#{name}")
+    %a.glyphicon.glyphicon-chevron-down(ng-show="!isCollapsed_#{name}")
+    = group[:label] || readable_method_name(name)
+    - unless group[:help].blank?
+      .glyphicon.glyphicon-question-sign.small(tooltip="#{group[:help].html_safe}" tooltip-trigger="mouseenter")
+  .panel(collapse="isCollapsed_#{name}")
+    - group[:inputs].each do |input_name, options|
+      - if options[:multiple]
+        = render 'deckhand/templates/modal_form/multiple', name: "#{name}.#{input_name}", multiple: options
+      - else
+        = render 'deckhand/templates/modal_form/input', name: input_name, options: options, prefix: "form.#{name}"
