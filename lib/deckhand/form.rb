@@ -1,6 +1,7 @@
 require 'active_support/core_ext/class/attribute'
 require 'active_model'
 require 'backport/active_model/model'
+require 'recursive-open-struct'
 
 class Deckhand::Form
   extend ActiveModel::Callbacks
@@ -19,9 +20,20 @@ class Deckhand::Form
   end
 
   class << self
+    def group(name, options = {}, &block)
+      @current_group_input = {inputs: {}, group: true, default: {}}.merge(options)
+      attr_accessor name
+      self.inputs[name] = @current_group_input
+      block.call
+      @current_group_input[:inputs].each {|name, options| @current_group_input[:default][name] = options[:default] if options[:default]}
+      @current_group_input = nil
+    end
+
     def input(name, options = {})
       if @current_multiple_input
         @current_multiple_input[:inputs][name] = options
+      elsif @current_group_input
+        @current_group_input[:inputs][name] = options
       else
         attr_accessor name
         self.inputs[name] = options
@@ -29,10 +41,14 @@ class Deckhand::Form
     end
 
     def multiple(name, options = {}, &block)
-      attr_accessor name
       @current_multiple_input = {inputs: {}, multiple: true, default: []}.merge(options)
-      self.inputs[name] = @current_multiple_input
       block.call
+      if @current_group_input
+        @current_group_input[:inputs][name] = @current_multiple_input
+      else
+        attr_accessor name
+        self.inputs[name] = @current_multiple_input
+      end
       @current_multiple_input = nil
     end
 
@@ -83,7 +99,7 @@ class Deckhand::Form
     type = options[:type]
 
     if !value and default = options[:default]
-      [true, false, []].include?(default) ? default : send(default)
+      [TrueClass, FalseClass, Array, Hash].include?(default.class) ? default : send(default)
 
     elsif type == :boolean
       !!value
@@ -96,6 +112,9 @@ class Deckhand::Form
 
     elsif type == Float
       value.to_f
+
+    elsif options[:group]
+      RecursiveOpenStruct.new(value, recurse_over_arrays: true)
 
     elsif options[:multiple]
       value.map do |subval|
@@ -110,5 +129,4 @@ class Deckhand::Form
       value
     end
   end
-
 end

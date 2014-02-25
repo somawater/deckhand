@@ -38,8 +38,8 @@ Deckhand.app.controller 'CardListCtrl', [
 ]
 
 .controller 'ModalFormCtrl', [
-  '$scope', '$q', '$modalInstance', '$upload', 'Model', 'context', 'Search'
-  ($scope, $q, $modalInstance, $upload, Model, context, Search) ->
+  '$scope', '$q', '$modalInstance', '$upload', '$sce', 'Model', 'context', 'Search'
+  ($scope, $q, $modalInstance, $upload, $sce, Model, context, Search) ->
     $scope.item = context.item
     $scope.itemId = if $scope.item then $scope.item.id else null
     $scope.form = {}
@@ -85,7 +85,7 @@ Deckhand.app.controller 'CardListCtrl', [
       $upload.upload(params).success((response) ->
         $modalInstance.close response
       ).error (response) ->
-        $scope.error = response.error
+        $scope.error = $sce.trustAsHtml(response.error)
 
     $scope.search = (val, model) ->
       Search.query(term: val, model: model).$promise

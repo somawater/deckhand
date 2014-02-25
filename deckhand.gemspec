@@ -19,4 +19,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   s.add_dependency 'sprockets-browserify'
   s.add_dependency 'haml'
+  s.add_dependency 'recursive-open-struct'
 end

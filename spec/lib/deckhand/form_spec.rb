@@ -34,4 +34,30 @@ describe Deckhand::Form do
     ]
   end
 
+  context "with groups" do
+    it 'accepts regular inputs' do
+      form = ExampleForm.new(album: {title: 'Music for the Jilted Generation'})
+      expect(form.album.title).to eq('Music for the Jilted Generation')
+    end
+
+    it 'embeds list values within group' do
+      form = ExampleForm.new
+      expect(form.inputs[:album][:inputs][:songs]).not_to be_nil
+    end
+
+    it 'has list values in default' do
+      form = ExampleForm.new
+      expect(form.inputs[:album][:default]).to eq({songs: []})
+    end
+
+    it 'accepts list values' do
+      form = ExampleForm.new(album: {songs: [
+        {title: 'Voodoo People'},
+        {title: 'Poison'},
+        {title: 'No Good (Start The Dance)'}
+      ]})
+      expect(form.album.songs.size).to eq(3)
+      expect(form.album.songs.last.title).to eq('No Good (Start The Dance)')
+    end
+  end
 end

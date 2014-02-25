@@ -8,11 +8,20 @@ class ExampleForm < Deckhand::Form
   input :here, type: :boolean, default: true
   input :there, type: :boolean, default: false
   input :nowhere
+  input :with_help, help: 'Whatever'
 
   multiple :positions do
     input :left_side
     input :right_side
     input :intensity, type: Integer
+  end
+
+  group :album, label: 'Album > Songs' do
+    input :title
+
+    multiple :songs, label: 'Songs:' do
+      input :title
+    end
   end
 
   def forty_one
