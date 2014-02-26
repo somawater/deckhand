@@ -18,8 +18,13 @@ module Deckhand::TemplatesHelper
     args = {'ng-model' => name, 'class' => 'form-control'}
 
     if options[:model]
+      args['type'] = 'text'
       args['typeahead'] = "object as object._label for object in search($viewValue, '#{options[:model]}')"
+      args['typeahead-loading'] = "loading_#{paremetrize(name)}"
       args['typeahead-template-url'] = 'typeahead-search'
+      args['typeahead-on-select'] = 'select()'
+      args['typeahead-wait-ms'] = '300'
+      args['placeholder'] = options[:placeholder] || 'Start typing ...'
     elsif options[:type] == :boolean
       args['type'] = 'checkbox'
       args.delete('class')
@@ -38,6 +43,7 @@ module Deckhand::TemplatesHelper
       # nothing
     else
       args['type'] = 'text'
+      args['placeholder'] = options[:placeholder] if options[:placeholder]
     end # TODO more types & HTML5 validators
 
     if options[:choices]
@@ -52,10 +58,18 @@ module Deckhand::TemplatesHelper
       content_tag :textarea, '', args
     elsif options[:type] == Time
       content_tag :div, content_tag(:timepicker), args
+    elsif options[:model]
+      content_tag(:span, '', class: 'modal-search') do
+        content_tag(:i, '', class: 'glyphicon glyphicon-search', "ng-class" => "{loading: loading_#{paremetrize(name)}}") +
+        content_tag(:input, '', args)
+      end
     else
       content_tag :input, '', args
     end
 
   end
 
+  def paremetrize(string)
+    string.gsub('.', '_')
+  end
 end
