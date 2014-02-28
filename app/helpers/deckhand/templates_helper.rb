@@ -20,7 +20,7 @@ module Deckhand::TemplatesHelper
     if options[:model]
       args['type'] = 'text'
       args['typeahead'] = "object as object._label for object in search($viewValue, '#{options[:model]}')"
-      args['typeahead-loading'] = "loading_#{paremetrize(name)}"
+      args['typeahead-loading'] = "loading_#{parameterize(name)}"
       args['typeahead-template-url'] = 'typeahead-search'
       args['typeahead-on-select'] = 'select()'
       args['typeahead-wait-ms'] = '300'
@@ -60,7 +60,7 @@ module Deckhand::TemplatesHelper
       content_tag :div, content_tag(:timepicker), args
     elsif options[:model]
       content_tag(:span, '', class: 'modal-search') do
-        content_tag(:i, '', class: 'glyphicon glyphicon-search', "ng-class" => "{loading: loading_#{paremetrize(name)}}") +
+        content_tag(:i, '', class: 'glyphicon glyphicon-search', "ng-class" => "{loading: loading_#{parameterize(name)}}") +
         content_tag(:input, '', args)
       end
     else
@@ -69,7 +69,7 @@ module Deckhand::TemplatesHelper
 
   end
 
-  def paremetrize(string)
+  def parameterize(string)
     string.gsub('.', '_')
   end
 end
