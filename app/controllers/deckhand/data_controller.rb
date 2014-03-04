@@ -1,4 +1,5 @@
 class Deckhand::DataController < Deckhand::BaseController
+  include NormalizeParams
 
   before_filter :normalize_params, only: [:act, :update]
 
@@ -135,40 +136,4 @@ class Deckhand::DataController < Deckhand::BaseController
   def instance
     @instance ||= model_class.try(:find, params[:id]) if params[:id]
   end
-
-  # this is a workaround for the way angular-file-upload works.
-  # it splits up top-level parameters into their own parts of the response
-  # and stringifies them in a way that Rails can't deal with automatically,
-  # so we put them into a subtree keyed with "non_file_params" and parse
-  # them here.
-  def normalize_params
-    return unless params[:non_file_params]
-
-    non_file_params = JSON.load(params[:non_file_params])
-
-    # copy this first so we can load the instance
-    params[:model] ||= non_file_params['model']
-    params[:act] ||= non_file_params['act']
-
-    fix_file_attachment_params(non_file_params)
-
-    params.merge! non_file_params
-    params.delete :non_file_params
-
-    Rails.logger.debug "  Normalized parameters: #{params.inspect}"
-  end
-
-  def fix_file_attachment_params(non_file_params)
-    non_file_params['form'].tap do |form|
-      # remove the previous values for the file attachment fields
-      form.keys.each do |key|
-        if Deckhand.config.attachment? instance.class, key.to_sym
-          form.delete(key)
-        end
-      end
-      # add the uploaded files
-      form.merge!(params[:form]) if params[:form]
-    end
-  end
-
 end
