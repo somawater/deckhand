@@ -13,7 +13,7 @@ module Deckhand::NormalizeParams
 
     params.merge! non_file_params
     params.delete :non_file_params
-    #Rails.logger.debug "  Normalized parameters: #{params.inspect}"
+    Rails.logger.debug "Normalized parameters: #{params.inspect}" if defined? Rails
   end
 
   private

@@ -61,7 +61,6 @@ describe Deckhand::NormalizeParams do
     it "takes care of files in group" do
       params[:form] = {"content.file" => "image.jpg"}
       controller.normalize_params
-      puts params
       expect(params["form"]["content"]).to eq({"title"=>"Title", "file"=>"image.jpg"})
     end
   end
