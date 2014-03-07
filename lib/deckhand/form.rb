@@ -1,7 +1,7 @@
 require 'active_support/core_ext/class/attribute'
 require 'active_model'
 require 'backport/active_model/model'
-require 'recursive-open-struct'
+require 'deckhand/open_struct_without_table'
 
 class Deckhand::Form
   extend ActiveModel::Callbacks
@@ -61,7 +61,7 @@ class Deckhand::Form
     self.object = params[:object]
 
     # because we're iterating through all inputs, not just the ones passed
-    # to the constructor, this will set any missing inputs to nil or false
+    # to the constructor, this will set any missing inputs to default or nil
     self.class.inputs.each do |name, options|
       send "#{name}=", resolve_value(params[name], options)
     end
@@ -69,13 +69,23 @@ class Deckhand::Form
     super()
   end
 
+  # collects values of the form into a hash
   def values
-    @values ||= inputs.reduce({}) do |h, (name, options)|
-      h[name] = {
+    @values ||= inputs.reduce({}) do |values, (name, options)|
+      values[name] = {
         value: send(name),
-        choices: (send(options[:choices]) if options[:choices])
+        choices: (eval(options[:choices].to_s) if options[:choices])
       }
-      h
+
+      #if options[:inputs]
+      #  options[:inputs].each do |input, input_options|
+      #    values[name][input] = {choices: eval(input_options[:choices].to_s)} if input_options[:choices]
+      #    or
+      #    values[name][:value][input][:choices] = eval(input_options[:choices].to_s) if input_options[:choices]
+      #  end
+      #end
+
+      values
     end
   end
 
@@ -95,38 +105,38 @@ class Deckhand::Form
 
   private
 
-  def resolve_value(value, options)
-    type = options[:type]
-
-    if !value and default = options[:default]
-      [TrueClass, FalseClass, Float, Time, Integer, String, Array, Hash].include?(default.class) ? default : send(default)
-
-    elsif type == :boolean
-      !!value
-
-    elsif !value
-      nil
-
-    elsif type == Integer
-      value.to_i
-
-    elsif type == Float
-      value.to_f
-
-    elsif options[:group]
-      RecursiveOpenStruct.new(value, recurse_over_arrays: true)
-
+  def resolve_value(params, options)
+    if options[:group]
+      resolve_nested_values(params, options)
     elsif options[:multiple]
-      value.map do |subval|
-        resolved = subval.map do |k, v|
-          sym = k.to_sym
-          [sym, resolve_value(v, options[:inputs][sym])]
-        end.flatten
-        ActiveSupport::HashWithIndifferentAccess.new Hash[*resolved]
+      (params || []).map do |member_params|
+        resolve_nested_values(member_params, options)
       end
-
+    elsif !params and default = options[:default]
+      if [TrueClass, FalseClass, Integer, Fixnum, Float, Time, String, Array, Hash].include?(default.class)
+        default
+      else
+        send(default)
+      end
+    elsif options[:type] == :boolean
+      !!params
+    elsif !params
+      nil
+    elsif options[:type] == Integer
+      params.to_i
+    elsif options[:type] == Float
+      params.to_f
     else
-      value
+      params.is_a?(Hash) ? Deckhand::OpenStructWithoutTable.new(params) : params
     end
+  end
+
+  def resolve_nested_values(params, options)
+    params = ActiveSupport::HashWithIndifferentAccess.new(params || {})
+    values = options[:inputs].reduce({}) do |values, (input, input_options)|
+      values[input] = resolve_value(params[input.to_sym], input_options)
+      values
+    end
+    Deckhand::OpenStructWithoutTable.new(values)
   end
 end

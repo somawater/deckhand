@@ -1,10 +1,10 @@
 %fieldset
   %legend
-    %a.glyphicon.glyphicon-plus(ng-click="form.#{name}.push({})")
+    %a.glyphicon.glyphicon-plus(ng-click="form.#{name}.push(#{defaults_for_new_multiple_item(multiple)})")
     = multiple[:label] || readable_method_name(name)
     - unless multiple[:help].blank?
       .glyphicon.glyphicon-question-sign.small(tooltip="#{multiple[:help].html_safe}" tooltip-trigger="mouseenter")
   .well(ng-repeat="nested_item in form.#{name}")
-    %button.close(ng-click="form.#{name}.splice($index)") &times;
+    %button.close(ng-click="form.#{name}.splice($index, 1)") &times;
     - multiple[:inputs].each do |name, options|
       = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'nested_item'

@@ -72,4 +72,9 @@ module Deckhand::TemplatesHelper
   def parameterize(string)
     string.gsub('.', '_')
   end
+
+  def defaults_for_new_multiple_item(multiple)
+    return {} unless multiple && multiple[:inputs]
+    multiple[:inputs].reduce({}) {|defaults, (name, options)| defaults[name] = options[:default]; defaults }.to_json
+  end
 end
