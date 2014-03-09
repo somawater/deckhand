@@ -9,18 +9,18 @@ class ExampleForm < Deckhand::Form
   input :there, type: :boolean, default: false
   input :nowhere
   input :with_help, help: 'Whatever'
-  input :marital_status, choices: :marital_status_enum
+  input :marital_status, choices: :marital_status_enum, default: 'm'
 
   multiple :positions do
     input :left_side
     input :right_side
     input :intensity, type: Integer, default: 100
-    input :preference, choices: :position_preference_enum
+    input :preference, choices: :position_preference_enum, default: 2
   end
 
   group :album, label: 'Album > Songs' do
     input :title, default: 'YMCA'
-    input :play_speed, choices: [['LP', 33], ['SP', 45]]
+    input :play_speed, choices: [['LP', 33], ['SP', 45]], default: 33
 
     multiple :songs, label: 'Songs:' do
       input :title

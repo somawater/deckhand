@@ -13,7 +13,7 @@ describe Deckhand::Form do
       expect(form.bonk).to eq('40')
     end
 
-    it 'sets defaults' do
+    it 'respects defaults' do
       form = ExampleForm.new(object: thing, foo: '45', bar: '35.70')
       expect(form.baz).to eq(42)
       expect(form.bonk).to eq(41)
@@ -22,12 +22,13 @@ describe Deckhand::Form do
       expect(form.nowhere).to be_nil
       expect(form.positions).to eq([])
       expect(form.thing).to eq(thing)
+      expect(form.marital_status).to eq('m')
     end
     
-    #it "has choices" do
-    #  form = ExampleForm.new
-    #  expect(form.values[:marital_status][:choices]).to eq([['Single', 's'], ['Married', 'm']])
-    #end
+    it "has choices" do
+      form = ExampleForm.new
+      expect(form.values[:marital_status][:choices]).to eq([['Single', 's'], ['Married', 'm']])
+    end
   end
 
   context "with list parameters" do
@@ -69,10 +70,15 @@ describe Deckhand::Form do
       expect(form.positions.last.intensity).to eq(3)
     end
 
-    #it "has choices" do
-    #  form = ExampleForm.new
-    #  expect(form.values[:positions][:preference][:choices]).to eq([['Left', 1], ['Right', 2]])
-    #end
+    it "has choices" do
+      form = ExampleForm.new
+      expect(form.values[:positions][:inputs][:preference][:choices]).to eq([['Left', 1], ['Right', 2]])
+    end
+
+    it "respects default value for choices" do
+      form = ExampleForm.new
+      expect(form.values[:positions][:inputs][:preference][:value]).to eq(2)
+    end
   end
 
 
@@ -117,9 +123,14 @@ describe Deckhand::Form do
       expect(form.album.songs.last.title).to eq('No Good (Start The Dance)')
     end
 
-    #it "has choices" do
-    #  form = ExampleForm.new
-    #  expect(form.values[:album][:play_speed][:choices]).to eq([['LP', 33], ['SP', 45]])
-    #end
+    it "has choices" do
+      form = ExampleForm.new
+      expect(form.values[:album][:inputs][:play_speed][:choices]).to eq([['LP', 33], ['SP', 45]])
+    end
+
+    it "respects default value for choices" do
+      form = ExampleForm.new
+      expect(form.values[:album][:inputs][:play_speed][:value]).to eq(33)
+    end
   end
 end

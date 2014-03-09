@@ -74,16 +74,18 @@ class Deckhand::Form
     @values ||= inputs.reduce({}) do |values, (name, options)|
       values[name] = {
         value: send(name),
-        choices: (eval(options[:choices].to_s) if options[:choices])
+        choices: (eval(options[:choices].to_s) if options[:choices]),
+        inputs: {}
       }
 
-      #if options[:inputs]
-      #  options[:inputs].each do |input, input_options|
-      #    values[name][input] = {choices: eval(input_options[:choices].to_s)} if input_options[:choices]
-      #    or
-      #    values[name][:value][input][:choices] = eval(input_options[:choices].to_s) if input_options[:choices]
-      #  end
-      #end
+      if options[:inputs]
+        options[:inputs].each do |input, input_options|
+          values[name][:inputs][input] = {
+            value: input_options[:default],
+            choices: (eval(input_options[:choices].to_s) if input_options[:choices])
+          }
+        end
+      end
 
       values
     end
