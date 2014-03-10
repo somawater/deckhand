@@ -56,6 +56,12 @@ Deckhand.app.controller 'CardListCtrl', [
           # FIXME this "form." prefix is weird
           $scope.choicesForSelect["form." + key] = value.choices if value.choices
 
+          for input_key, input_value of value.inputs
+            do ->
+              input_key = key + '.' + input_key
+              $scope.form[input_key] = input_value.value
+              $scope.choicesForSelect["form." + input_key] = input_value.choices if input_value.choices
+
     $scope.cancel = ->
       $modalInstance.dismiss "cancel"
 

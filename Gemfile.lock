@@ -4,7 +4,6 @@ PATH
     deckhand (0.1.0)
       activesupport
       haml
-      recursive-open-struct
       sprockets-browserify
 
 GEM
@@ -30,7 +29,6 @@ GEM
     minitest (4.7.5)
     multi_json (1.8.4)
     rack (1.5.2)
-    recursive-open-struct (0.4.5)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
