@@ -1,0 +1,8 @@
+require './search'
+require './alert_service'
+require './model'
+require './model_store'
+require './field_formatter'
+require './model_config'
+require './cards'
+require './modal_editor'

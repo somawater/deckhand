@@ -1,0 +1,5 @@
+require './card_list_ctrl'
+require './card_ctrl'
+require './modal_form_ctrl'
+require './nav_ctrl'
+require './sidebar_ctrl'
