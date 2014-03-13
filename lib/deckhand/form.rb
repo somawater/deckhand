@@ -74,7 +74,7 @@ class Deckhand::Form
     @values ||= inputs.reduce({}) do |values, (name, options)|
       values[name] = {
         value: send(name),
-        choices: (eval(options[:choices].to_s) if options[:choices]),
+        choices: get_choices(options),
         inputs: {}
       }
 
@@ -82,7 +82,7 @@ class Deckhand::Form
         options[:inputs].each do |input, input_options|
           values[name][:inputs][input] = {
             value: input_options[:default],
-            choices: (eval(input_options[:choices].to_s) if input_options[:choices])
+            choices: get_choices(input_options)
           }
         end
       end
@@ -140,5 +140,11 @@ class Deckhand::Form
       values
     end
     Deckhand::OpenStructWithoutTable.new(values)
+  end
+
+  def get_choices(options)
+    choices_expression = options[:choices]
+    return unless choices_expression
+    choices_expression.is_a?(Symbol) ? send(choices_expression) : choices_expression
   end
 end

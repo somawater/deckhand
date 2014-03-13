@@ -1,3 +1,5 @@
 # RubyMine project files
 .idea
 *.iml
+.bundle
+bin
