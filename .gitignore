@@ -4,3 +4,4 @@
 .bundle
 bin
 node_modules
+vendor/bundle
