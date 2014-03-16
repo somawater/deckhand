@@ -1,0 +1,26 @@
+{
+  "name": "deckhand",
+  "version": "0.0.0",
+  "description": "A card-based, user-centric admin interface.",
+  "main": "index.js",
+  "devDependencies": {
+    "karma": "~0.12.0",
+    "karma-jasmine": "~0.2.2",
+    "karma-coffee-preprocessor": "~0.2.1",
+    "coffeeify": "~0.6.0",
+    "karma-phantomjs-launcher": "~0.1.2",
+    "karma-browserify": "0.0.6",
+    "browserify": "~3.32.1"
+  },
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start spec/karma.config.coffee --single-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/somawater/deckhand.git"
+  },
+  "author": "",
+  "license": "BSD",
+  "gitHead": "2d2ddddee44592f8a512b1340d284e1f9f5bdeed",
+  "readmeFilename": "README.md"
+}

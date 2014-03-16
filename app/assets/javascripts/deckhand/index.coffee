@@ -19,9 +19,9 @@ Deckhand.app = angular.module 'Deckhand', [
   'ui.bootstrap'
 ]
 
-require "./controllers"
-require "./services"
-require "./directives"
+require "./controllers/index.coffee"
+require "./services/index.coffee"
+require "./directives/index.coffee"
 
 Deckhand.app.filter "readableMethodName", ->
   (name) ->
