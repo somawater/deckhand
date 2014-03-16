@@ -1,9 +1,11 @@
+require './spec_helper'
+
 describe 'AlertService', ->
   subject = undefined
   rootScope = undefined
 
   beforeEach ->
-    module 'Deckhand'
+    angular.mock.module 'Deckhand'
 
     inject [
       'AlertService', '$rootScope'

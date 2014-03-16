@@ -11,8 +11,7 @@ module.exports = (config) ->
     ]
 
     preprocessors:
-      'app/assets/javascripts/deckhand/index.coffee': ['browserify']
-      'spec/**/*.coffee': ['coffee']
+      'spec/**/*.coffee': ['browserify']
 
     browserify:
       extensions: ['.coffee']
@@ -23,16 +22,9 @@ module.exports = (config) ->
 
     # list of files / patterns to load in the browser
     files: [
+      'spec/support/jquery-1.11.0.js' # load jQuery before angular so that it uses it
+      'spec/support/jasmine-jquery.js'
       'spec/support/karma_init.coffee'
-      'app/assets/javascripts/deckhand/index.coffee' # load the application, have browserify serve it
-      {
-        # watch application files, but do not serve them from Karma since they are served by browserify
-        pattern: 'app/assets/javascripts/deckhand/*.+(coffee|js)'
-        watched: true
-        included: false
-        served: false
-      }
-      'spec/support/**/*.+(coffee|js)' # load specs dependencies
       'spec/javascripts/**/*_spec.+(coffee|js)' # load the specs
     ]
 
