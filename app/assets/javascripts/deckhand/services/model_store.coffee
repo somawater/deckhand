@@ -1,7 +1,7 @@
 Deckhand.app.factory "ModelStore", [
   'ModelConfig', '$log'
   (ModelConfig, $log) ->
-    window.store = {}
+    store = {}
     register = (item) ->
       model = item._model
       id = item.id
@@ -12,7 +12,7 @@ Deckhand.app.factory "ModelStore", [
       entry = store[model][id]
       if entry.item
         $log.debug "register (hit): #{model} #{id}"
-        extend true, entry.item, item
+        angular.extend entry.item, item
       else
         $log.debug "register (miss): #{model} #{id}"
         entry.item = item

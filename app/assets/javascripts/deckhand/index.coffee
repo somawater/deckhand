@@ -1,8 +1,3 @@
-window.extend = require("extend")
-window.slice = require("slice-keys")
-
-moment = require("moment")
-
 require "angular"
 require "./lib/angular-resource"
 require "./lib/angular-sanitize"
