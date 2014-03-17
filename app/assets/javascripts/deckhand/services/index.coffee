@@ -1,0 +1,8 @@
+require './search.coffee'
+require './alert_service.coffee'
+require './model.coffee'
+require './model_store.coffee'
+require './field_formatter.coffee'
+require './model_config.coffee'
+require './cards.coffee'
+require './modal_editor.coffee'

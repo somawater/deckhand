@@ -1,0 +1,5 @@
+require './card_list_ctrl.coffee'
+require './card_ctrl.coffee'
+require './modal_form_ctrl.coffee'
+require './nav_ctrl.coffee'
+require './sidebar_ctrl.coffee'
