@@ -2,7 +2,7 @@ require './spec_helper'
 scroll = require '../../app/assets/javascripts/deckhand/node_modules/scroll'
 
 describe 'Card scrolling', ->
-  el = scope = Cards = Model = ModelStore = $timeout = null
+  el = scope = Cards = Model = ModelStore = null
 
   beforeEach angular.mock.module 'Deckhand'
 
@@ -14,8 +14,7 @@ describe 'Card scrolling', ->
     Model = _Model_
     ModelStore = _ModelStore_
 
-  beforeEach inject ($rootScope, $compile, _$timeout_) ->
-    $timeout = _$timeout_
+  beforeEach inject ($rootScope, $compile) ->
     fixture = setFixtures("""
       <div ng-controller="CardListCtrl">
         <div class="card" ng-repeat="item in cards" dh-scroll-to="showCard">
@@ -40,7 +39,6 @@ describe 'Card scrolling', ->
       scope.$apply()
 
     it 'scrolls to the card representing that model', ->
-      $timeout.flush()
       cardEl = el.find('.card')[0]
       expect(scroll.top).toHaveBeenCalledWith(
         document.body,
