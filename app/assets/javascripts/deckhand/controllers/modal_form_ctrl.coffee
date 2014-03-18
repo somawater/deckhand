@@ -1,3 +1,5 @@
+extend = angular.extend
+
 Deckhand.app.controller 'ModalFormCtrl', [
   '$scope', '$q', '$modalInstance', '$upload', '$sce', 'Model', 'context', 'Search'
   ($scope, $q, $modalInstance, $upload, $sce, Model, context, Search) ->
