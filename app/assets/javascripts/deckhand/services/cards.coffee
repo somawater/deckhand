@@ -1,13 +1,11 @@
 Deckhand.app.factory 'Cards', [
-  'Model', 'ModelStore', '$rootScope', '$timeout'
-  (Model, ModelStore, $rootScope, $timeout) ->
+  'Model', 'ModelStore', '$rootScope'
+  (Model, ModelStore, $rootScope) ->
 
     cards = []
 
     scrollToCard = (item) ->
-      $timeout ->
-        $rootScope.$broadcast 'showCard', item
-      , 0
+      $rootScope.$broadcast 'showCard', item
 
     {
       show: (model, id) =>
@@ -19,7 +17,6 @@ Deckhand.app.factory 'Cards', [
             entry = ModelStore.register(item)
             entry.card = true
             cards.unshift entry.item
-            scrollToCard entry.item
 
       refresh: (item) ->
         entry = ModelStore.register(item)
