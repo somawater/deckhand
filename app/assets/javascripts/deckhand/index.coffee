@@ -1,3 +1,5 @@
+window.$ = window.jQuery = require 'jquery'
+
 require "angular"
 require "./lib/angular-resource"
 require "./lib/angular-sanitize"
