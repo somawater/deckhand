@@ -26,7 +26,7 @@ module Deckhand
     def run
       self.models = {}
       self.global = OpenStruct.new(model_label: [:id], actions: {})
-      DSL.new(self).instance_eval &initializer_block
+      DSL.new(self).instance_eval(&initializer_block)
       build_models_relations
     end
 
