@@ -102,13 +102,13 @@ class Deckhand::DataController < Deckhand::BaseController
             changed: form.changed_objects.map { |obj| present(obj) }
           )
         else
-          render_error form.error
+          render_error form.errors.full_messages.join('<br/>')
         end
       rescue
         render_error $!.message
       end
     else
-      render_error form.error
+      render_error form.errors.full_messages.join('<br/>')
     end
   end
 
