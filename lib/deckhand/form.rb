@@ -55,6 +55,11 @@ class Deckhand::Form
     def object_name(name)
       alias_method name, :object
     end
+
+    def view(path = nil)
+      return @view unless path
+      @view = path
+    end
   end
 
   def initialize(params = {})

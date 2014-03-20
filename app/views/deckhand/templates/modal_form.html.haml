@@ -1,20 +1,27 @@
+- inputs = Proc.new do
+  - @inputs.each do |name, options|
+    - if options[:multiple]
+      = render 'deckhand/templates/modal_form/multiple', name: name, multiple: options
+    - elsif options[:group]
+      = render 'deckhand/templates/modal_form/group', name: name, group: options
+    - else
+      = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
+
 .modal-header
   %h3 {{title}}
 
-.modal-body
-  .alert.alert-danger(ng-show="error")
-    %span(ng-bind-html="error")
-  %span(ng-show="prompt") {{prompt}}
+%form.form-horizontal(ng-submit="submit()")
+  .modal-body
+    .alert.alert-danger(ng-show="error")
+      %span(ng-bind-html="error")
+    %span(ng-show="prompt") {{prompt}}
 
-  %form.form-horizontal
-    - @inputs.each do |name, options|
-      - if options[:multiple]
-        = render 'deckhand/templates/modal_form/multiple', name: name, multiple: options
-      - elsif options[:group]
-        = render 'deckhand/templates/modal_form/group', name: name, group: options
-      - else
-        = render 'deckhand/templates/modal_form/input', name: name, options: options, prefix: 'form'
+    - if @view
+      = render layout: @view do
+        - inputs.call
+    - else
+      - inputs.call
 
-.modal-footer
-  %button.btn.btn-default(ng-click="cancel()") cancel
-  %button.btn.btn-primary(ng-click="submit()") continue
+  .modal-footer
+    %button.btn.btn-default(type="button" ng-click="cancel()") cancel
+    %button.btn.btn-primary(type="submit") continue
