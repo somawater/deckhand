@@ -80,8 +80,11 @@ Deckhand.app.directive 'dhFieldEditor', [
         when 'nested'
           '<span></span>'
         when 'checkbox'
-          #"<input type='checkbox' ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-show='true'/>" # TODO not sure why explicit unhide is necesarry
-          "<button type='button' class='btn btn-xs' ng-class='item[name] ? \"btn-success\" : \"\"' ng-model='item[name]' ng-change=\"onCheckboxChange()\" btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false' ng-show='true'>{{item[name] ? 'Yes' : 'No'}}</button>"
+          #TODO not sure why explicit unhide is necesarry
+          #"<input type='checkbox' ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'/>"
+          "<button type='button' class='btn btn-xs btn-checkbox' ng-class='item[name] ? \"btn-success\" : \"\"'
+                   ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'
+                   btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'><span class='glyphicon glyphicon-off'></span></button>"
         else
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
