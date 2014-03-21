@@ -11,10 +11,8 @@ Deckhand.app.directive 'dhField', [
       scope.edit = (type) ->
         switch type
           when 'checkbox'
-            scope.$apply ->
-              newValue = $scope.item[$scope.name]
-              updateText $scope, newValue if newValue != $  scope.previousValue
-          when 'text', 'upload'
+            null # handled by ng-change immediately
+          when 'text', 'upload', 'checkbox'
             if !scope.editing
               scope.$broadcast 'startEditing'
               scope.editing = true
@@ -53,7 +51,7 @@ Deckhand.app.directive 'dhField', [
 
       else if field.link_to
         output = "<a target='_blank' ng-href=\"{{substitute(item, name, '#{field.link_to}')}}\">
-          #{value}</a>"
+                  #{value}</a>"
 
       else if field.type == 'relation'
         output = "<a ng-click=\"show(item[name]._model, item[name].id)\">#{value}</a>"
@@ -78,30 +76,30 @@ Deckhand.app.directive 'dhField', [
 
         output =
           "<div class='dh-field editable'
-                ng-click=\"edit('#{editType}')\"
-                ng-class='{editing: editing, image: #{field.thumbnail}}'>"
+                          ng-click=\"edit('#{editType}')\"
+                          ng-class='{editing: editing, image: #{field.thumbnail}}'>"
         unless editType is 'checkbox'
           output += "
-                <i class='glyphicon glyphicon-pencil edit-icon'></i>
-                <div ng-hide='editing'>#{output}</div>"
+                          <i class='glyphicon glyphicon-pencil edit-icon'></i>
+                          <div ng-hide='editing'>#{output}</div>"
         output += "
-                <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
-          </div>"
+                        <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
+                  </div>"
 
       else
         output =
           "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>
-            #{output}
-          </div>"
+                      #{output}
+                    </div>"
 
       return output
 
     {
-      link: link
-      restrict: 'E'
-      replace: true
-      scope: {item: '='}
-      template: template
-      controller: controller
+    link: link
+    restrict: 'E'
+    replace: true
+    scope: {item: '='}
+    template: template
+    controller: controller
     }
 ]

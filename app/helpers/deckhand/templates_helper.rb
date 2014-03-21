@@ -25,7 +25,7 @@ module Deckhand::TemplatesHelper
     return build_integer_picker(args)                   if options[:type] == Integer
     return build_float_picker(args)                     if options[:type] == Float
     return build_select_input(args, name, options)      if options[:choices]
-    return build_hidden_input(args, options)      if options[:hidden]
+    return build_hidden_input(args, options)            if options[:hidden]
 
     build_text_input(args, options)
   end

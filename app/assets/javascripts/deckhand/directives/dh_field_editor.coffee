@@ -2,7 +2,7 @@ Deckhand.app.directive 'dhFieldEditor', [
   'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor', '$upload'
   (Model, $log, AlertService, $timeout, Cards, ModalEditor, $upload) ->
 
-    updateText = (scope, value) ->
+    updateValue = (scope, value) ->
       $log.debug "#{scope.previousValue} => #{value}"
       params =
         id: scope.item.id
@@ -48,6 +48,9 @@ Deckhand.app.directive 'dhFieldEditor', [
         .error (response) ->
           AlertService.add 'danger', (response.data?.error or 'The upload failed')
 
+      scope.onCheckboxChange = ->
+        updateValue scope, scope.item[scope.name]
+
     setupTextInputHandlers = (scope, element, dhField) ->
       element.on 'keydown', (event) ->
         if event.which is 27 # esc
@@ -64,7 +67,7 @@ Deckhand.app.directive 'dhFieldEditor', [
           @blur()
           scope.$apply ->
             newValue = scope.item[scope.name]
-            updateText scope, newValue if newValue != scope.previousValue
+            updateValue scope, newValue if newValue != scope.previousValue
 
     template = (tElement, tAttrs) ->
       switch tAttrs.editType
@@ -77,16 +80,17 @@ Deckhand.app.directive 'dhFieldEditor', [
         when 'nested'
           '<span></span>'
         when 'checkbox'
-          "<input type='checkbox' ng-model='item[name]' ng-hide='false'/>" # TODO not sure why explicit unhide is necesarry
+          #"<input type='checkbox' ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-show='true'/>" # TODO not sure why explicit unhide is necesarry
+          "<button type='button' class='btn btn-xs' ng-class='item[name] ? \"btn-success\" : \"\"' ng-model='item[name]' ng-change=\"onCheckboxChange()\" btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false' ng-show='true'>{{item[name] ? 'Yes' : 'No'}}</button>"
         else
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
     {
-      require: '^dhField'
-      link: link
-      restrict: 'E'
-      replace: true
-      scope: {item: '=', name: '='}
-      template: template
+    require: '^dhField'
+    link: link
+    restrict: 'E'
+    replace: true
+    scope: {item: '=', name: '='}
+    template: template
     }
 ]
