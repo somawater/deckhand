@@ -1,3 +1,8 @@
+# We expose jQuery to global in order for angular to use it.
+# We need jQuery to be used instead of jqLite because we want DOM
+# inserts to eval script tags, so that javascript gets executed
+window.$ = window.jQuery = require 'jquery'
+
 require "angular"
 require "./lib/angular-resource"
 require "./lib/angular-sanitize"

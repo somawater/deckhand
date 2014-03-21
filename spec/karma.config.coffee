@@ -22,8 +22,6 @@ module.exports = (config) ->
 
     # list of files / patterns to load in the browser
     files: [
-      'spec/support/jquery-1.11.0.js' # load jQuery before angular so that it uses it
-      'spec/support/jasmine-jquery.js'
       'spec/support/karma_init.coffee'
       'spec/javascripts/**/*_spec.+(coffee|js)' # load the specs
     ]
