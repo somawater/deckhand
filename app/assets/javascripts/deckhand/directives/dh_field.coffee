@@ -74,17 +74,17 @@ Deckhand.app.directive 'dhField', [
         else
           'text'
 
-        output =
-          "<div class='dh-field editable'
-                          ng-click=\"edit('#{editType}')\"
-                          ng-class='{editing: editing, image: #{field.thumbnail}}'>"
+        output = "
+          <div class='dh-field editable'
+                ng-click=\"edit('#{editType}')\"
+                ng-class='{editing: editing, image: #{field.thumbnail}}'>"
         unless editType is 'checkbox'
           output += "
-                          <i class='glyphicon glyphicon-pencil edit-icon'></i>
-                          <div ng-hide='editing'>#{output}</div>"
+            <i class='glyphicon glyphicon-pencil edit-icon'></i>
+            <div ng-hide='editing'>#{output}</div>"
         output += "
-                        <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
-                  </div>"
+            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
+          </div>"
 
       else
         output =
@@ -95,11 +95,11 @@ Deckhand.app.directive 'dhField', [
       return output
 
     {
-    link: link
-    restrict: 'E'
-    replace: true
-    scope: {item: '='}
-    template: template
-    controller: controller
+      link: link
+      restrict: 'E'
+      replace: true
+      scope: {item: '='}
+      template: template
+      controller: controller
     }
 ]

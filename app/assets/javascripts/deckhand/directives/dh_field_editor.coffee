@@ -86,11 +86,11 @@ Deckhand.app.directive 'dhFieldEditor', [
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
     {
-    require: '^dhField'
-    link: link
-    restrict: 'E'
-    replace: true
-    scope: {item: '=', name: '='}
-    template: template
+      require: '^dhField'
+      link: link
+      restrict: 'E'
+      replace: true
+      scope: {item: '=', name: '='}
+      template: template
     }
 ]
