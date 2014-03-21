@@ -2,7 +2,7 @@ Deckhand.app.directive 'dhFieldEditor', [
   'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor', '$upload'
   (Model, $log, AlertService, $timeout, Cards, ModalEditor, $upload) ->
 
-    updateText = (scope, value) ->
+    updateValue = (scope, value) ->
       $log.debug "#{scope.previousValue} => #{value}"
       params =
         id: scope.item.id
@@ -48,6 +48,9 @@ Deckhand.app.directive 'dhFieldEditor', [
         .error (response) ->
           AlertService.add 'danger', (response.data?.error or 'The upload failed')
 
+      scope.onCheckboxChange = ->
+        updateValue scope, scope.item[scope.name]
+
     setupTextInputHandlers = (scope, element, dhField) ->
       element.on 'keydown', (event) ->
         if event.which is 27 # esc
@@ -64,7 +67,7 @@ Deckhand.app.directive 'dhFieldEditor', [
           @blur()
           scope.$apply ->
             newValue = scope.item[scope.name]
-            updateText scope, newValue if newValue != scope.previousValue
+            updateValue scope, newValue if newValue != scope.previousValue
 
     template = (tElement, tAttrs) ->
       switch tAttrs.editType
@@ -76,6 +79,12 @@ Deckhand.app.directive 'dhFieldEditor', [
           "<textarea></textarea>"
         when 'nested'
           '<span></span>'
+        when 'checkbox'
+          #TODO not sure why explicit unhide is necesarry
+          #"<input type='checkbox' ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'/>"
+          "<button type='button' class='btn btn-xs btn-checkbox' ng-class='item[name] ? \"btn-success\" : \"\"'
+                   ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'
+                   btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'><span class='glyphicon glyphicon-off'></span></button>"
         else
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
