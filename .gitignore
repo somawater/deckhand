@@ -1,10 +1,13 @@
 # RubyMine project files
 .idea
 *.iml
+
 .bundle
 bin
-node_modules
 vendor/bundle
+
+# ignore root npm modules but not the ones in assets
+/node_modules
 
 spec/dummy/log
 spec/dummy/tmp
