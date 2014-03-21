@@ -12,7 +12,7 @@ Deckhand.app.directive 'dhField', [
         switch type
           when 'checkbox'
             null # handled by ng-change immediately
-          when 'text', 'upload', 'checkbox'
+          when 'text', 'upload'
             if !scope.editing
               scope.$broadcast 'startEditing'
               scope.editing = true
@@ -74,23 +74,20 @@ Deckhand.app.directive 'dhField', [
         else
           'text'
 
-        output = "
-          <div class='dh-field editable'
-                ng-click=\"edit('#{editType}')\"
-                ng-class='{editing: editing, image: #{field.thumbnail}}'>"
-        unless editType is 'checkbox'
-          output += "
-            <i class='glyphicon glyphicon-pencil edit-icon'></i>
-            <div ng-hide='editing'>#{output}</div>"
-        output += "
-            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
-          </div>"
+        middle = if editType is 'checkbox'
+          output
+        else
+          "<i class='glyphicon glyphicon-pencil edit-icon'></i>
+           <div ng-hide='editing'>#{output}</div>"
 
+        output = "<div class='dh-field editable'
+                       ng-click=\"edit('#{editType}')\"
+                       ng-class='{editing: editing, image: #{field.thumbnail}}'>
+                    #{middle}
+                    <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
+                  </div>"
       else
-        output =
-          "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>
-                      #{output}
-                    </div>"
+        output = "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>#{output}</div>"
 
       return output
 

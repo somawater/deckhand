@@ -22,7 +22,6 @@ class Deckhand::TemplatesController < Deckhand::BaseController
 
     when 'edit'
       @inputs = model_config.fields_to_edit
-      @view = form_class.view
       if edit_fields = params[:edit_fields]
         @inputs = @inputs.reject {|name, options| !edit_fields.include? name.to_s }
       end
