@@ -10,6 +10,10 @@ Deckhand.app.directive 'dhField', [
 
       scope.edit = (type) ->
         switch type
+          when 'checkbox'
+            scope.$apply ->
+              newValue = $scope.item[$scope.name]
+              updateText $scope, newValue if newValue != $  scope.previousValue
           when 'text', 'upload'
             if !scope.editing
               scope.$broadcast 'startEditing'
@@ -67,16 +71,21 @@ Deckhand.app.directive 'dhField', [
           'nested'
         else if field.type == 'file'
           'upload'
+        else if field.type == 'boolean'
+          'checkbox'
         else
           'text'
 
         output =
           "<div class='dh-field editable'
                 ng-click=\"edit('#{editType}')\"
-                ng-class='{editing: editing, image: #{field.thumbnail}}'>
-            <i class='glyphicon glyphicon-pencil edit-icon'></i>
-            <div ng-hide='editing'>#{output}</div>
-            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
+                ng-class='{editing: editing, image: #{field.thumbnail}}'>"
+        unless editType is 'checkbox'
+          output += "
+                <i class='glyphicon glyphicon-pencil edit-icon'></i>
+                <div ng-hide='editing'>#{output}</div>"
+        output += "
+                <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
           </div>"
 
       else

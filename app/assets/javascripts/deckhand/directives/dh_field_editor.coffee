@@ -76,6 +76,8 @@ Deckhand.app.directive 'dhFieldEditor', [
           "<textarea></textarea>"
         when 'nested'
           '<span></span>'
+        when 'checkbox'
+          "<input type='checkbox' ng-model='item[name]' ng-hide='false'/>" # TODO not sure why explicit unhide is necesarry
         else
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 
