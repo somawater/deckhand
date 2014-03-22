@@ -13,9 +13,16 @@
         %tr
           %th &nbsp;
           - @columns.each do |column|
-            %th= readable_method_name column
+            %th(ng-click="sortBy('#{column}', '#{@name}')")
+              %i.glyphicon( |
+                ng-class="{ |
+                  'glyphicon-chevron-up': reverse['#{@name}'] && sortingColumn['#{@name}'] == '#{column}', |
+                  'glyphicon-chevron-down': !reverse['#{@name}'] && sortingColumn['#{@name}'] == '#{column}' |
+                }" |
+              )
+              = readable_method_name column
       %tbody
-        %tr(ng-repeat="nested_item in item.#{@name}")
+        %tr(ng-repeat="nested_item in item.#{@name} | orderBy:sortingColumn['#{@name}']:reverse['#{@name}']")
           %td
             %a.glyphicon.glyphicon-new-window(ng-click="show(nested_item._model, nested_item.id)")
           - @columns.each_with_index do |column, i|
