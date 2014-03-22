@@ -18,10 +18,8 @@ Deckhand.app.directive 'dhTable', ->
         undefined # Reset sortingColumn when toggling the same column from a reverse
       else
         column
+
       $scope.reverse = if sameColumn
-        if $scope.reverse
-          false
-        else
-          true
+        !$scope.reverse
       else
         false
