@@ -12,9 +12,14 @@
   },
   "dependencies": {
     "moment": "*",
-    "angular": "1.2.2",
     "scroll": "*",
     "coffeeify": "*",
-    "jquery": "~2"
+    "jquery": "~2",
+    "brfs": "~1.0.0"
+  },
+  "browserify": {
+    "transform": [
+      "brfs"
+    ]
   }
 }
