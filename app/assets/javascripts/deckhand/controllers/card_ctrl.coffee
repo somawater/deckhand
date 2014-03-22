@@ -7,10 +7,8 @@ Deckhand.app.controller 'CardCtrl', [
     $scope.show = Cards.show
     $scope.remove = Cards.remove
 
-    $scope.sortingColumn = {}
-    $scope.reverse = {}
-
-    $scope.init = (item) ->
+    $scope.init = (item, columns) ->
+      $scope.columns = columns
       return if item.id == 'list'
       for field in ModelConfig.tableFields(item._model)
         do ->
@@ -19,20 +17,6 @@ Deckhand.app.controller 'CardCtrl', [
             $scope.lazyLoad[field.name] = true
           else if field.table and item[field.name].length is 0
             $scope.collapse[field.name] = true
-
-    $scope.sortBy = (column, table) ->
-      sameColumn = $scope.sortingColumn[table] == column
-      $scope.sortingColumn[table] = if sameColumn && $scope.reverse[table]
-        undefined # Reset sortingColumn when toggling the same column from a reverse
-      else
-        column
-      $scope.reverse[table] = if sameColumn
-        if $scope.reverse[table]
-          false
-        else
-          true
-      else
-        false
 
     $scope.toggleTable = (name) ->
       if $scope.lazyLoad[name]

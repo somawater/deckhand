@@ -1,9 +1,13 @@
 Deckhand.app.directive 'dhField', [
-  'FieldFormatter', '$rootScope', 'ModelConfig', 'Cards', 'ModalEditor'
-  (FieldFormatter, $rootScope, ModelConfig, Cards, ModalEditor) ->
+  '$compile', 'FieldFormatter', '$rootScope', 'ModelConfig', 'Cards', 'ModalEditor'
+  ($compile, FieldFormatter, $rootScope, ModelConfig, Cards, ModalEditor) ->
 
     link = (scope, element, attrs) ->
-      scope.name = attrs.name
+
+      element.html(getTemplate(scope))
+
+      $compile(element.contents())(scope)
+
       scope.format = FieldFormatter.format
       scope.substitute = FieldFormatter.substitute
       scope.show = Cards.show
@@ -26,8 +30,8 @@ Deckhand.app.directive 'dhField', [
       return this
     ]
 
-    template = (tElement, tAttrs) ->
-      field = ModelConfig.field(tAttrs.model, tAttrs.name, tAttrs.relation)
+    getTemplate = (scope) ->
+      field = ModelConfig.field(scope.model, scope.name, scope.relation)
       value = null
 
       return '<span>{{format(item, name)}}</span>' unless field
@@ -95,8 +99,11 @@ Deckhand.app.directive 'dhField', [
       link: link
       restrict: 'E'
       replace: true
-      scope: {item: '='}
-      template: template
+      scope:
+        item: '='
+        model: '='
+        name: '='
+        relation: '='
       controller: controller
     }
 ]
