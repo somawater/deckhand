@@ -117,3 +117,41 @@ describe 'dhField', ->
 
     it 'invokes dh-field-editor directive', ->
       expect(element.find("[edit-type='text']").length).toBe(1)
+
+    describe 'with ckeditor', ->
+      beforeEach ->
+        mockField({editable: {with: 'ckeditor'}})
+        render()
+
+      it 'invokes dh-field-editor ckeditor directive', ->
+        expect(element.find("[edit-type='ckeditor']").length).toBe(1)
+
+    describe 'with nested', ->
+      beforeEach ->
+        mockField({editable: {nested: true}})
+        render()
+
+      it 'invokes dh-field-editor nested directive', ->
+        expect(element.find("[edit-type='nested']").length).toBe(1)
+
+    describe 'with file', ->
+      beforeEach ->
+        mockField({editable: true, type: 'file'})
+        render()
+
+      it 'invokes dh-field-editor upload directive', ->
+        expect(element.find("[edit-type='upload']").length).toBe(1)
+
+    describe 'with boolean', ->
+      beforeEach ->
+        mockField({editable: true, type: 'boolean'})
+        render()
+
+      it 'does not contain editable icon', ->
+        expect(element.find('.glyphicon-pencil').length).toEqual(0)
+
+      it 'does not contain hidable element with value', ->
+        expect(element.find("[ng-hide='editing']").length).toEqual(0)
+
+      it 'invokes dh-field-editor checkbox directive', ->
+        expect(element.find("[edit-type='checkbox']").length).toBe(1)
