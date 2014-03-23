@@ -19,6 +19,8 @@ Deckhand.app = angular.module 'Deckhand', [
   'ui.bootstrap'
 ]
 
+Deckhand.app.value 'modelConfigData', Deckhand.models
+
 require "./controllers/index.coffee"
 require "./services/index.coffee"
 require "./directives/index.coffee"
