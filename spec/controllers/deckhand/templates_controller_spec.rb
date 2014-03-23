@@ -54,9 +54,5 @@ describe Deckhand::TemplatesController do
       include_examples 'rendering the modal_form view'
     end
 
-    context 'with type="edit"' do
-      let(:type_param) { 'edit' }
-      include_examples 'rendering the modal_form view'
-    end
   end
 end

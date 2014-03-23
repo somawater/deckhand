@@ -74,25 +74,22 @@ Deckhand.app.directive 'dhField', [
         else
           'text'
 
-        wrapper = "
-          <div class='dh-field editable'
-                ng-click=\"edit('#{editType}')\"
-                ng-class='{editing: editing, image: #{field.thumbnail}}'>"
-        unless editType == 'checkbox'
-          wrapper += "
-            <i class='glyphicon glyphicon-pencil edit-icon'></i>
-            <div ng-hide='editing'>#{output}</div>"
-        wrapper += "
-            <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
-          </div>"
+        middle = if editType is 'checkbox'
+          output
+        else
+          "<i class='glyphicon glyphicon-pencil edit-icon'></i>
+           <div ng-hide='editing'>#{output}</div>"
 
+        output = "<div class='dh-field editable'
+                       ng-click=\"edit('#{editType}')\"
+                       ng-class='{editing: editing, image: #{field.thumbnail}}'>
+                    #{middle}
+                    <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
+                  </div>"
       else
-        wrapper =
-          "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>
-                      #{output}
-                    </div>"
+        output = "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>#{output}</div>"
 
-      return wrapper
+      return output
 
     {
       link: link
