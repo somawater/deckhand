@@ -1,25 +1,32 @@
 require '../../spec_helper'
 
 describe 'dhTable directive', ->
-  scope = el = null
+  scope = outerScope = el = null
 
   beforeEach angular.mock.module 'Deckhand'
 
   beforeEach inject ($compile, $rootScope) ->
-    scope = $rootScope.$new()
-    scope.columns =
-      table: [
-        { name: 'col1', friendlyName: 'Column 1' }
-        { name: 'col2', friendlyName: 'Column 2' }
-        { name: 'col3', friendlyName: 'Column 3' }
-      ]
+    outerScope = $rootScope.$new()
+    outerScope.columns = [
+      { name: 'col1', friendlyName: 'Column 1' }
+      { name: 'col2', friendlyName: 'Column 2' }
+      { name: 'col3', friendlyName: 'Column 3' }
+    ]
 
-    scope.items = []
-    scope.model = 'Model'
+    outerScope.items = [
+      {col1: 'val1', col2: 'val2', col3: 'val3'}
+      {col1: 'val4', col2: 'val5', col3: 'val6'}
+      {col1: 'val7', col2: 'val8', col3: 'val9'}
+    ]
+    outerScope.model = 'Model'
 
-    html = '<dh-table columns="columns" items="items" model="model" />'
-    el = $compile(html)(scope)
-    scope.$apply()
+    outerScope.showItem = jasmine.createSpy('show')
+
+    html = '''
+      <dh-table columns="columns" items="items" model="model" on-show-item="showItem(item)" />
+    '''
+    el = $compile(html)(outerScope)
+    outerScope.$apply()
 
     scope = el.isolateScope()
 
@@ -30,7 +37,7 @@ describe 'dhTable directive', ->
     column = null
 
     beforeEach ->
-      column = scope.columns.table[0]
+      column = scope.columns[0]
       scope.sortBy(column)
 
     it 'sets sortingColumn to the column specified', ->
@@ -44,7 +51,7 @@ describe 'dhTable directive', ->
         anotherColumn = null
 
         beforeEach ->
-          anotherColumn = scope.columns.table[1]
+          anotherColumn = scope.columns[1]
           scope.sortBy(anotherColumn)
 
         it 'sets sortingColumn to the column specified', ->
@@ -73,7 +80,24 @@ describe 'dhTable directive', ->
     changingTheSortingColumn()
 
   describe 'rendering', ->
-    it 'shows table rows for each item'
-    it 'shows the columns specified in the table header'
-    it 'shows the columns specified for each row'
+    it 'shows table rows for each item', ->
+      expect(el.find('tbody tr')).toHaveLength(scope.items.length)
+
+    it 'shows the columns specified in the table header', ->
+      columnsText = $.map(el.find('thead th'), (e) -> $(e).text().trim())
+      columnsText.shift() # Remove first empty header
+      columnsNames = scope.columns.map (c) -> c.friendlyName
+      expect(columnsText).toEqual(columnsNames)
+
+    it 'shows the columns specified for each row', ->
+      headerColumns = el.find('thead th')
+      el.find('tbody tr').each (index, el) ->
+        expect($(el).find('td')).toHaveLength(headerColumns.length)
+
+  describe 'when clicking the show icon', ->
+    beforeEach ->
+      el.find('tbody tr:first td:first a').click()
+
+    it 'triggers the show action in the outer scope', ->
+      expect(outerScope.showItem).toHaveBeenCalledWith(scope.items[0])
 
