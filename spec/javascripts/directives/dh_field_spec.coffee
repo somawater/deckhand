@@ -18,6 +18,7 @@ describe 'dhField', ->
   beforeEach ->
     spyOn(ModelConfig, 'field').and.returnValue(null)
     spyOn(FieldFormatter, 'format').and.returnValue('formatted')
+    spyOn(FieldFormatter, 'substitute').and.returnValue('substituted')
 
   mockField = (field, value) ->
     ModelConfig.field.and.returnValue(field)
@@ -41,26 +42,27 @@ describe 'dhField', ->
     it 'contains formatted value', ->
       expect(element.text().trim()).toEqual('formatted')
 
-  expectToBeRegular = (field, value) ->
+  expectToBeRegular = (setup, value) ->
     describe 'is regular', ->
       beforeEach ->
         value = if value? then value else 'formatted'
-        mockField(field, value)
-        render()
+        setup()
 
       it 'renders div when field is present', ->
         expect(element.prop('tagName').toLowerCase()).toEqual('div')
 
-      it 'contains formatted value', ->
+      it 'contains appropriate value', ->
         expect(element.text().trim()).toEqual(value)
 
   describe 'with non editable field', ->
     describe 'with html', ->
-      beforeEach ->
+      setup = ->
         mockField({editable: false, html: 'some html'})
         render()
 
-      expectToBeRegular({editable: false, html: 'some html'})
+      beforeEach -> setup()
+
+      expectToBeRegular(setup)
 
       it 'binds html', ->
         boundHtmlContainers = element.find('div[ng-bind-html]')
@@ -68,44 +70,52 @@ describe 'dhField', ->
         expect(boundHtmlContainers.eq(0).text().trim()).toEqual('formatted')
 
     describe 'with thumbnail', ->
-      beforeEach ->
+      setup = ->
         mockField({thumbnail: 'thumbnail.png'}, 'thumbnail.png')
         render()
 
-      expectToBeRegular({thumbnail: 'thumbnail.png'}, '')
+      beforeEach -> setup()
+
+      expectToBeRegular(setup, '')
 
       it 'links to thumbnail image', ->
         expect(element.find("a[ng-href='thumbnail.png']").length).toBe(1)
         expect(element.find("img[ng-src='thumbnail.png']").length).toBe(1)
 
     describe 'with link', ->
-      beforeEach ->
+      setup = ->
         mockField({link_to: 'some_link'})
-        spyOn(FieldFormatter, 'substitute').and.returnValue('some_link')
+        FieldFormatter.substitute.and.returnValue('some_link')
         render()
 
-      expectToBeRegular({link_to: 'some_link'})
+      beforeEach -> setup()
+
+      expectToBeRegular(setup)
 
       it 'links to it', ->
         expect(element.find("a[ng-href='some_link']").length).toBe(1)
 
     describe 'with relation', ->
-      beforeEach ->
+      setup = ->
         mockField({type: 'relation'})
         render()
 
-      expectToBeRegular({type: 'relation'})
+      beforeEach -> setup()
+
+      expectToBeRegular(setup)
 
       it 'links click to the related model', ->
         expect(element.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
 
     describe 'with time', ->
-      beforeEach ->
+      setup = ->
         mockField({type: 'time'})
         FieldFormatter.format.and.returnValue('some_time')
         render()
 
-      expectToBeRegular({type: 'time'}, 'a few seconds ago')
+      beforeEach -> setup()
+
+      expectToBeRegular(setup, 'a few seconds ago')
 
       it 'invokes dh-time directive', ->
         expect(element.find("[time='some_time']").length).toBe(1)
@@ -141,7 +151,7 @@ describe 'dhField', ->
 
   describe 'with editable field', ->
     describe 'with text', ->
-      expectToBeEditable({editable: true})
+      expectToBeEditable({editable: true}, 'text')
       expectToDisplayAsEditable({editable: true})
 
     describe 'with ckeditor', ->
