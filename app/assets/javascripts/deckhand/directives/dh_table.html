@@ -1,0 +1,26 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
+      <th ng-repeat="column in columns" ng-click="sortBy(column)">
+        <i class="glyphicon" ng-class="{
+          'glyphicon-chevron-up': reverse && sortingColumn == column,
+          'glyphicon-chevron-down': !reverse && sortingColumn == column
+        }">
+        </i>
+        {{ column.friendlyName }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="item in items | orderBy:sortingColumn.name:reverse">
+      <td>
+        <a class="glyphicon glyphicon-new-window" ng-click="onShow({item: item})"></a>
+      </td>
+      <td ng-repeat="column in columns">
+        <dh-field model="model" relation="relation"
+                  item="item" name="column.name"></dh-field>
+      </td>
+    </tr>
+  </tbody>
+</table>

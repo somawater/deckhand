@@ -1,6 +1,6 @@
 Deckhand.app.directive 'dhFieldEditor', [
-  'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor', '$upload'
-  (Model, $log, AlertService, $timeout, Cards, ModalEditor, $upload) ->
+  '$compile', 'Model', '$log', 'AlertService', '$timeout', 'Cards', 'ModalEditor', '$upload'
+  ($compile, Model, $log, AlertService, $timeout, Cards, ModalEditor, $upload) ->
 
     updateValue = (scope, value) ->
       $log.debug "#{scope.previousValue} => #{value}"
@@ -15,7 +15,11 @@ Deckhand.app.directive 'dhFieldEditor', [
         AlertService.add 'danger', (response.data?.error or 'The change was not saved')
 
     link = (scope, element, attrs, dhField) ->
-      scope.editType = attrs.editType
+      element.html(getTemplate(scope))
+
+      $compile(element.contents())(scope)
+
+      fieldElement = element.children().first()
 
       scope.$on 'startEditing', ->
         $log.debug "startEditing: #{scope.editType}"
@@ -24,15 +28,15 @@ Deckhand.app.directive 'dhFieldEditor', [
           scope.setupRanOnce = true
           switch scope.editType
             when 'text'
-              setupTextInputHandlers(scope, element, dhField)
+              setupTextInputHandlers(scope, fieldElement, dhField)
 
         switch scope.editType
           when 'text'
             scope.previousValue = scope.item[scope.name]
-            $timeout (-> element[0].focus()), 20
+            $timeout (-> fieldElement[0].focus()), 20
           when 'upload'
             $timeout ->
-              element[0].click()
+              fieldElement[0].click()
               dhField.stopEditing()
 
       scope.onFileSelect = ($files) ->
@@ -69,8 +73,8 @@ Deckhand.app.directive 'dhFieldEditor', [
             newValue = scope.item[scope.name]
             updateValue scope, newValue if newValue != scope.previousValue
 
-    template = (tElement, tAttrs) ->
-      switch tAttrs.editType
+    getTemplate = (scope) ->
+      switch scope.editType
         when 'text'
           "<input class='form-control' type='text' ng-model='item[name]'/>"
         when 'upload'
@@ -86,14 +90,16 @@ Deckhand.app.directive 'dhFieldEditor', [
                    ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'
                    btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'><span class='glyphicon glyphicon-off'></span></button>"
         else
-          $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
+          $log.error "edit type \"#{scope.editType}\" not implemented yet"
 
     {
       require: '^dhField'
       link: link
       restrict: 'E'
       replace: true
-      scope: {item: '=', name: '='}
-      template: template
+      scope:
+        item: '='
+        name: '='
+        editType: '@'
     }
 ]

@@ -1,5 +1,11 @@
-.card.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item)")
+:ruby
+  columns_json = {
+    @name => @columns.map do |c|
+      {name: c, friendlyName: readable_method_name(c)}
+    end
+  }.to_json.html_safe
 
+.card.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item, #{columns_json})")
   .panel-heading
     %h3.panel-title
       %span.right
@@ -8,16 +14,4 @@
       {{item._label}} ({{item.#{@name}.length}})
 
   %div(collapse="collapse['#{@name}']")
-    %table.table
-      %thead
-        %tr
-          %th &nbsp;
-          - @columns.each do |column|
-            %th= readable_method_name column
-      %tbody
-        %tr(ng-repeat="nested_item in item.#{@name}")
-          %td
-            %a.glyphicon.glyphicon-new-window(ng-click="show(nested_item._model, nested_item.id)")
-          - @columns.each_with_index do |column, i|
-            %td
-              %dh-field(model=@model item="nested_item" name=column)
+    %dh-table(columns="columns.#{@name}" model="#{@model}" items="item.#{@name}" on-show-item="show(item._model, item.id)")

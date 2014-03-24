@@ -1,5 +1,13 @@
-.card.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item)")
+:ruby
+  columns_json = model_config.table_fields.reduce({}) do |obj, field|
+    name, options = field
+    obj[name] = options[:table].map do |c|
+      {name: c, friendlyName: readable_method_name(c)}
+    end
+    obj
+  end.to_json.html_safe
 
+.card.panel.panel-info(ng-controller="CardCtrl" ng-init="init(item, #{columns_json})")
   .panel-heading
     %h3.panel-title
       %span.right
@@ -12,7 +20,7 @@
       - model_config.flat_fields.each do |name, options|
         %dt= options[:label] || readable_method_name(name)
         %dd
-          %dh-field(model=@model item="item" name=name)
+          %dh-field(model="'#{@model}'" item="item" name="'#{name}'")
 
   - model_config.table_fields.each do |name, options|
 
@@ -22,19 +30,7 @@
       %span(ng-show="!lazyLoad['#{name}']") ({{item.#{name}.length}})
 
     %div(collapse="collapse['#{name}']")
-      %table.table
-        %thead
-          %tr
-            %th &nbsp;
-            - options[:table].each do |column|
-              %th= readable_method_name column
-        %tbody
-          %tr(ng-repeat="nested_item in item.#{name}")
-            %td
-              %a.glyphicon.glyphicon-new-window(ng-click="show(nested_item._model, nested_item.id)")
-            - options[:table].each_with_index do |column, i|
-              %td
-                %dh-field(model=@model relation=name item="nested_item" name=column)
+      %dh-table(columns="columns.#{name}" model="#{@model}" relation=name items="item.#{name}" on-show-item="show(item._model, item.id)")
 
   - if model_config.actions.any?
     .panel-footer

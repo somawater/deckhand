@@ -7,7 +7,8 @@ Deckhand.app.controller 'CardCtrl', [
     $scope.show = Cards.show
     $scope.remove = Cards.remove
 
-    $scope.init = (item) ->
+    $scope.init = (item, columns) ->
+      $scope.columns = columns
       return if item.id == 'list'
       for field in ModelConfig.tableFields(item._model)
         do ->
