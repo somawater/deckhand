@@ -41,13 +41,18 @@ describe 'dhField', ->
     it 'contains formatted value', ->
       expect(element.text().trim()).toEqual('formatted')
 
-  expectToBeRegular = (regularElement) ->
-    describe '(regular)', ->
+  expectToBeRegular = (field, value) ->
+    describe 'is regular', ->
+      beforeEach ->
+        value = if value? then value else 'formatted'
+        mockField(field, value)
+        render()
+
       it 'renders div when field is present', ->
-        expect(regularElement.prop('tagName').toLowerCase()).toEqual('div')
+        expect(element.prop('tagName').toLowerCase()).toEqual('div')
 
       it 'contains formatted value', ->
-        expect(regularElement.text().trim()).toEqual('formatted')
+        expect(element.text().trim()).toEqual(value)
 
   describe 'with non editable field', ->
     describe 'with html', ->
@@ -55,8 +60,7 @@ describe 'dhField', ->
         mockField({editable: false, html: 'some html'})
         render()
 
-      it 'behaves like regular', ->
-        expectToBeRegular(element)
+      expectToBeRegular({editable: false, html: 'some html'})
 
       it 'binds html', ->
         boundHtmlContainers = element.find('div[ng-bind-html]')
@@ -68,8 +72,7 @@ describe 'dhField', ->
         mockField({thumbnail: 'thumbnail.png'}, 'thumbnail.png')
         render()
 
-      it 'behaves like regular', ->
-        expectToBeRegular(element)
+      expectToBeRegular({thumbnail: 'thumbnail.png'}, '')
 
       it 'links to thumbnail image', ->
         expect(element.find("a[ng-href='thumbnail.png']").length).toBe(1)
@@ -81,8 +84,7 @@ describe 'dhField', ->
         spyOn(FieldFormatter, 'substitute').and.returnValue('some_link')
         render()
 
-      it 'behaves like regular', ->
-        expectToBeRegular(element)
+      expectToBeRegular({link_to: 'some_link'})
 
       it 'links to it', ->
         expect(element.find("a[ng-href='some_link']").length).toBe(1)
@@ -92,8 +94,7 @@ describe 'dhField', ->
         mockField({type: 'relation'})
         render()
 
-      it 'behaves like regular', ->
-        expectToBeRegular(element)
+      expectToBeRegular({type: 'relation'})
 
       it 'links click to the related model', ->
         expect(element.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
@@ -104,8 +105,7 @@ describe 'dhField', ->
         FieldFormatter.format.and.returnValue('some_time')
         render()
 
-      it 'behaves like regular', ->
-        expectToBeRegular(element)
+      expectToBeRegular({type: 'time'}, 'a few seconds ago')
 
       it 'invokes dh-time directive', ->
         expect(element.find("[time='some_time']").length).toBe(1)
@@ -115,7 +115,7 @@ describe 'dhField', ->
       beforeEach ->
         mockField(field)
         render()
-        editType = editType || 'text'
+        editType = if editType? then editType else 'formatted'
 
       it 'wraps content in editable', ->
         expect(element.hasClass('editable')).toBe(true)
