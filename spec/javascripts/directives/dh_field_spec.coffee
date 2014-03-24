@@ -110,57 +110,58 @@ describe 'dhField', ->
       it 'invokes dh-time directive', ->
         expect(element.find("[time='some_time']").length).toBe(1)
 
-  expectToBeEditable = (editElement, editType) ->
-    describe "(editable)", ->
+  expectToBeEditable = (field, editType) ->
+    describe "is editable", ->
       beforeEach ->
+        mockField(field)
+        render()
         editType = editType || 'text'
 
       it 'wraps content in editable', ->
-        expect(editElement.hasClass('editable')).toBe(true)
+        expect(element.hasClass('editable')).toBe(true)
 
       it 'makes field clickable', ->
-        expect(editElement.attr('ng-click')).toEqual("edit('" + editType + "')")
+        expect(element.attr('ng-click')).toEqual("edit('" + editType + "')")
 
       it 'invokes dh-field-editor directive', ->
-        expect(editElement.find("[edit-type='" + editType + "']").length).toBe(1)
+        expect(element.find("[edit-type='" + editType + "']").length).toBe(1)
 
-  expectToDisplayAsEditable = (editElement) ->
-    describe "(editable)", ->
+  expectToDisplayAsEditable = (field) ->
+    describe "displays as editable", ->
+      beforeEach ->
+        mockField(field)
+        render()
+
       it 'contains editable icon', ->
-        expect(editElement.find('.glyphicon-pencil').length).toEqual(1)
+        expect(element.find('.glyphicon-pencil').length).toEqual(1)
 
       it 'contains hidable element with value', ->
-        expect(editElement.find("[ng-hide='editing']").length).toEqual(1)
-        expect(editElement.find("[ng-hide='editing']").eq(0).text().trim()).toEqual('formatted')
+        expect(element.find("[ng-hide='editing']").length).toEqual(1)
+        expect(element.find("[ng-hide='editing']").eq(0).text().trim()).toEqual('formatted')
 
   describe 'with editable field', ->
-    it 'defaults to text', ->
-      mockField({editable: true})
-      expectToBeEditable(render())
-      expectToDisplayAsEditable(element)
+    describe 'with text', ->
+      expectToBeEditable({editable: true})
+      expectToDisplayAsEditable({editable: true})
 
-    it 'supports ckeditor', ->
-      mockField({editable: {with: 'ckeditor'}})
-      expectToBeEditable(render(), 'ckeditor')
-      expectToDisplayAsEditable(element)
+    describe 'with ckeditor', ->
+      expectToBeEditable({editable: {with: 'ckeditor'}}, 'ckeditor')
+      expectToDisplayAsEditable({editable: {with: 'ckeditor'}})
 
-    it 'supports nested', ->
-      mockField({editable: {nested: true}})
-      expectToBeEditable(render(), 'nested')
-      expectToDisplayAsEditable(element)
+    describe 'with nested', ->
+      expectToBeEditable({editable: {nested: true}}, 'nested')
+      expectToDisplayAsEditable({editable: {nested: true}})
 
-    it 'supports file', ->
-      mockField({editable: type: 'file'})
-      expectToBeEditable(render(), 'upload')
-      expectToDisplayAsEditable(element)
+    describe 'with file', ->
+      expectToBeEditable({editable: true, type: 'file'}, 'upload')
+      expectToDisplayAsEditable({editable: true, type: 'file'})
 
     describe 'as boolean', ->
       beforeEach ->
         mockField({editable: true, type: 'boolean'})
         render()
 
-      it 'supports checkbox', ->
-        expectToBeEditable(element, 'checkbox')
+      expectToBeEditable({editable: true, type: 'boolean'}, 'checkbox')
 
       it 'does not contain editable icon', ->
         expect(element.find('.glyphicon-pencil').length).toEqual(0)
