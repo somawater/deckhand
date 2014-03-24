@@ -55,8 +55,10 @@ describe 'dhField', ->
         mockField({editable: false, html: 'some html'})
         render()
 
-      it 'binds html', ->
+      it 'behaves like regular', ->
         expectToBeRegular(element)
+
+      it 'binds html', ->
         boundHtmlContainers = element.find('div[ng-bind-html]')
         expect(boundHtmlContainers.length).toBe(1)
         expect(boundHtmlContainers.eq(0).text().trim()).toEqual('formatted')
@@ -66,8 +68,10 @@ describe 'dhField', ->
         mockField({thumbnail: 'thumbnail.png'}, 'thumbnail.png')
         render()
 
-      it 'links to thumbnail image', ->
+      it 'behaves like regular', ->
         expectToBeRegular(element)
+
+      it 'links to thumbnail image', ->
         expect(element.find("a[ng-href='thumbnail.png']").length).toBe(1)
         expect(element.find("img[ng-src='thumbnail.png']").length).toBe(1)
 
@@ -77,8 +81,10 @@ describe 'dhField', ->
         spyOn(FieldFormatter, 'substitute').and.returnValue('some_link')
         render()
 
-      it 'links to it', ->
+      it 'behaves like regular', ->
         expectToBeRegular(element)
+
+      it 'links to it', ->
         expect(element.find("a[ng-href='some_link']").length).toBe(1)
 
     describe 'with relation', ->
@@ -86,8 +92,10 @@ describe 'dhField', ->
         mockField({type: 'relation'})
         render()
 
-      it 'links click to the related model', ->
+      it 'behaves like regular', ->
         expectToBeRegular(element)
+
+      it 'links click to the related model', ->
         expect(element.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
 
     describe 'with time', ->
@@ -96,8 +104,10 @@ describe 'dhField', ->
         FieldFormatter.format.and.returnValue('some_time')
         render()
 
-      it 'invokes dh-time directive', ->
+      it 'behaves like regular', ->
         expectToBeRegular(element)
+
+      it 'invokes dh-time directive', ->
         expect(element.find("[time='some_time']").length).toBe(1)
 
   expectToBeEditable = (editElement, editType) ->
