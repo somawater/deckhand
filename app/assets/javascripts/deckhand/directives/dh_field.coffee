@@ -74,16 +74,13 @@ Deckhand.app.directive 'dhField', [
         else
           'text'
 
-        middle = if editType is 'checkbox'
-          output
-        else
-          "<i class='glyphicon glyphicon-pencil edit-icon'></i>
-           <div ng-hide='editing'>#{output}</div>"
+        middle = "<i class='glyphicon glyphicon-pencil edit-icon'></i>
+                  <div ng-hide='editing'>#{output}</div>" unless editType is 'checkbox'
 
         output = "<div class='dh-field editable'
                        ng-click=\"edit('#{editType}')\"
                        ng-class='{editing: editing, image: #{field.thumbnail}}'>
-                    #{middle}
+                    #{middle || ''}
                     <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
                   </div>"
       else
