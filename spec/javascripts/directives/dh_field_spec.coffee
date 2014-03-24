@@ -41,23 +41,22 @@ describe 'dhField', ->
     it 'contains formatted value', ->
       expect(element.text().trim()).toEqual('formatted')
 
+  expectToBeRegular = (regularElement) ->
+    describe '(regular)', ->
+      it 'renders div when field is present', ->
+        expect(regularElement.prop('tagName').toLowerCase()).toEqual('div')
+
+      it 'contains formatted value', ->
+        expect(regularElement.text().trim()).toEqual('formatted')
+
   describe 'with non editable field', ->
-    beforeEach ->
-      mockField({editable: false})
-      render()
-
-    it 'renders div when field is present', ->
-      expect(element.prop('tagName').toLowerCase()).toEqual('div')
-
-    it 'contains formatted value', ->
-      expect(element.text().trim()).toEqual('formatted')
-
     describe 'with html', ->
       beforeEach ->
-        mockField({html: 'some html'})
+        mockField({editable: false, html: 'some html'})
         render()
 
       it 'binds html', ->
+        expectToBeRegular(element)
         boundHtmlContainers = element.find('div[ng-bind-html]')
         expect(boundHtmlContainers.length).toBe(1)
         expect(boundHtmlContainers.eq(0).text().trim()).toEqual('formatted')
@@ -68,6 +67,7 @@ describe 'dhField', ->
         render()
 
       it 'links to thumbnail image', ->
+        expectToBeRegular(element)
         expect(element.find("a[ng-href='thumbnail.png']").length).toBe(1)
         expect(element.find("img[ng-src='thumbnail.png']").length).toBe(1)
 
@@ -78,6 +78,7 @@ describe 'dhField', ->
         render()
 
       it 'links to it', ->
+        expectToBeRegular(element)
         expect(element.find("a[ng-href='some_link']").length).toBe(1)
 
     describe 'with relation', ->
@@ -86,6 +87,7 @@ describe 'dhField', ->
         render()
 
       it 'links click to the related model', ->
+        expectToBeRegular(element)
         expect(element.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
 
     describe 'with time', ->
@@ -95,63 +97,63 @@ describe 'dhField', ->
         render()
 
       it 'invokes dh-time directive', ->
+        expectToBeRegular(element)
         expect(element.find("[time='some_time']").length).toBe(1)
 
-  describe 'when editable', ->
-    beforeEach ->
+  expectToBeEditable = (editElement, editType) ->
+    describe "(editable)", ->
+      beforeEach ->
+        editType = editType || 'text'
+
+      it 'wraps content in editable', ->
+        expect(editElement.hasClass('editable')).toBe(true)
+
+      it 'makes field clickable', ->
+        expect(editElement.attr('ng-click')).toEqual("edit('" + editType + "')")
+
+      it 'invokes dh-field-editor directive', ->
+        expect(editElement.find("[edit-type='" + editType + "']").length).toBe(1)
+
+  expectToDisplayAsEditable = (editElement) ->
+    describe "(editable)", ->
+      it 'contains editable icon', ->
+        expect(editElement.find('.glyphicon-pencil').length).toEqual(1)
+
+      it 'contains hidable element with value', ->
+        expect(editElement.find("[ng-hide='editing']").length).toEqual(1)
+        expect(editElement.find("[ng-hide='editing']").eq(0).text().trim()).toEqual('formatted')
+
+  describe 'with editable field', ->
+    it 'defaults to text', ->
       mockField({editable: true})
-      render()
+      expectToBeEditable(render())
+      expectToDisplayAsEditable(element)
 
-    it 'wraps content in editable', ->
-      expect(element.hasClass('editable')).toBe(true)
+    it 'supports ckeditor', ->
+      mockField({editable: {with: 'ckeditor'}})
+      expectToBeEditable(render(), 'ckeditor')
+      expectToDisplayAsEditable(element)
 
-    it 'makes field clickable', ->
-      expect(element.attr('ng-click')).toEqual("edit('text')")
+    it 'supports nested', ->
+      mockField({editable: {nested: true}})
+      expectToBeEditable(render(), 'nested')
+      expectToDisplayAsEditable(element)
 
-    it 'contains editable icon', ->
-      expect(element.find('.glyphicon-pencil').length).toEqual(1)
+    it 'supports file', ->
+      mockField({editable: type: 'file'})
+      expectToBeEditable(render(), 'upload')
+      expectToDisplayAsEditable(element)
 
-    it 'contains hidable element with value', ->
-      expect(element.find("[ng-hide='editing']").length).toEqual(1)
-      expect(element.find("[ng-hide='editing']").eq(0).text().trim()).toEqual('formatted')
-
-    it 'invokes dh-field-editor directive', ->
-      expect(element.find("[edit-type='text']").length).toBe(1)
-
-    describe 'with ckeditor', ->
-      beforeEach ->
-        mockField({editable: {with: 'ckeditor'}})
-        render()
-
-      it 'invokes dh-field-editor ckeditor directive', ->
-        expect(element.find("[edit-type='ckeditor']").length).toBe(1)
-
-    describe 'with nested', ->
-      beforeEach ->
-        mockField({editable: {nested: true}})
-        render()
-
-      it 'invokes dh-field-editor nested directive', ->
-        expect(element.find("[edit-type='nested']").length).toBe(1)
-
-    describe 'with file', ->
-      beforeEach ->
-        mockField({editable: true, type: 'file'})
-        render()
-
-      it 'invokes dh-field-editor upload directive', ->
-        expect(element.find("[edit-type='upload']").length).toBe(1)
-
-    describe 'with boolean', ->
+    describe 'as boolean', ->
       beforeEach ->
         mockField({editable: true, type: 'boolean'})
         render()
+
+      it 'supports checkbox', ->
+        expectToBeEditable(element, 'checkbox')
 
       it 'does not contain editable icon', ->
         expect(element.find('.glyphicon-pencil').length).toEqual(0)
 
       it 'does not contain hidable element with value', ->
         expect(element.find("[ng-hide='editing']").length).toEqual(0)
-
-      it 'invokes dh-field-editor checkbox directive', ->
-        expect(element.find("[edit-type='checkbox']").length).toBe(1)
