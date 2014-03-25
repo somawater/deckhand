@@ -3,12 +3,11 @@
     <tr>
       <th>&nbsp;</th>
       <th ng-repeat="column in columns" ng-click="sortBy(column)">
+        {{column.friendlyName}}
         <i class="glyphicon" ng-class="{
-          'glyphicon-chevron-up': reverse && sortingColumn == column,
-          'glyphicon-chevron-down': !reverse && sortingColumn == column
-        }">
-        </i>
-        {{ column.friendlyName }}
+          'glyphicon-sort-by-attributes-alt': reverse && sortingColumn == column,
+          'glyphicon-sort-by-attributes': !reverse && sortingColumn == column
+        }"></i>
       </th>
     </tr>
   </thead>
