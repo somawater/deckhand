@@ -25,9 +25,11 @@ Deckhand.app.directive 'dhFieldEditor', [
           switch scope.editType
             when 'text'
               setupTextInputHandlers(scope, element, dhField)
+            when 'select'
+              setupSelectInputHandlers(scope, element, dhField)
 
         switch scope.editType
-          when 'text'
+          when 'text', 'select'
             scope.previousValue = scope.item[scope.name]
             $timeout (-> element[0].focus()), 20
           when 'upload'
@@ -52,6 +54,18 @@ Deckhand.app.directive 'dhFieldEditor', [
         updateValue scope, scope.item[scope.name]
 
     setupTextInputHandlers = (scope, element, dhField) ->
+      setupDefaultInputHandlers(scope, element, dhField)
+
+    setupSelectInputHandlers = (scope, element, dhField) ->
+      setupDefaultInputHandlers(scope, element, dhField)
+
+      element.on 'change', (event) ->
+        @blur()
+        scope.$apply ->
+          newValue = scope.item[scope.name]
+          updateValue scope, newValue if newValue != scope.previousValue
+
+    setupDefaultInputHandlers = (scope, element, dhField) ->
       element.on 'keydown', (event) ->
         if event.which is 27 # esc
           @blur()
@@ -85,6 +99,8 @@ Deckhand.app.directive 'dhFieldEditor', [
           "<button type='button' class='btn btn-xs btn-checkbox' ng-class='item[name] ? \"btn-success\" : \"\"'
                    ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'
                    btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'><span class='glyphicon glyphicon-off'></span></button>"
+        when 'select'
+          "<select ng-model='item[name]' ng-options='" + tAttrs.editChoices + "'/>"
         else
           $log.error "edit type \"#{tAttrs.editType}\" not implemented yet"
 

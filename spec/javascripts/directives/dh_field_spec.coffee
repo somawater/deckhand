@@ -178,3 +178,14 @@ describe 'dhField', ->
 
       it 'does not contain hidable element with value', ->
         expect(element.find("[ng-hide='editing']").length).toEqual(0)
+
+    describe 'with choices', ->
+      beforeEach ->
+        mockField({name: 'type', editable: true, choices: true})
+        render()
+
+      expectToBeEditable({editable: true, choices: true}, 'select')
+      expectToDisplayAsEditable({editable: true, choices: true})
+
+      it 'invokes dh-field-editor directive with choices', ->
+        expect(element.find("[edit-choices='o.key as o.value for o in item.type_choices']").length).toBe(1)

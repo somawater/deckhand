@@ -12,7 +12,7 @@ Deckhand.app.directive 'dhField', [
         switch type
           when 'checkbox'
             null # handled by ng-change immediately
-          when 'text', 'upload'
+          when 'text', 'upload', 'select'
             if !scope.editing
               scope.$broadcast 'startEditing'
               scope.editing = true
@@ -37,8 +37,7 @@ Deckhand.app.directive 'dhField', [
       else
         args = ['item', 'name']
 
-      if field.multiline
-        args.push "'multiline'"
+      args.push "'multiline'" if field.multiline
 
       value = "{{format(#{args.join(", ")})}}"
 
@@ -71,8 +70,12 @@ Deckhand.app.directive 'dhField', [
           'upload'
         else if field.type == 'boolean'
           'checkbox'
+        else if field.choices
+          'select'
         else
           'text'
+
+        choices = "edit-choices=\"o.key as o.value for o in item.#{field.name}_choices\"" if editType is 'select'
 
         middle = if editType is 'checkbox'
           output
@@ -84,7 +87,7 @@ Deckhand.app.directive 'dhField', [
                        ng-click=\"edit('#{editType}')\"
                        ng-class='{editing: editing, image: #{field.thumbnail}}'>
                     #{middle}
-                    <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\"/>
+                    <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\" #{choices}/>
                   </div>"
       else
         output = "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>#{output}</div>"

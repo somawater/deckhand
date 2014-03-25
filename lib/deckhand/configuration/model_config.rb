@@ -6,28 +6,9 @@ class Deckhand::Configuration::ModelConfig
   delegate :list, :to => :@dsl
 
   def initialize(options = {}, &block)
-
-    default_options = {
-      singular: [:label, :fields_to_show, :search_scope, :list],
-      defaults: {show: [], exclude: []}
-    }
-    @label_defaults = options.delete(:label_defaults)
-    @model = options.delete(:model)
-    @dsl = Deckhand::Configuration::ModelDSL.new(default_options.merge(options), &block)
-
-    @fields_to_show = @dsl.show.each do |name, options|
-      complete_options(name, options)
-    end
-
-    @fields_to_include = fields_to_show.dup.tap do |fields|
-      names = fields.map(&:first)
-      actions.map {|a| a.last[:if] }.compact.each do |action|
-        unless names.include?(action)
-          fields << [action, complete_options(action, {})]
-        end
-      end
-    end
-
+    setup(block, options)
+    @fields_to_show = detect_fields_to_show
+    @fields_to_include = detect_action_fields
   end
 
   # a model's label can either be a symbol name of a method on that model,
@@ -100,6 +81,31 @@ class Deckhand::Configuration::ModelConfig
 
   private
 
+  def setup(block, options)
+    default_options = {
+      singular: [:label, :fields_to_show, :search_scope, :list],
+      defaults: {show: [], exclude: []}
+    }
+    @label_defaults = options.delete(:label_defaults)
+    @model = options.delete(:model)
+    @dsl = Deckhand::Configuration::ModelDSL.new(default_options.merge(options), &block)
+  end
+
+  def detect_fields_to_show
+    @dsl.show.each do |name, options|
+      complete_options(name, options)
+    end
+  end
+
+  def detect_action_fields
+    fields_to_show.dup.tap do |fields|
+      names = fields.map(&:first)
+      actions.map { |a| a.last[:if] }.compact.each do |action|
+        fields << [action, complete_options(action, {})] unless names.include?(action)
+      end
+    end
+  end
+
   def complete_options(name, options)
     unless options.include? :class_name
       class_name = Deckhand.config.model_storage.relation_class_name @model.to_s, name
@@ -108,19 +114,16 @@ class Deckhand::Configuration::ModelConfig
 
     unless options.include? :type
       options[:type] = if options[:class_name]
-        :relation
-      elsif Deckhand.config.attachment?(@model, name)
-        :file
-      else
-        Deckhand.config.model_storage.field_type @model, name
-      end
+                         :relation
+                       elsif Deckhand.config.attachment?(@model, name)
+                         :file
+                       else
+                         Deckhand.config.model_storage.field_type @model, name
+                       end
     end
 
-    unless options.include? :name
-      options[:name] = name
-    end
+    options[:name] = name unless options.include? :name
 
     options
   end
-
 end
