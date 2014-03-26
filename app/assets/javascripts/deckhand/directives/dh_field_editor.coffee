@@ -15,7 +15,7 @@ Deckhand.app.directive 'dhFieldEditor', [
         AlertService.add 'danger', (response.data?.error or 'The change was not saved')
 
     link = (scope, element, attrs, dhField) ->
-      element.html(getTemplate(scope))
+      element.html(getTemplate(scope, attrs))
 
       $compile(element.contents())(scope)
 
@@ -64,10 +64,10 @@ Deckhand.app.directive 'dhFieldEditor', [
       setupDefaultInputHandlers(scope, element, dhField)
 
       element.on 'change', (event) ->
-        @blur()
         scope.$apply ->
           newValue = scope.item[scope.name]
           updateValue scope, newValue if newValue != scope.previousValue
+          dhField.stopEditing()
 
     setupDefaultInputHandlers = (scope, element, dhField) ->
       element.on 'keydown', (event) ->
@@ -87,7 +87,7 @@ Deckhand.app.directive 'dhFieldEditor', [
             newValue = scope.item[scope.name]
             updateValue scope, newValue if newValue != scope.previousValue
 
-    getTemplate = (scope) ->
+    getTemplate = (scope, attrs) ->
       switch scope.editType
         when 'text'
           "<input class='form-control' type='text' ng-model='item[name]'/>"
@@ -104,7 +104,7 @@ Deckhand.app.directive 'dhFieldEditor', [
                    ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'
                    btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'><span class='glyphicon glyphicon-off'></span></button>"
         when 'select'
-          "<select ng-model='item[name]' ng-options='" + tAttrs.editChoices + "'/>"
+          "<select ng-model='item[name]' ng-options='" + attrs.editChoices + "'/>"
         else
           $log.error "edit type \"#{scope.editType}\" not implemented yet"
 
