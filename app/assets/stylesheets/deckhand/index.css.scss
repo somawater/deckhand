@@ -180,6 +180,10 @@ h4.table-title {
 }
 
 .card {
+  .table thead tr th {
+    vertical-align: top;
+  }
+
   dl.dl-horizontal {
     dt {
       padding: 2px 0;
