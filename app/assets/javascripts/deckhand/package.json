@@ -15,7 +15,8 @@
     "scroll": "*",
     "coffeeify": "*",
     "jquery": "~2",
-    "brfs": "~1.0.0"
+    "brfs": "~1.0.0",
+    "create-element": "0.2.3"
   },
   "browserify": {
     "transform": [

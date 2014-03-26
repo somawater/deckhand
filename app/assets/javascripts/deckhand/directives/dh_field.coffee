@@ -1,3 +1,5 @@
+createElement = require('create-element')
+
 Deckhand.app.directive 'dhField', [
   '$compile', 'FieldFormatter', '$rootScope', 'ModelConfig', 'Cards', 'ModalEditor'
   ($compile, FieldFormatter, $rootScope, ModelConfig, Cards, ModalEditor) ->
@@ -29,6 +31,17 @@ Deckhand.app.directive 'dhField', [
 
       return this
     ]
+
+    editorTag = (fieldName, editType) ->
+      attrs = {item: 'item', name: 'name', 'edit-type': editType}
+
+      if editType is 'select'
+        attrs['edit-choices'] = "o.key as o.value for o in item.#{fieldName}_choices"
+
+      unless editType is 'checkbox'
+        attrs['ng-show'] = 'editing'
+
+      createElement 'dh-field-editor', attrs
 
     getTemplate = (scope) ->
       field = ModelConfig.field(scope.model, scope.name, scope.relation)
@@ -79,16 +92,13 @@ Deckhand.app.directive 'dhField', [
         else
           'text'
 
-        choices = "edit-choices=\"o.key as o.value for o in item.#{field.name}_choices\"" if editType is 'select'
-
         middle = "<i class='glyphicon glyphicon-pencil edit-icon'></i>
                   <div ng-hide='editing'>#{output}</div>" unless editType is 'checkbox'
 
         output = "<div class='dh-field editable'
                        ng-click=\"edit('#{editType}')\"
                        ng-class='{editing: editing, image: #{field.thumbnail}}'>
-                    #{middle || ''}
-                    <dh-field-editor ng-show='editing' item='item' name='name' edit-type=\"#{editType}\" #{choices}/>
+                    #{middle || ''}#{editorTag(field.name, editType)}
                   </div>"
       else
         output = "<div class='dh-field' ng-class='{image: #{field.thumbnail}}'>#{output}</div>"

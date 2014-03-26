@@ -98,11 +98,12 @@ Deckhand.app.directive 'dhFieldEditor', [
         when 'nested'
           '<span></span>'
         when 'checkbox'
-          #TODO not sure why explicit unhide is necesarry
-          #"<input type='checkbox' ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'/>"
-          "<button type='button' class='btn btn-xs btn-checkbox' ng-class='item[name] ? \"btn-success\" : \"\"'
-                   ng-model='item[name]' ng-change=\"onCheckboxChange()\" ng-hide='false'
-                   btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'><span class='glyphicon glyphicon-off'></span></button>"
+          "<button type='button' class='btn btn-xs btn-checkbox'
+                   ng-class='item[name] ? \"btn-success\" : \"\"'
+                   ng-model='item[name]' ng-change=\"onCheckboxChange()\"
+                   btn-checkbox btn-checkbox-true='true' btn-checkbox-false='false'>
+            <span class='glyphicon glyphicon-off'></span>
+          </button>"
         when 'select'
           "<select ng-model='item[name]' ng-options='" + attrs.editChoices + "'/>"
         else

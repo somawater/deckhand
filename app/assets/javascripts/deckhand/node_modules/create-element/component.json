@@ -1,0 +1,11 @@
+{
+  "name": "create-element",
+  "description": "HTML element string creator",
+  "repo": "component/create-element",
+  "version": "0.2.3",
+  "main": "index.js",
+  "scripts": [
+    "index.js"
+  ],
+  "license": "MIT"
+}
