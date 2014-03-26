@@ -30,7 +30,7 @@
       %span(ng-show="!lazyLoad['#{name}']") ({{item.#{name}.length}})
 
     %div(collapse="collapse['#{name}']")
-      %dh-table(columns="columns.#{name}" model="#{@model}" relation=name items="item.#{name}" on-show-item="show(item._model, item.id)")
+      %dh-table(columns="columns.#{name}" model="#{@model}" relation="'#{name}'" items="item.#{name}" on-show-item="show(item._model, item.id)")
 
   - if model_config.actions.any?
     .panel-footer
