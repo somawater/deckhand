@@ -1,5 +1,5 @@
-require './spec_helper'
-scroll = require '../../app/assets/javascripts/deckhand/node_modules/scroll'
+require '../spec_helper'
+scroll = require '../../../app/assets/javascripts/deckhand/node_modules/scroll'
 
 describe 'Card scrolling', ->
   el = scope = Cards = Model = ModelStore = null

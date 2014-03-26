@@ -31,7 +31,9 @@ describe Deckhand::Configuration::ModelConfig do
         [:groups, {type: nil, name: :groups}],
         [:twitter_handle, {link_to: 'http://twitter.com/:value', type: nil, name: :twitter_handle}],
         [:address, {delegate: :summary, html: true, editable: {nested: true}, type: nil, name: :address}],
-        [:text_messages, {table: [:created_at, :text], lazy_load: true, type: nil, name: :text_messages}]
+        [:text_messages, {table: [:created_at, :text], lazy_load: true, type: nil, name: :text_messages}],
+        [:gender, {choices: [['Female', 'f'], ['Male', 'm']], type: nil, name: :gender, editable: true}],
+        [:type, {choices: :types, type: nil, name: :type, editable: true}]
       ]
     end
   end

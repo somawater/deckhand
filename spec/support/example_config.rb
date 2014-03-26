@@ -16,6 +16,8 @@ Deckhand.configure do
     show :twitter_handle, link_to: 'http://twitter.com/:value'
     show :address, :delegate => :summary, :html => true, :editable => {nested: true}
     show :text_messages, table: [:created_at, :text], lazy_load: true
+    show :gender, choices: [['Female', 'f'], ['Male', 'm']], editable: true
+    show :type, choices: :types, editable: true
 
     action :promote, :if => :promotable?
   end
