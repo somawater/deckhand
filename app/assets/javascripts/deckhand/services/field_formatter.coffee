@@ -23,7 +23,7 @@ Deckhand.app.factory "FieldFormatter", [
 
     substitute = (item, attr, string) ->
       value = format(item, attr)
-      string.replace ":value", value
+      string.replace /:value/g, value
 
     {
       format: format
