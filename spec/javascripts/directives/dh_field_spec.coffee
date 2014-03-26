@@ -4,18 +4,19 @@ describe 'dhField', ->
   scope = undefined
   compile = undefined
   element = undefined
+  inner = undefined
   FieldFormatter = undefined
   ModelConfig = undefined
 
-  beforeEach angular.mock.module 'Deckhand'
-
-  beforeEach inject ($rootScope, $compile, _FieldFormatter_, _ModelConfig_) ->
-    scope = $rootScope
-    compile = $compile
-    FieldFormatter = _FieldFormatter_
-    ModelConfig = _ModelConfig_
-
   beforeEach ->
+    angular.mock.module 'Deckhand'
+
+    inject ($rootScope, $compile, _FieldFormatter_, _ModelConfig_) ->
+      scope = $rootScope
+      compile = $compile
+      FieldFormatter = _FieldFormatter_
+      ModelConfig = _ModelConfig_
+
     spyOn(ModelConfig, 'field').and.returnValue(null)
     spyOn(FieldFormatter, 'format').and.returnValue('formatted')
     spyOn(FieldFormatter, 'substitute').and.returnValue('substituted')
@@ -30,17 +31,29 @@ describe 'dhField', ->
     element = angular.element(html)
     compile(element)(scope)
     scope.$digest()
+    inner = element.children().first()
+
+  expectToBeDhField = (setup) ->
+    describe 'is dh-field', ->
+      beforeEach -> setup()
+
+      it 'wraps ', ->
+        expect(element.prop('tagName').toLowerCase()).toEqual('dh-field')
 
   describe 'with no field', ->
-    beforeEach ->
+    setup = ->
       mockField(null)
       render()
 
+    beforeEach -> setup()
+
+    expectToBeDhField(setup)
+
     it 'renders span when no field present', ->
-      expect(element.prop('tagName').toLowerCase()).toEqual('span')
+      expect(inner.prop('tagName').toLowerCase()).toEqual('span')
 
     it 'contains formatted value', ->
-      expect(element.text().trim()).toEqual('formatted')
+      expect(inner.text().trim()).toEqual('formatted')
 
   expectToBeRegular = (setup, value) ->
     describe 'is regular', ->
@@ -48,11 +61,13 @@ describe 'dhField', ->
         value = if value? then value else 'formatted'
         setup()
 
+      expectToBeDhField(setup)
+
       it 'renders div when field is present', ->
-        expect(element.prop('tagName').toLowerCase()).toEqual('div')
+        expect(inner.prop('tagName').toLowerCase()).toEqual('div')
 
       it 'contains appropriate value', ->
-        expect(element.text().trim()).toEqual(value)
+        expect(inner.text().trim()).toEqual(value)
 
   describe 'with non editable field', ->
     describe 'with html', ->
@@ -65,7 +80,7 @@ describe 'dhField', ->
       expectToBeRegular(setup)
 
       it 'binds html', ->
-        boundHtmlContainers = element.find('div[ng-bind-html]')
+        boundHtmlContainers = inner.find('div[ng-bind-html]')
         expect(boundHtmlContainers.length).toBe(1)
         expect(boundHtmlContainers.eq(0).text().trim()).toEqual('formatted')
 
@@ -79,8 +94,8 @@ describe 'dhField', ->
       expectToBeRegular(setup, '')
 
       it 'links to thumbnail image', ->
-        expect(element.find("a[ng-href='thumbnail.png']").length).toBe(1)
-        expect(element.find("img[ng-src='thumbnail.png']").length).toBe(1)
+        expect(inner.find("a[ng-href='thumbnail.png']").length).toBe(1)
+        expect(inner.find("img[ng-src='thumbnail.png']").length).toBe(1)
 
     describe 'with link', ->
       setup = ->
@@ -93,7 +108,7 @@ describe 'dhField', ->
       expectToBeRegular(setup)
 
       it 'links to it', ->
-        expect(element.find("a[ng-href='some_link']").length).toBe(1)
+        expect(inner.find("a[ng-href='some_link']").length).toBe(1)
 
     describe 'with relation', ->
       setup = ->
@@ -105,7 +120,7 @@ describe 'dhField', ->
       expectToBeRegular(setup)
 
       it 'links click to the related model', ->
-        expect(element.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
+        expect(inner.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
 
     describe 'with time', ->
       setup = ->
@@ -118,36 +133,44 @@ describe 'dhField', ->
       expectToBeRegular(setup, 'a few seconds ago')
 
       it 'invokes dh-time directive', ->
-        expect(element.find("[time='some_time']").length).toBe(1)
+        expect(inner.find("[time='some_time']").length).toBe(1)
 
   expectToBeEditable = (field, editType) ->
     describe "is editable", ->
-      beforeEach ->
+      setup = ->
         mockField(field)
         render()
+
+      beforeEach ->
+        setup()
         editType = if editType? then editType else 'formatted'
 
+      expectToBeDhField(setup)
+
       it 'wraps content in editable', ->
-        expect(element.hasClass('editable')).toBe(true)
+        expect(inner.hasClass('editable')).toBe(true)
 
       it 'makes field clickable', ->
-        expect(element.attr('ng-click')).toEqual("edit('" + editType + "')")
+        expect(inner.attr('ng-click')).toEqual("edit('" + editType + "')")
 
       it 'invokes dh-field-editor directive', ->
-        expect(element.find("[edit-type='" + editType + "']").length).toBe(1)
+        expect(inner.find("[edit-type='" + editType + "']").length).toBe(1)
 
   expectToDisplayAsEditable = (field) ->
     describe "displays as editable", ->
-      beforeEach ->
+      setup = ->
         mockField(field)
         render()
 
+      beforeEach ->
+        setup()
+
       it 'contains editable icon', ->
-        expect(element.find('.glyphicon-pencil').length).toEqual(1)
+        expect(inner.find('.glyphicon-pencil').length).toEqual(1)
 
       it 'contains hidable element with value', ->
-        expect(element.find("[ng-hide='editing']").length).toEqual(1)
-        expect(element.find("[ng-hide='editing']").eq(0).text().trim()).toEqual('formatted')
+        expect(inner.find("[ng-hide='editing']").length).toEqual(1)
+        expect(inner.find("[ng-hide='editing']").eq(0).text().trim()).toEqual('formatted')
 
   describe 'with editable field', ->
     describe 'with text', ->
@@ -174,10 +197,10 @@ describe 'dhField', ->
       expectToBeEditable({editable: true, type: 'boolean'}, 'checkbox')
 
       it 'does not contain editable icon', ->
-        expect(element.find('.glyphicon-pencil').length).toEqual(0)
+        expect(inner.find('.glyphicon-pencil').length).toEqual(0)
 
       it 'does not contain hidable element with value', ->
-        expect(element.find("[ng-hide='editing']").length).toEqual(0)
+        expect(inner.find("[ng-hide='editing']").length).toEqual(0)
 
     describe 'with choices', ->
       beforeEach ->
@@ -188,4 +211,4 @@ describe 'dhField', ->
       expectToDisplayAsEditable({editable: true, choices: true})
 
       it 'invokes dh-field-editor directive with choices', ->
-        expect(element.find("[edit-choices='o.key as o.value for o in item.type_choices']").length).toBe(1)
+        expect(inner.find("[edit-choices='o.key as o.value for o in item.type_choices']").length).toBe(1)
