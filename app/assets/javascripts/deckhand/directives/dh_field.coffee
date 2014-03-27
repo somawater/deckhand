@@ -1,8 +1,8 @@
 createElement = require('create-element')
 
 Deckhand.app.directive 'dhField', [
-  '$compile', 'FieldFormatter', '$rootScope', 'ModelConfig', 'Cards', 'ModalEditor'
-  ($compile, FieldFormatter, $rootScope, ModelConfig, Cards, ModalEditor) ->
+  '$compile', 'FieldFormatter', 'ModelConfig', 'Cards', 'ModalEditor'
+  ($compile, FieldFormatter, ModelConfig, Cards, ModalEditor) ->
 
     link = (scope, element, attrs) ->
 
