@@ -19,6 +19,7 @@ Deckhand.app.factory 'Cards', [
             cards.unshift entry.item
 
       refresh: (item) ->
+        $rootScope.$broadcast 'itemRefreshed', item
         entry = ModelStore.register(item)
         if entry.card
           index = cards.indexOf(entry.item)
