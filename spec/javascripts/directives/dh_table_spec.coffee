@@ -101,3 +101,7 @@ describe 'dhTable directive', ->
     it 'triggers the show action in the outer scope', ->
       expect(outerScope.showItem).toHaveBeenCalledWith(scope.items[0])
 
+  describe '2 way data binding', ->
+    it 'updates when outer scope is updated', ->
+      outerScope.items[1] = {col1: 'updated', col2: 'val5', col3: 'val6'}
+      expect(scope.items[1].col1).toEqual('updated')
