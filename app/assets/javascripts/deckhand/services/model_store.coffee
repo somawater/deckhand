@@ -20,10 +20,12 @@ Deckhand.app.factory "ModelStore", [
       for name, value of item
         do ->
           field = ModelConfig.field(item._model, name)
-          return unless field
-          if field.table
+          is_list = id == 'list' and Array.isArray(value)
+          return unless field or is_list
+
+          if is_list or field?.table
             register(nestedItem) for nestedItem in value
-          else if field.type is "relation" and value?._model
+          else if field?.type is "relation" and value?._model
             register value
 
       entry
