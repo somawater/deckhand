@@ -70,7 +70,10 @@ Deckhand.app.directive 'dhField', [
                   #{value}</a>"
 
       else if field.type == 'relation'
-        output = "<a ng-click=\"show(item[name]._model, item[name].id)\">#{value}</a>"
+        if scope.item && scope.item[scope.name]
+          output = "<a ng-click=\"show(item[name]._model, item[name].id)\">" + value + "</a>"
+        else
+          output = value
 
       else if field.type == 'time'
         output = "<dh-time time='#{value}'/>"

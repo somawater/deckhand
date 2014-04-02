@@ -27,7 +27,7 @@ describe 'dhField', ->
     field
 
   render = (html) ->
-    html = '<dh-field item="item" model="Campaign" name="title"></dh-field>' unless html
+    html = '<dh-field item="item" model="Campaign" name="\'title\'"></dh-field>' unless html
     element = angular.element(html)
     compile(element)(scope)
     scope.$digest()
@@ -119,8 +119,15 @@ describe 'dhField', ->
 
       expectToBeRegular(setup)
 
-      it 'links click to the related model', ->
+      it 'links click to the related value when present', ->
+        scope.item = {related: 'not null'}
+        render('<dh-field item="item" model="Campaign" name="\'related\'"></dh-field>')
         expect(inner.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(1)
+
+      it 'does not link when related value does not exist', ->
+        scope.item = {related: null}
+        render('<dh-field item="item" model="Campaign" name="\'related\'"></dh-field>')
+        expect(inner.find("a[ng-click='show(item[name]._model, item[name].id)']").length).toBe(0)
 
     describe 'with time', ->
       setup = ->
