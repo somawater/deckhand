@@ -69,11 +69,8 @@ Deckhand.app.directive 'dhField', [
         output = "<a target='_blank' ng-href=\"{{substitute(item, name, '#{field.link_to}')}}\">
                   #{value}</a>"
 
-      else if field.type == 'relation'
-        if scope.item && scope.item[scope.name]
-          output = "<a ng-click=\"show(item[name]._model, item[name].id)\">" + value + "</a>"
-        else
-          output = value
+      else if field.type == 'relation' && scope.item && scope.item[scope.name]
+        output = "<a ng-click=\"show(item[name]._model, item[name].id)\">" + value + "</a>"
 
       else if field.type == 'time'
         output = "<dh-time time='#{value}'/>"
