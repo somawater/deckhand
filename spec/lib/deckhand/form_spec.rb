@@ -24,7 +24,13 @@ describe Deckhand::Form do
       expect(form.thing).to eq(thing)
       expect(form.marital_status).to eq('m')
     end
-    
+
+    it 'respects booleans' do
+      form = ExampleForm.new(object: thing, here: false, there: true)
+      expect(form.here).to eq(false)
+      expect(form.there).to eq(true)
+    end
+
     it "has choices" do
       form = ExampleForm.new
       expect(form.values[:marital_status][:choices]).to eq([['Single', 's'], ['Married', 'm']])

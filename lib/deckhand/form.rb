@@ -119,7 +119,7 @@ class Deckhand::Form
       (params || []).map do |member_params|
         resolve_nested_values(member_params, options)
       end
-    elsif !params and default = options[:default]
+    elsif params.nil? and default = options[:default]
       if [TrueClass, FalseClass, Integer, Fixnum, Float, Time, String, Array, Hash].include?(default.class)
         default
       else
