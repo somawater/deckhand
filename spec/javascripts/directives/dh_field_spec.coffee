@@ -1,12 +1,7 @@
 require '../spec_helper'
 
-describe 'dhField', ->
-  scope = undefined
-  compile = undefined
-  element = undefined
-  inner = undefined
-  FieldFormatter = undefined
-  ModelConfig = undefined
+describe 'dhField directive', ->
+  scope = compile = element = inner = FieldFormatter = ModelConfig = null
 
   beforeEach ->
     angular.mock.module 'Deckhand'
