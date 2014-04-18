@@ -10,6 +10,7 @@ require "./lib/angular-animate"
 require "./lib/angular-ui-bootstrap-0.10.0"
 require "./lib/angular-ui-bootstrap-tpls-0.10.0"
 require "./lib/angular-file-upload"
+require "./lib/datetimepicker"
 
 Deckhand.app = angular.module 'Deckhand', [
   'ngResource'
@@ -17,6 +18,7 @@ Deckhand.app = angular.module 'Deckhand', [
   'ngAnimate'
   'angularFileUpload'
   'ui.bootstrap'
+  'ui.bootstrap.datetimepicker'
 ]
 
 Deckhand.app.value 'modelConfigData', Deckhand.models

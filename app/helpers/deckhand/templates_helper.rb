@@ -21,7 +21,9 @@ module Deckhand::TemplatesHelper
     return build_typeahead_input(args, name, options)   if options[:model]
     return build_checkbox(args)                         if options[:type] == :boolean
     return build_file_upload(args, name)                if options[:type] == :file
+    return build_date_picker(args)                      if options[:type] == Date
     return build_time_picker(args)                      if options[:type] == Time
+    return build_datetime_picker(args)                  if options[:type] == DateTime
     return build_integer_picker(args)                   if options[:type] == Integer
     return build_float_picker(args)                     if options[:type] == Float
     return build_select_input(args, name, options)      if options[:choices]
@@ -68,9 +70,26 @@ module Deckhand::TemplatesHelper
     content_tag :input, '', args
   end
 
+  def build_date_picker(args)
+    args['type'] = 'text'
+    args['datepicker-popup'] = ''
+    content_tag :div, '', class: 'input-group' do
+      content_tag :input, '', args do
+        content_tag :span, '', class: 'input-group-addon' do
+          content_tag :i, '', class: 'glyphicon glyphicon-calendar'
+        end
+      end
+    end
+  end
+
   def build_time_picker(args)
     args.delete('class')
     content_tag :div, content_tag(:timepicker), args
+  end
+
+  def build_datetime_picker(args)
+    args.delete('class')
+    content_tag :datetimepicker, '', args
   end
 
   def build_integer_picker(args)
