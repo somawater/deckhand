@@ -54,7 +54,11 @@ class Deckhand::Presenter
   end
 
   def core_fields(obj)
-    {_model: obj.class.to_s, _label: label_value(obj), id: obj.id}
+    {
+      _model: Deckhand.config.known_ancestor(obj.class).to_s,
+      _label: label_value(obj),
+      id: obj.id
+    }
   end
 
   private

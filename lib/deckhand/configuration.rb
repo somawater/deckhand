@@ -34,16 +34,27 @@ module Deckhand
       self.models = self.global = nil
     end
 
+    def known_ancestor(cls)
+      cls.ancestors.detect {|a| models.include? a.to_s }
+    end
+
     def model_class(model)
-      models.keys.detect {|k| k == model }.constantize
+      if name = models.keys.detect {|k| k == model }
+        name.constantize
+      else
+        known_ancestor model.constantize
+      end
     end
 
     def for_model(model)
-      models[model.to_s]
+      return models[model] if models[model]
+
+      model = model.constantize if model.is_a?(String)
+      models[known_ancestor(model).to_s]
     end
 
     def has_model?(model)
-      models.include? model.to_s
+      !!for_model(model)
     end
 
     def action_form_class(action)
