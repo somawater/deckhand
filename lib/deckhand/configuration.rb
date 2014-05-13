@@ -49,7 +49,7 @@ module Deckhand
     def for_model(model)
       return models[model] if models[model]
 
-      model = model.constantize if model.is_a?(String)
+      model = model.to_s.constantize unless model.is_a?(Class)
       models[known_ancestor(model).to_s]
     end
 

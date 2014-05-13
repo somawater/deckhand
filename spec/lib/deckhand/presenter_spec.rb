@@ -62,15 +62,15 @@ describe Deckhand::Presenter do
       Deckhand.configure do
         model Foo do
           show :thing, class_name: :foo
-          show :bars, table: [:bar], class_name: :foo
+          show :bars, table: [:bar], class_name: 'Bar'
         end
 
         model Bar do
-          show :baz, :bonk, :foos, class_name: :bar
+          show :baz, :bonk, :foos
         end
 
         model Baz do
-          show :foo, class_name: :baz
+          show :foo, class_name: 'Foo'
         end
       end
       Deckhand.config.run
@@ -148,11 +148,11 @@ describe Deckhand::Presenter do
     before do
       Deckhand.configure do
         model Foo do
-          show :bars, table: [:quuz], lazy_load: true, class_name: :foo
+          show :bars, table: [:quuz], lazy_load: true, class_name: 'Bar'
         end
 
         model Bar do
-          show :quuz, :quux, class_name: :bar
+          show :quuz, :quux
         end
       end
       Deckhand.config.run
