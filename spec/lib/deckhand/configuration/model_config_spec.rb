@@ -41,7 +41,10 @@ describe Deckhand::Configuration::ModelConfig do
   context '#fields_to_include' do
     it 'includes fields used as conditions for actions' do
       fields_to_include = Deckhand.config.for_model(Participant).fields_to_include
+      # case with :if
       expect(fields_to_include).to include [:promotable?, {type: nil, name: :promotable?}]
+      # case with :unless
+      expect(fields_to_include).to include [:confirmed?, {type: nil, name: :confirmed?}]
     end
 
     it 'includes fields used in tables by related models' do

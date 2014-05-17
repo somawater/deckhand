@@ -100,7 +100,7 @@ class Deckhand::Configuration::ModelConfig
   def detect_action_fields
     fields_to_show.dup.tap do |fields|
       names = fields.map(&:first)
-      actions.map { |a| a.last[:if] }.compact.each do |action|
+      actions.map { |a| [a.last[:if], a.last[:unless]].compact }.flatten.each do |action|
         fields << [action, complete_options(action, {})] unless names.include?(action)
       end
     end

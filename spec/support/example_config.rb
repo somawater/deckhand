@@ -20,6 +20,7 @@ Deckhand.configure do
     show :type, choices: :types, editable: true
 
     action :promote, :if => :promotable?
+    action :delete, :unless => :confirmed?
   end
 
   model Group do
