@@ -39,7 +39,7 @@ Deckhand.app.controller 'CardCtrl', [
 
     $scope.act = (item, action, options) ->
       if options.form
-        ModalEditor.act(action, item)
+        ModalEditor.act(action, item, options)
       else
         options.confirm = "Are you sure?" unless options.hasOwnProperty("confirm")
         if not options.confirm or confirm(options.confirm)
@@ -47,7 +47,9 @@ Deckhand.app.controller 'CardCtrl', [
             model: item._model
             id: item.id
             act: action
-          , ModalEditor.processResponse
+          , (response) ->
+            Cards.remove item if options.close_after
+            ModalEditor.processResponse(response)
 
     $scope.edit = (name) ->
       ModalEditor.edit item, name

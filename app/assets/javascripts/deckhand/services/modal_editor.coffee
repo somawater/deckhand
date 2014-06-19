@@ -14,7 +14,7 @@ Deckhand.app.factory 'ModalEditor', [
       Cards.show result._model, result.id if result and result._model
 
     {
-      act: (action, item) ->
+      act: (action, item, options) ->
         formParams = {act: action, type: "action"}
 
         if item
@@ -35,7 +35,9 @@ Deckhand.app.factory 'ModalEditor', [
               formParams: formParams
               verb: "act"
         )
-        modalInstance.result.then processResponse
+        modalInstance.result.then (response) ->
+          Cards.remove item if options?.close_after
+          processResponse(response)
 
       edit: (item, name) ->
         url = null
