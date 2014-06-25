@@ -4,7 +4,7 @@ Deckhand.app.factory "FieldFormatter", [
     format = (item, attr, modifier) ->
       type = ModelConfig.type(item._model, attr)
       value = undefined
-      if type is "relation"
+      if type is "relation" or item[attr]?._model
         obj = item[attr]
         value = (if obj then obj._label else "none")
       else
