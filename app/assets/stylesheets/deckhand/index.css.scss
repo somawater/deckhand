@@ -298,3 +298,20 @@ legend .glyphicon-question-sign {
 
 .btn-checkbox {
 }
+
+
+
+@media (min-width: 768px) { 
+  .card dl.dl-horizontal dt {
+      width: 25%;
+      float: left;
+      margin: 0;
+      padding: 0;  
+    }
+  .card dl.dl-horizontal dd {
+
+      width: 75%;
+      float: left;
+      margin: 0;
+  }
+}
