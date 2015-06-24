@@ -27,7 +27,7 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
   protected
 
   def query(scope, term, fields)
-    scope.or(*search_criteria(term, fields)).limit(5)
+    scope.or(*search_criteria(term, fields)).limit(10)
   end
 
   private
