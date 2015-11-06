@@ -54,7 +54,7 @@ module Deckhand
     end
 
     def has_model?(model)
-      !!for_model(model)
+      !!(!model.nil? && for_model(model))
     end
 
     def action_form_class(action)
@@ -80,7 +80,6 @@ module Deckhand
       models.each do |model, config|
         config.table_fields.each do |name, options|
           class_name = options[:class_name]
-
           if has_model?(class_name)
             relation_config = for_model(class_name)
             options[:table].each do |column|
