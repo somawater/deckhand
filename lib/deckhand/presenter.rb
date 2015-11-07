@@ -57,7 +57,7 @@ class Deckhand::Presenter
     {
       _model: Deckhand.config.known_ancestor(obj.class).to_s,
       _label: label_value(obj),
-      id: obj.id
+      id: obj.id.to_s
     }
   end
 
