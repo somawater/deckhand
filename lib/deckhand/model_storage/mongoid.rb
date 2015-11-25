@@ -21,7 +21,7 @@ class Deckhand::ModelStorage::Mongoid < Deckhand::ModelStorage::Base
   end
 
   def update(instance, attributes)
-    instance.update_attributes attributes, without_protection: true
+    instance.update_attributes attributes
   end
 
   protected
