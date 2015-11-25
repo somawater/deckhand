@@ -16,6 +16,10 @@ module Deckhand
     end
 
     initializer 'deckhand.assets_precompile', :group => :all do |app|
+      
+      app.config.assets.version = ENV['ASSET_VERSION'] || '1.0'
+      app.config.action_controller.asset_host = ENV['ASSET_HOST'] unless ENV['ASSET_HOST'].nil?
+
       # We don't want the default of everything that isn't js or css, because it pulls too many things in
       app.config.assets.precompile.shift
 
