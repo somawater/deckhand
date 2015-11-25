@@ -33,6 +33,8 @@ module Deckhand
       end)
       
       app.config.assets.precompile += %w[
+        deckhand/bootstrap-3.0.3/fonts/glyphicons-halflings-regular.ttf
+        deckhand/bootstrap-3.0.3/fonts/glyphicons-halflings-regular.woff
         deckhand/bootstrap-3.0.3/css/bootstrap.css
         deckhand/index.css
         deckhand/theme.css
